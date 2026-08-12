@@ -1,4 +1,106 @@
-export const en = {
+export type Dictionary = {
+  nav: {
+    home: string;
+    properties: string;
+    sell: string;
+    blog: string;
+    contact: string;
+    signIn: string;
+    english: string;
+    arabic: string;
+    rights: string;
+  };
+  hero: {
+    scroll: string;
+    down: string;
+    description: string;
+    featureTitle: string;
+    featureAddress: string;
+    imageAlt: string;
+  };
+  search: {
+    pill: string;
+    title: string;
+    description: string;
+    lookingFor: string;
+    locations: string;
+    bedrooms: string;
+    budget: string;
+    search: string;
+    options: {
+      buy: string;
+      rent: string;
+      invest: string;
+      single: string;
+      bed1: string;
+      bed2: string;
+      bed3: string;
+      bed4: string;
+    };
+  };
+  about: {
+    pill: string;
+    clickMe: string;
+    titleLine1: string;
+    titleLine2: string;
+    description: string;
+    cards: {
+      villa: { title: string; description: string; count: string };
+      family: { title: string; description: string; count: string };
+      apartment: { title: string; description: string; count: string };
+      office: { title: string; description: string; count: string };
+    };
+  };
+  properties: {
+    pill: string;
+    titleLine1: string;
+    titleLine2: string;
+    description: string;
+    view: string;
+    details: string;
+    seeAll: string;
+    bed: string;
+    bath: string;
+    sqft: string;
+    filters: {
+      all: string;
+      family: string;
+      villa: string;
+      apartment: string;
+    };
+    forSale: string;
+    forRent: string;
+  };
+  agents: {
+    pill: string;
+    titleLine1: string;
+    titleLine2: string;
+    description: string;
+    reserveUnit: string;
+    seeAll: string;
+  };
+  faq: {
+    pill: string;
+    titleLine1: string;
+    titleLine2: string;
+    intro: string;
+    items: { q: string; a: string }[];
+  };
+  stats: {
+    title: string;
+    homesForRent: string;
+    homesToBuy: string;
+    citiesCovered: string;
+    totalProperties: string;
+  };
+  partners: {
+    pill: string;
+    title: string;
+    description: string;
+  };
+};
+
+export const en: Dictionary = {
   nav: {
     home: "Home",
     properties: "Properties",
@@ -142,6 +244,4 @@ export const en = {
     description:
       "Built on strong alliances with leading brands and institutions that share our standard for trust, quality, and long-term value.",
   },
-} as const;
-
-export type Dictionary = typeof en;
+};

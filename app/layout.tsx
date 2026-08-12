@@ -34,7 +34,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${manrope.variable} ${cairo.variable} ${notoKufiArabic.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <Script id="maqsed-locale-bootstrap" strategy="beforeInteractive">
           {localeBootstrap}
         </Script>
