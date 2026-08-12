@@ -1,160 +1,169 @@
 "use client";
 
 import { useEffect } from "react";
+import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import Image from "next/image";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
-import { Star, MapPin, Key } from "lucide-react";
+import { MapPin, Key, ArrowUpRight } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
-const agents = [
+const units = [
   {
     id: 1,
-    name: "Sarah Michelle",
-    rating: "4.9",
-    role: "Luxury Property Specialist",
-    location: "New York",
-    sold: "412 Properties Sold",
-    image: "/herosectionimg.avif",
+    name: "Amberwood Homestead",
+    type: "Family House · Ready to Reserve",
+    location: "Vancouver, Canada",
+    status: "Priority Booking Open",
+    image: "/properites/1.webp",
   },
   {
     id: 2,
-    name: "Michael Lawson",
-    rating: "4.9",
-    role: "Senior Real Estate Advisor",
-    location: "Los Angeles",
-    sold: "389 Properties Sold",
-    image: "/herosectionimg.avif",
+    name: "Aurora Tower",
+    type: "Luxury Apartment · Limited Units",
+    location: "Dubai, UAE",
+    status: "Reserve from Phase 2",
+    image: "/properites/2.webp",
   },
   {
     id: 3,
-    name: "Bambang Widjaja",
-    rating: "4.8",
-    role: "Senior Real Estate Advisor",
-    location: "Jakarta",
-    sold: "346 Properties Sold",
-    image: "/herosectionimg.avif",
+    name: "Azure Bay Villa",
+    type: "Modern Villa · Exclusive Release",
+    location: "Santorini, Greece",
+    status: "Private Reservation",
+    image: "/properites/3.webp",
   },
   {
     id: 4,
-    name: "Miyoshi Nakano",
-    rating: "4.8",
-    role: "Commercial Real Estate Agent",
-    location: "Tokyo",
-    sold: "340 Properties Sold",
-    image: "/herosectionimg.avif",
+    name: "Urban Skyline Penthouse",
+    type: "Penthouse · High Demand",
+    location: "New York, USA",
+    status: "Book a Viewing Slot",
+    image: "/properites/4.avif",
   },
   {
     id: 5,
-    name: "David Harrison",
-    rating: "4.8",
-    role: "First-Time Home Buyer Specialist",
-    location: "Barcelona",
-    sold: "284 Properties Sold",
-    image: "/herosectionimg.avif",
+    name: "Golden Horizon Estate",
+    type: "Family Estate · Now Available",
+    location: "Los Angeles, USA",
+    status: "Reserve This Unit",
+    image: "/properites/5.avif",
   },
   {
     id: 6,
-    name: "Isabella Clarke",
-    rating: "4.7",
-    role: "Real Estate Negotiation Expert",
-    location: "London",
-    sold: "365 Properties Sold",
-    image: "/herosectionimg.avif",
+    name: "Minimalist Zen Retreat",
+    type: "Boutique Residence · Soft Launch",
+    location: "Kyoto, Japan",
+    status: "Early Booking Open",
+    image: "/properites/6.webp",
   },
 ];
 
 export function AgentsSection() {
+  const { t, locale, isRtl } = useLocale();
   const [emblaRef, emblaApi] = useEmblaCarousel(
-    { loop: true, align: "start", dragFree: true },
+    {
+      loop: true,
+      align: "start",
+      dragFree: true,
+      direction: isRtl ? "rtl" : "ltr",
+    },
     [
       AutoScroll({
         playOnInit: true,
-        speed: 1, // Slow continuous scroll
+        speed: 1,
         stopOnInteraction: false,
         stopOnMouseEnter: true,
       }),
     ]
   );
 
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.reInit({ direction: isRtl ? "rtl" : "ltr" });
+  }, [emblaApi, isRtl]);
+
   return (
-    <section className="relative z-30 w-full bg-white py-24 px-6 md:px-12 lg:px-20 overflow-hidden">
-      <div className="max-w-[1400px] mx-auto">
-        
-        {/* Header Row */}
-        <div className="flex flex-col lg:flex-row justify-between items-start gap-10 mb-16">
-          {/* Left Side */}
+    <section className="relative z-30 w-full overflow-hidden bg-white px-6 py-24 md:px-12 lg:px-20">
+      <div className="mx-auto max-w-[1400px]">
+        <div className="mb-16 flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
           <div className="max-w-2xl">
-            <div className="group inline-flex items-center gap-3 border border-gray-200 rounded-full px-4 py-2 mb-6 transition-colors duration-300 hover:bg-[#0a0f1d] cursor-pointer">
-              <div className="w-2 h-2 rounded-full bg-[#0a0f1d] group-hover:bg-white transition-colors duration-300" />
-              <span className="text-sm font-medium text-[#0a0f1d] group-hover:text-white transition-colors duration-300">
-                Top Rated Agents
+            <div className="group mb-8 inline-flex cursor-default items-center gap-2 rounded-full border border-gray-200 px-3.5 py-1.5 transition-colors duration-300 hover:bg-[#0a0f1d]">
+              <div className="h-3 w-3 flex-shrink-0 rounded-full bg-[#0a0f1d] transition-colors duration-300 group-hover:bg-white" />
+              <span className="text-sm font-medium tracking-wide text-[#0a0f1d] transition-colors duration-300 group-hover:text-white">
+                {t("agents.pill")}
               </span>
             </div>
-            <h2 className="text-5xl lg:text-[4rem] font-bold text-[#0a0f1d] leading-[1.1] tracking-tight">
-              Meet One of Our Top
-              <br />
-              Performing Agents.
+            <h2 className="flex flex-col items-start text-5xl leading-tight font-bold tracking-tight text-[#0a0f1d] sm:text-6xl lg:text-6xl">
+              <DiaTextReveal
+                key={`agents-1-${locale}`}
+                text={t("agents.titleLine1")}
+                textColor="#0a0f1d"
+                colors={["#0a0f1d"]}
+              />
+              <DiaTextReveal
+                key={`agents-2-${locale}`}
+                text={t("agents.titleLine2")}
+                textColor="#0a0f1d"
+                colors={["#0a0f1d"]}
+              />
             </h2>
           </div>
 
-          {/* Right Side */}
-          <div className="max-w-md lg:pt-20">
-            <p className="text-[#6b7280] text-[1.1rem] leading-relaxed">
-              A special feature showcasing an exceptional agent who has consistently exceeded expectations and delivered outstanding service.
+          <div className="max-w-lg">
+            <p className="text-lg leading-snug font-semibold tracking-normal text-[#8c8c8c]">
+              {t("agents.description")}
             </p>
           </div>
         </div>
 
-        {/* Carousel */}
         <div className="overflow-hidden" ref={emblaRef}>
-          {/* Fix Embla Gap with -ml-6 and pl-6 */}
-          <div className="flex -ml-6">
-            {agents.map((agent) => (
-              <div 
-                key={agent.id} 
-                className="flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_25%] min-w-0 pl-6"
+          <div className="flex -ms-6">
+            {units.map((unit) => (
+              <div
+                key={unit.id}
+                className="min-w-0 flex-[0_0_100%] ps-6 sm:flex-[0_0_50%] lg:flex-[0_0_25%]"
               >
-                {/* Wrap the card in a group for the hover effect */}
-                <div className="flex flex-col group cursor-pointer">
-                  {/* Image Container */}
-                  <div className="relative w-full aspect-[4/5] rounded-2xl overflow-hidden mb-6">
+                <div className="group flex cursor-pointer flex-col">
+                  <div className="relative mb-6 aspect-[4/5] w-full overflow-hidden rounded-2xl">
                     <Image
-                      src={agent.image}
-                      alt={agent.name}
+                      src={unit.image}
+                      alt={unit.name}
                       fill
                       className="object-cover transition-transform duration-700 group-hover:scale-105"
                     />
                   </div>
 
-                  {/* Info Header */}
-                  <div className="flex justify-between items-start mb-3">
-                    <h4 className="text-2xl font-bold text-[#0a0f1d]">{agent.name}</h4>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <Star className="w-6 h-6 fill-[#FFB800] text-[#FFB800]" />
-                      <span className="text-lg font-bold text-[#0a0f1d]">{agent.rating}</span>
-                    </div>
+                  <div className="mb-3 flex items-start justify-between">
+                    <h4 className="pe-2 text-2xl font-bold text-[#0a0f1d]">
+                      {unit.name}
+                    </h4>
                   </div>
 
-                  {/* Role */}
-                  <p className="text-[#8c8c8c] text-base font-medium mb-5">
-                    {agent.role}
+                  <p className="mb-5 text-base font-medium text-[#8c8c8c]">
+                    {unit.type}
                   </p>
 
-                  {/* Details */}
-                  <div className="flex flex-col gap-4 mb-8">
+                  <div className="mb-8 flex flex-col gap-4">
                     <div className="flex items-center gap-3 text-[#0a0f1d]">
-                      <MapPin className="w-6 h-6 stroke-[2.5]" />
-                      <span className="text-base font-semibold">{agent.location}</span>
+                      <MapPin className="h-6 w-6 stroke-[2.5]" />
+                      <span className="text-base font-semibold">
+                        {unit.location}
+                      </span>
                     </div>
                     <div className="flex items-center gap-3 text-[#0a0f1d]">
-                      <Key className="w-6 h-6 stroke-[2.5]" />
-                      <span className="text-base font-semibold">{agent.sold}</span>
+                      <Key className="h-6 w-6 stroke-[2.5]" />
+                      <span className="text-base font-semibold">
+                        {unit.status}
+                      </span>
                     </div>
                   </div>
 
-                  {/* Button */}
-                  <button className="w-full py-4 rounded-xl border border-gray-300 text-[#0a0f1d] font-extrabold text-lg transition-colors duration-300 group-hover:bg-[#0a0f1d] group-hover:text-white group-hover:border-[#0a0f1d]">
-                    Contact Agent
+                  <button
+                    type="button"
+                    className="w-full rounded-xl border border-gray-300 py-4 text-lg font-extrabold text-[#0a0f1d] transition-colors duration-300 group-hover:border-[#0a0f1d] group-hover:bg-[#0a0f1d] group-hover:text-white"
+                  >
+                    {t("agents.reserveUnit")}
                   </button>
                 </div>
               </div>
@@ -162,6 +171,18 @@ export function AgentsSection() {
           </div>
         </div>
 
+        <div className="mt-16 flex justify-center">
+          <button
+            type="button"
+            className="group inline-flex items-center gap-2.5 rounded-full bg-[#0a0f1d] px-6 py-3.5 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#0a0f1d] hover:ring-1 hover:ring-[#0a0f1d]/15 active:scale-[0.98]"
+          >
+            {t("agents.seeAll")}
+            <ArrowUpRight
+              className="h-4 w-4 transition-transform duration-300 ease-out group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5"
+              strokeWidth={2}
+            />
+          </button>
+        </div>
       </div>
     </section>
   );

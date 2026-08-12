@@ -40,8 +40,7 @@ export function Footer() {
             </span>
             <a
               href="mailto:marketing@maqsed.com"
-              className="text-2xl md:text-3xl font-black text-white leading-tight hover:text-white/70 transition-colors duration-300"
-              style={{ fontStyle: "italic", fontFamily: "Georgia, 'Times New Roman', serif" }}
+              className="text-2xl md:text-3xl font-bold text-white leading-tight hover:text-white/60 transition-colors duration-300 tracking-tight"
             >
               marketing@maqsed.com
             </a>

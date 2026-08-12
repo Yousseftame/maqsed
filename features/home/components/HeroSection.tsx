@@ -1,54 +1,123 @@
+"use client";
+
 import Image from "next/image";
+import { useState, useEffect, useRef } from "react";
+import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
+import { useSplashDone } from "@/components/providers/SplashProvider";
+import { useLocale } from "@/components/providers/LocaleProvider";
 
 export function HeroSection() {
+  const splashDone = useSplashDone();
+  const { t, locale } = useLocale();
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      if (sectionRef.current) {
+        const rect = sectionRef.current.getBoundingClientRect();
+        setMousePos({
+          x: e.clientX - rect.left,
+          y: e.clientY - rect.top,
+        });
+      }
+    };
+
+    const section = sectionRef.current;
+    if (section) {
+      section.addEventListener("mousemove", handleMouseMove);
+    }
+
+    return () => {
+      if (section) {
+        section.removeEventListener("mousemove", handleMouseMove);
+      }
+    };
+  }, []);
+
   return (
-    <section className="sticky top-16 w-full h-[calc(100vh-64px)] min-h-[700px] flex flex-col justify-end overflow-hidden bg-white">
-      
-      {/* Background Huge Text */}
-      <div className="absolute top-[8%] sm:top-[12%] left-0 w-full flex justify-center z-0 px-4">
-        <h1 
-          className="text-[#0a0f1d] font-bold leading-none tracking-tighter select-none"
+    <section
+      ref={sectionRef}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="sticky top-16 flex h-[calc(100vh-64px)] min-h-[700px] w-full flex-col justify-end overflow-hidden bg-white"
+    >
+      <div
+        className="pointer-events-none absolute top-0 left-0 z-[100] hidden h-[105px] w-[105px] items-center justify-center rounded-full bg-[#0a0f1d] text-center text-white shadow-xl lg:flex"
+        style={{
+          opacity: isHovered ? 1 : 0,
+          transform: `translate(${mousePos.x - 52.5}px, ${mousePos.y - 52.5}px) scale(${isHovered ? 1 : 0})`,
+          transition: "transform 0.15s ease-out, opacity 0.3s ease",
+        }}
+      >
+        <div className="flex flex-col items-center justify-center text-[19px] leading-none font-black tracking-tight">
+          <span>{t("hero.scroll")}</span>
+          <span className="tracking-normal">{t("hero.down")}</span>
+        </div>
+      </div>
+
+      <div
+        className={`absolute left-0 z-[1] flex w-full justify-center px-4 ${
+          locale === "ar"
+            ? "top-0 sm:top-[1%] -translate-x-28 sm:-translate-x-40 lg:-translate-x-56 -translate-y-2 sm:-translate-y-4"
+            : "top-[8%] sm:top-[12%]"
+        }`}
+      >
+        <h1
+          className="leading-none font-bold tracking-tighter text-[#0a0f1d] select-none"
           style={{ fontSize: "clamp(120px, 22vw, 400px)" }}
         >
-          MAQSED
+          {splashDone ? (
+            <DiaTextReveal
+              key={`hero-maqsed-${locale}`}
+              text={locale === "ar" ? "مقصد" : "MAQSED"}
+              textColor="#0a0f1d"
+              colors={["#0a0f1d"]}
+              startOnView={false}
+              once
+              duration={1.6}
+              className="inline-block leading-none font-bold tracking-tighter"
+            />
+          ) : (
+            <span
+              className="inline-block leading-none font-bold tracking-tighter opacity-0"
+              aria-hidden
+            >
+              {locale === "ar" ? "مقصد" : "MAQSED"}
+            </span>
+          )}
         </h1>
       </div>
 
-      {/* Hero Image overlapping the text */}
-      <div className="absolute left-0 top-[22%] sm:top-[26%] w-full h-[100%] z-10">
+      <div className="absolute top-[22%] left-0 z-10 h-[100%] w-full sm:top-[26%]">
         <Image
           src="/herosectionimg.avif"
-          alt="Modern House Architecture"
+          alt={t("hero.imageAlt")}
           fill
           priority
-          className="object-cover object-top pointer-events-none mix-blend-darken"
+          className="pointer-events-none object-cover object-top mix-blend-darken"
           sizes="100vw"
         />
       </div>
-      
-      {/* Subtle gradient at the bottom to ensure white text is readable */}
-      <div className="absolute bottom-0 left-0 w-full h-[40%] bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
 
-      {/* Content Overlays */}
-      <div className="absolute bottom-12 sm:bottom-16 left-0 right-0 w-full px-6 md:px-12 lg:px-20 max-w-[1600px] mx-auto flex flex-col sm:flex-row justify-between items-start sm:items-end gap-6 z-20">
-        
-        {/* Bottom Left Text */}
-        <div className="max-w-[320px] sm:max-w-md text-white">
-          <p className="text-base sm:text-lg font-medium leading-relaxed drop-shadow-md">
-            Discover meticulously crafted homes and properties, blending contemporary aesthetics with sustainable living.
+      <div className="pointer-events-none absolute bottom-0 left-0 z-10 h-[40%] w-full bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+      <div className="absolute right-0 bottom-12 left-0 z-20 mx-auto flex w-full max-w-[1600px] flex-col items-start justify-between gap-6 px-6 sm:bottom-16 sm:flex-row sm:items-end md:px-12 lg:px-20">
+        <div className="max-w-[320px] text-white sm:max-w-md">
+          <p className="text-base leading-relaxed font-medium drop-shadow-md sm:text-lg">
+            {t("hero.description")}
           </p>
         </div>
 
-        {/* Bottom Right Info */}
-        <div className="flex flex-col items-start sm:items-end text-white text-left sm:text-right">
-          <h3 className="text-lg sm:text-xl font-bold tracking-tight drop-shadow-md">
-            Silverstone Residence
+        <div className="flex flex-col items-start text-start text-white sm:items-end sm:text-end">
+          <h3 className="text-lg font-bold tracking-tight drop-shadow-md sm:text-xl">
+            {t("hero.featureTitle")}
           </h3>
-          <p className="text-sm sm:text-base text-gray-200 mt-1 font-medium drop-shadow-md">
-            1234 Sunflower Lane
+          <p className="mt-1 text-sm font-medium text-gray-200 drop-shadow-md sm:text-base">
+            {t("hero.featureAddress")}
           </p>
         </div>
-        
       </div>
     </section>
   );

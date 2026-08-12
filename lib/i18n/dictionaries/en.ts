@@ -1,0 +1,147 @@
+export const en = {
+  nav: {
+    home: "Home",
+    properties: "Properties",
+    sell: "Sell Your Unit",
+    blog: "The Blog",
+    contact: "Contact Us",
+    signIn: "Sign In",
+    english: "English",
+    arabic: "العربية",
+    rights: "All Rights Reserved",
+  },
+  hero: {
+    scroll: "Scroll",
+    down: "Down",
+    description:
+      "Discover meticulously crafted homes and properties, blending contemporary aesthetics with sustainable living.",
+    featureTitle: "Silverstone Residence",
+    featureAddress: "1234 Sunflower Lane",
+    imageAlt: "Modern House Architecture",
+  },
+  search: {
+    pill: "Search Properties",
+    title: "Find Your Dream Home",
+    description:
+      "We offer modern properties with the best quality that meet all your needs.",
+    lookingFor: "Looking for",
+    locations: "Locations",
+    bedrooms: "Bedrooms",
+    budget: "Budget",
+    search: "Search",
+    options: {
+      buy: "Buy",
+      rent: "Rent",
+      invest: "Invest",
+      single: "Single",
+      bed1: "1 Bedroom",
+      bed2: "2 Bedrooms",
+      bed3: "3 Bedrooms",
+      bed4: "4+ Bedrooms",
+    },
+  },
+  about: {
+    pill: "About MAQSED",
+    clickMe: "Click on me",
+    titleLine1: "Your Dream Home,",
+    titleLine2: "Our Expertise.",
+    description:
+      "At MAQSED, we are committed to helping individuals and families find their perfect homes and smart investment properties. Our approach blends personalized service, expert insights, and a dedication to excellence, ensuring your real estate journey is seamless, rewarding, and tailored to your unique needs.",
+    cards: {
+      villa: {
+        title: "Luxury Villa",
+        description:
+          "Experience unparalleled luxury in sprawling private estates with stunning architecture and world-class amenities.",
+        count: "320+ Properties",
+      },
+      family: {
+        title: "Modern Family Home",
+        description:
+          "Thoughtfully designed spaces for families who value comfort, style, and community in premium neighborhoods.",
+        count: "540+ Properties",
+      },
+      apartment: {
+        title: "Luxury Apartment",
+        description:
+          "Indulge in high-end city living with sophisticated interiors, premium facilities, and exclusive services tailored for ultimate convenience.",
+        count: "850+ Properties",
+      },
+      office: {
+        title: "Premium Office Space",
+        description:
+          "Elevate your business with prestigious commercial spaces in prime locations across Saudi Arabia's key cities.",
+        count: "140+ Properties",
+      },
+    },
+  },
+  properties: {
+    pill: "Featured Properties",
+    titleLine1: "Discover MAQSED",
+    titleLine2: "Properties",
+    description:
+      "Explore an exclusive selection of premium properties, meticulously curated to provide you with the best in luxury living and prime real estate investment options, tailored to your needs",
+    view: "View",
+    details: "Details",
+    seeAll: "See All Properties",
+    bed: "bed",
+    bath: "bath",
+    sqft: "sq ft",
+    filters: {
+      all: "All Properties",
+      family: "Family House",
+      villa: "Modern Vila",
+      apartment: "Luxury Apartment",
+    },
+    forSale: "FOR SALE",
+    forRent: "FOR RENT",
+  },
+  agents: {
+    pill: "Reserve a Unit",
+    titleLine1: "Book Your Next",
+    titleLine2: "Dream Unit.",
+    description:
+      "Explore featured units ready for reservation — secure your preferred home early with a simple booking process guided by MAQSED.",
+    reserveUnit: "Reserve Unit",
+    seeAll: "See All Units",
+  },
+  faq: {
+    pill: "Testimonial",
+    titleLine1: "Frequently Asked",
+    titleLine2: "Questions",
+    intro:
+      "Have questions about buying, selling, or renting with MAQSED? We've got the answers to help guide you through the process.",
+    items: [
+      {
+        q: "How do I start searching for a property with MAQSED?",
+        a: "Set your preferences on our platform and explore a wide range of properties. Our team is ready to assist you!",
+      },
+      {
+        q: "What services does MAQSED offer for first-time homebuyers?",
+        a: "We provide comprehensive guidance including mortgage pre-approval assistance, property tours, and step-by-step closing support.",
+      },
+      {
+        q: "Can MAQSED help me sell my property?",
+        a: "Yes! We offer a full suite of seller services including professional photography, market analysis, and targeted marketing campaigns.",
+      },
+      {
+        q: "What types of properties does MAQSED specialize in?",
+        a: "We specialize in luxury residential properties, modern apartments, and premium commercial real estate.",
+      },
+    ],
+  },
+  stats: {
+    title: "By the Numbers",
+    homesForRent: "Homes for Rent",
+    homesToBuy: "Homes to Buy",
+    citiesCovered: "Cities Covered",
+    totalProperties: "Total Properties",
+  },
+  partners: {
+    pill: "Trusted by Industry Leaders",
+    title: "Our Global Partners",
+    description:
+      "Built on strong alliances with leading brands and institutions that share our standard for trust, quality, and long-term value.",
+  },
+} as const;
+
+export type Dictionary = typeof en;

@@ -1,45 +1,96 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type AnimationEvent,
+} from "react";
+import { LOCALE_STORAGE_KEY } from "@/lib/i18n/types";
 
 interface SplashScreenProps {
   onComplete: () => void;
 }
 
+function getSplashBrand() {
+  try {
+    if (window.localStorage.getItem(LOCALE_STORAGE_KEY) === "ar") return "مقصد";
+    if (document.documentElement.classList.contains("locale-ar")) return "مقصد";
+    if (document.documentElement.lang === "ar") return "مقصد";
+  } catch {
+    // ignore
+  }
+  return "Maqsed";
+}
+
 export function SplashScreen({ onComplete }: SplashScreenProps) {
+  // null until mount — SSR + first client paint stay identical
+  const [brand, setBrand] = useState<string | null>(null);
+  const isArabic = brand === "مقصد";
+  const lastLetterIndex = brand ? brand.length - 1 : 0;
+
   const [exiting, setExiting] = useState(false);
+  const drawDone = useRef(false);
+  const textDone = useRef(false);
+  const exitStarted = useRef(false);
+  const completed = useRef(false);
 
   useEffect(() => {
-    // Start exit animation after drawing is done
-    const exitTimer = setTimeout(() => setExiting(true), 3400);
-    // Unmount after exit animation completes
-    const doneTimer = setTimeout(() => onComplete(), 4400);
+    setBrand(getSplashBrand());
+  }, []);
 
-    return () => {
-      clearTimeout(exitTimer);
-      clearTimeout(doneTimer);
-    };
-  }, [onComplete]);
+  const tryStartExit = useCallback(() => {
+    if (exitStarted.current || !drawDone.current || !textDone.current) return;
+    exitStarted.current = true;
+    setExiting(true);
+  }, []);
 
-  // Asymmetric building silhouette:
-  // Base starts at x=550, goes to 640. Center is 595.
-  // The baseline is exactly at y=210 (center of 420 viewBox)
+  const handleDrawEnd = useCallback(
+    (event: AnimationEvent<SVGPathElement>) => {
+      if (event.animationName !== "splash-draw") return;
+      drawDone.current = true;
+      tryStartExit();
+    },
+    [tryStartExit]
+  );
+
+  const handleLetterEnd = useCallback(
+    (event: AnimationEvent<HTMLSpanElement>, index: number) => {
+      if (event.animationName !== "brand-letter-in") return;
+      if (index !== lastLetterIndex) return;
+      textDone.current = true;
+      tryStartExit();
+    },
+    [tryStartExit, lastLetterIndex]
+  );
+
+  const handleExitEnd = useCallback(
+    (event: AnimationEvent<HTMLDivElement>) => {
+      if (event.animationName !== "splash-split-bottom") return;
+      if (completed.current) return;
+      completed.current = true;
+      onComplete();
+    },
+    [onComplete]
+  );
+
   const buildingPath = [
     "M 0,210",
-    "H 550",             // left line to base
-    "V 140",             // up
-    "H 560",             // step in
-    "V 90",              // up
-    "H 570",             // step in
-    "V 40",              // up to left shoulder
-    "L 585,20",          // slant up to peak
-    "L 620,45",          // slant down to right shoulder
-    "V 90",              // straight down
-    "H 630",             // step out
-    "V 140",             // down
-    "H 640",             // step out
-    "V 210",             // down to baseline
-    "H 1200",            // right line to edge
+    "H 550",
+    "V 140",
+    "H 560",
+    "V 90",
+    "H 570",
+    "V 40",
+    "L 585,20",
+    "L 620,45",
+    "V 90",
+    "H 630",
+    "V 140",
+    "H 640",
+    "V 210",
+    "H 1200",
   ].join(" ");
 
   return (
@@ -49,17 +100,30 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
           from { stroke-dashoffset: 1800; }
           to   { stroke-dashoffset: 0; }
         }
-        @keyframes ar-premium-in {
-          0% { opacity: 0; filter: blur(12px); transform: translateY(20px) scale(0.95); }
-          100% { opacity: 1; filter: blur(0); transform: translateY(0) scale(1); }
+        @keyframes brand-letter-in {
+          0% {
+            opacity: 0;
+            filter: blur(14px);
+            transform: translateY(1.1em) scale(0.92);
+          }
+          60% {
+            opacity: 1;
+            filter: blur(0);
+          }
+          100% {
+            opacity: 1;
+            filter: blur(0);
+            transform: translateY(0) scale(1);
+          }
         }
-        @keyframes en-wrapper-reveal {
-          0% { max-width: 0; margin-left: 0; }
-          100% { max-width: 200px; margin-left: 0.75rem; }
+        @keyframes brand-mask-open {
+          0% { clip-path: inset(0 50% 0 50%); }
+          100% { clip-path: inset(0 0 0 0); }
         }
-        @keyframes en-text-in {
-          0% { opacity: 0; transform: translateX(-30px); }
-          100% { opacity: 1; transform: translateX(0); }
+        @keyframes brand-glow-settle {
+          0% { text-shadow: 0 0 0 transparent; }
+          40% { text-shadow: 0 0 28px rgba(255, 255, 255, 0.22); }
+          100% { text-shadow: 0 0 0 transparent; }
         }
         @keyframes splash-svg-exit {
           from { opacity: 1; transform: scale(1); filter: blur(0px); }
@@ -76,54 +140,68 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
         .splash-path {
           stroke-dasharray: 1800;
           stroke-dashoffset: 1800;
-          animation: splash-draw 2.6s cubic-bezier(0.25, 0.1, 0.25, 1) 0.3s forwards;
+          animation: splash-draw 2.2s cubic-bezier(0.25, 0.1, 0.25, 1) 0.2s forwards;
         }
-        .ar-text {
+        .splash-brand {
+          position: relative;
+          display: flex;
+          align-items: baseline;
+          justify-content: center;
+          gap: 0;
+          overflow: visible;
+          padding: 0.35em 0.5em;
+          font-family: var(--font-manrope), var(--font-plus-jakarta), system-ui, sans-serif;
+          font-size: clamp(1.35rem, 3.4vw, 1.85rem);
+          font-weight: 500;
+          color: rgba(255, 255, 255, 0.94);
+          letter-spacing: 0;
+          text-transform: uppercase;
+          clip-path: none;
+          animation: brand-glow-settle 0.85s ease-out 0.85s both;
+        }
+        .splash-brand.is-ar {
+          font-family: var(--font-cairo), var(--font-noto-kufi), sans-serif;
+          font-weight: 800;
+          text-transform: none;
+          letter-spacing: 0;
+          font-size: clamp(1.55rem, 3.8vw, 2.15rem);
+          padding: 0.5em 1em;
+        }
+        .splash-brand-word {
+          display: inline-block;
           opacity: 0;
-          animation: ar-premium-in 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-          animation-delay: 0.1s; 
-        }
-        .en-wrapper {
-          overflow: hidden;
-          max-width: 0;
-          margin-left: 0;
-          animation: en-wrapper-reveal 2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-          animation-delay: 1.5s; 
-        }
-        .en-text {
-          display: block;
-          opacity: 0;
-          backface-visibility: hidden;
-          -webkit-font-smoothing: antialiased;
-          animation: en-text-in 2s cubic-bezier(0.19, 1, 0.22, 1) forwards;
-          animation-delay: 1.5s; 
+          will-change: transform, filter, opacity;
+          animation: brand-letter-in 0.95s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
         }
         .splash-svg-exit {
-          animation: splash-svg-exit 0.4s ease-out forwards;
+          animation: splash-svg-exit 0.28s ease-out forwards;
         }
         .splash-exit-top {
-          animation: splash-split-top 0.8s cubic-bezier(0.76, 0, 0.24, 1) 0.2s forwards;
+          animation: splash-split-top 0.45s cubic-bezier(0.76, 0, 0.24, 1) forwards;
         }
         .splash-exit-bottom {
-          animation: splash-split-bottom 0.8s cubic-bezier(0.76, 0, 0.24, 1) 0.2s forwards;
+          animation: splash-split-bottom 0.45s cubic-bezier(0.76, 0, 0.24, 1) forwards;
         }
       `}</style>
 
-      <div className="fixed inset-0 z-[9999] pointer-events-none">
-        
-        {/* Split Backgrounds - They meet exactly at the 62vh line */}
-        <div className={`absolute inset-x-0 top-0 h-[62vh] bg-[#090c1b] ${exiting ? "splash-exit-top" : ""}`} />
-        <div className={`absolute inset-x-0 bottom-0 h-[38vh] bg-[#090c1b] ${exiting ? "splash-exit-bottom" : ""}`} />
+      <div className="pointer-events-none fixed inset-0 z-[9999]">
+        <div
+          className={`absolute inset-x-0 top-0 h-[62vh] bg-[#090c1b] ${exiting ? "splash-exit-top" : ""}`}
+        />
+        <div
+          className={`absolute inset-x-0 bottom-0 h-[38vh] bg-[#090c1b] ${exiting ? "splash-exit-bottom" : ""}`}
+          onAnimationEnd={handleExitEnd}
+        />
 
-        {/* SVG container - Vertically centered exactly on the 62vh line */}
-        <div className={`absolute top-[62vh] -translate-y-1/2 w-full z-10 ${exiting ? "splash-svg-exit" : ""}`}>
+        <div
+          className={`absolute top-[62vh] z-10 w-full -translate-y-1/2 ${exiting ? "splash-svg-exit" : ""}`}
+        >
           <svg
             viewBox="0 0 1200 420"
             preserveAspectRatio="xMidYMid meet"
             className="w-full"
             style={{ height: "auto", display: "block" }}
           >
-            {/* Animated building + line path */}
             <path
               className="splash-path"
               d={buildingPath}
@@ -132,18 +210,31 @@ export function SplashScreen({ onComplete }: SplashScreenProps) {
               strokeWidth="1.2"
               strokeLinecap="butt"
               strokeLinejoin="miter"
+              onAnimationEnd={handleDrawEnd}
             />
           </svg>
         </div>
 
-        {/* Text overlay — Positioned relative to the 62vh line */}
-        <div className={`absolute top-[62vh] left-0 w-full flex justify-center items-center mt-[15px] z-20 pointer-events-none ${exiting ? "splash-svg-exit" : ""}`}>
-          <div className="flex items-center text-[22px] font-bold font-geist text-white/90">
-            <span className="ar-text tracking-wide">مقصد</span>
-            <span className="en-wrapper">
-              <span className="en-text whitespace-nowrap overflow-hidden">Maqsed</span>
-            </span>
-          </div>
+        <div
+          className={`pointer-events-none absolute top-[62vh] left-0 z-20 mt-6 flex w-full items-start justify-center ${exiting ? "splash-svg-exit" : ""}`}
+        >
+          {brand && (
+            <div
+              className={`splash-brand${isArabic ? " is-ar" : ""}`}
+              aria-label={brand}
+              dir={isArabic ? "rtl" : "ltr"}
+              lang={isArabic ? "ar" : "en"}
+            >
+              <span
+                className="splash-brand-word"
+                onAnimationEnd={(event) =>
+                  handleLetterEnd(event, lastLetterIndex)
+                }
+              >
+                {brand}
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </>
