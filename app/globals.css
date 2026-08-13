@@ -160,3 +160,29 @@
     font-family: var(--font-noto-kufi), var(--font-cairo), sans-serif;
   }
 }
+
+#chatbase-bubble-button,
+#chatbase-message-bubbles {
+  right: 1rem !important;
+  left: auto !important;
+  bottom: 1.5rem !important;
+}
+
+#chatbase-bubble-window {
+  right: 1rem !important;
+  left: auto !important;
+  bottom: 6rem !important;
+}
+
+@media (min-width: 640px) {
+  #chatbase-bubble-button,
+  #chatbase-message-bubbles {
+    right: 2rem !important;
+    bottom: 2rem !important;
+  }
+
+  #chatbase-bubble-window {
+    right: 2rem !important;
+    bottom: 6.75rem !important;
+  }
+}

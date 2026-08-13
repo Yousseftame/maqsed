@@ -63,7 +63,7 @@ export function ScrollToTopButton({ lenis }: { lenis: Lenis | null }) {
       onClick={scrollToTop}
       aria-label={t("nav.scrollToTop")}
       className={cn(
-        "group fixed right-4 bottom-6 z-40 flex size-14 items-center justify-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 active:scale-95 sm:right-8 sm:bottom-8",
+        "group fixed right-[calc(1rem+3.75rem+0.5rem)] bottom-6 z-40 flex size-14 items-center justify-center rounded-full transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:scale-105 active:scale-95 sm:right-[calc(2rem+3.75rem+0.5rem)] sm:bottom-8",
         visible
           ? "pointer-events-auto translate-y-0 scale-100 opacity-100"
           : "pointer-events-none translate-y-6 scale-75 opacity-0"
