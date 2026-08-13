@@ -38,6 +38,14 @@ export type Dictionary = {
       bed3: string;
       bed4: string;
     };
+    cities: {
+      riyadh: string;
+      jeddah: string;
+      neom: string;
+      dammam: string;
+      khobar: string;
+      mecca: string;
+    };
   };
   about: {
     pill: string;
@@ -71,6 +79,12 @@ export type Dictionary = {
     };
     forSale: string;
     forRent: string;
+    page: {
+      pill: string;
+      titleLine1: string;
+      titleLine2: string;
+      description: string;
+    };
   };
   agents: {
     pill: string;
@@ -143,6 +157,14 @@ export const en: Dictionary = {
       bed3: "3 Bedrooms",
       bed4: "4+ Bedrooms",
     },
+    cities: {
+      riyadh: "Riyadh",
+      jeddah: "Jeddah",
+      neom: "NEOM",
+      dammam: "Dammam",
+      khobar: "Al Khobar",
+      mecca: "Mecca",
+    },
   },
   about: {
     pill: "About MAQSED",
@@ -198,6 +220,13 @@ export const en: Dictionary = {
     },
     forSale: "FOR SALE",
     forRent: "FOR RENT",
+    page: {
+      pill: "Explore Properties",
+      titleLine1: "Perfect Family Homes for",
+      titleLine2: "Comfort and Togetherness",
+      description:
+        "Discover spacious and welcoming family houses designed for a warm, secure, and joyful living experience.",
+    },
   },
   agents: {
     pill: "Reserve a Unit",

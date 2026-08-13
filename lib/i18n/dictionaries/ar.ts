@@ -41,6 +41,14 @@ export const ar: Dictionary = {
       bed3: "ثلاث غرف",
       bed4: "أربع غرف فأكثر",
     },
+    cities: {
+      riyadh: "الرياض",
+      jeddah: "جدة",
+      neom: "نيوم",
+      dammam: "الدمام",
+      khobar: "الخبر",
+      mecca: "مكة",
+    },
   },
   about: {
     pill: "عن مقصد",
@@ -96,6 +104,13 @@ export const ar: Dictionary = {
     },
     forSale: "للبيع",
     forRent: "للإيجار",
+    page: {
+      pill: "استكشف العقارات",
+      titleLine1: "منازل عائلية مثالية",
+      titleLine2: "للراحة والألفة",
+      description:
+        "اكتشف منازل عائلية واسعة ومرحّبة، صُممت لتمنحك دفئاً وأماناً وتجربة معيشة مبهجة.",
+    },
   },
   agents: {
     pill: "احجز وحدة",

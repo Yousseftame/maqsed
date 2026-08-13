@@ -3,34 +3,53 @@
 import { useState } from "react";
 import { Search } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { cn } from "@/lib/utils";
 
 const SelectField = ({
   label,
   value,
   onChange,
   options,
+  tone = "light",
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   options: string[];
+  tone?: "light" | "dark";
 }) => (
-  <div className="flex min-w-[200px] flex-1 flex-col border-b-2 border-[#8c8c8c] pb-3">
-    <label className="mb-6 text-base font-medium tracking-wide whitespace-nowrap text-gray-500">
+  <div
+    className={cn(
+      "flex min-w-[200px] flex-1 flex-col border-b-2 pb-3",
+      tone === "dark" ? "border-white/25" : "border-[#8c8c8c]"
+    )}
+  >
+    <label
+      className={cn(
+        "mb-6 text-base font-medium tracking-wide whitespace-nowrap",
+        tone === "dark" ? "text-white/45" : "text-gray-500"
+      )}
+    >
       {label}
     </label>
     <div className="relative w-full">
       <select
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="w-full cursor-pointer appearance-none bg-transparent ps-3 pe-10 text-lg font-semibold text-[#0a0f1d] focus:outline-none sm:text-xl"
+        className={cn(
+          "w-full cursor-pointer appearance-none bg-transparent ps-3 pe-10 text-lg font-semibold focus:outline-none sm:text-xl",
+          tone === "dark" ? "text-white" : "text-[#0a0f1d]"
+        )}
       >
         {options.map((o) => (
           <option key={o}>{o}</option>
         ))}
       </select>
       <svg
-        className="pointer-events-none absolute top-1/2 end-3 h-4 w-4 flex-shrink-0 -translate-y-1/2 text-[#0a0f1d]"
+        className={cn(
+          "pointer-events-none absolute top-1/2 end-3 h-4 w-4 flex-shrink-0 -translate-y-1/2",
+          tone === "dark" ? "text-white" : "text-[#0a0f1d]"
+        )}
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -46,7 +65,11 @@ const SelectField = ({
   </div>
 );
 
-export function PropertySearchBar() {
+export function PropertySearchBar({
+  tone = "light",
+}: {
+  tone?: "light" | "dark";
+}) {
   const { t } = useLocale();
   const lookingOptions = [
     t("search.options.buy"),
@@ -61,12 +84,12 @@ export function PropertySearchBar() {
     t("search.options.bed4"),
   ];
   const locationOptions = [
-    "Riyadh",
-    "Jeddah",
-    "NEOM",
-    "Dammam",
-    "Al Khobar",
-    "Mecca",
+    t("search.cities.riyadh"),
+    t("search.cities.jeddah"),
+    t("search.cities.neom"),
+    t("search.cities.dammam"),
+    t("search.cities.khobar"),
+    t("search.cities.mecca"),
   ];
   const budgetOptions = [
     "SAR 500,000",
@@ -92,13 +115,15 @@ export function PropertySearchBar() {
         value={lookingOptions.includes(lookingFor) ? lookingFor : lookingOptions[0]}
         onChange={setLookingFor}
         options={lookingOptions}
+        tone={tone}
       />
 
       <SelectField
         label={t("search.locations")}
-        value={location}
+        value={locationOptions.includes(location) ? location : locationOptions[0]}
         onChange={setLocation}
         options={locationOptions}
+        tone={tone}
       />
 
       <SelectField
@@ -106,6 +131,7 @@ export function PropertySearchBar() {
         value={bedroomOptions.includes(bedrooms) ? bedrooms : bedroomOptions[0]}
         onChange={setBedrooms}
         options={bedroomOptions}
+        tone={tone}
       />
 
       <SelectField
@@ -113,12 +139,18 @@ export function PropertySearchBar() {
         value={budget}
         onChange={setBudget}
         options={budgetOptions}
+        tone={tone}
       />
 
       <div className="mt-6 flex flex-shrink-0 items-end pb-1 sm:mt-0 sm:ms-6">
         <button
           type="button"
-          className="group flex h-14 items-center justify-center rounded-full bg-[#0a0f1d] px-4 text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-[#0a0f1d] hover:px-5 active:scale-[0.98]"
+          className={cn(
+            "group flex h-14 items-center justify-center rounded-full px-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:px-5 active:scale-[0.98]",
+            tone === "dark"
+              ? "bg-white text-[#0a0f1d] hover:bg-white"
+              : "bg-[#0a0f1d] text-white hover:bg-[#0a0f1d]"
+          )}
           aria-label={t("search.search")}
         >
           <span className="max-w-0 overflow-hidden text-sm font-medium tracking-wide whitespace-nowrap opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:me-2.5 group-hover:max-w-[4.5rem] group-hover:opacity-100">
