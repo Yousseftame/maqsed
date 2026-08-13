@@ -9,6 +9,7 @@ export type Dictionary = {
     english: string;
     arabic: string;
     rights: string;
+    scrollToTop: string;
   };
   hero: {
     scroll: string;
@@ -111,6 +112,7 @@ export const en: Dictionary = {
     english: "English",
     arabic: "العربية",
     rights: "All Rights Reserved",
+    scrollToTop: "Scroll to top",
   },
   hero: {
     scroll: "Scroll",

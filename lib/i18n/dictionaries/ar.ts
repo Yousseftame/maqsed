@@ -11,6 +11,7 @@ export const ar: Dictionary = {
     english: "English",
     arabic: "العربية",
     rights: "جميع الحقوق محفوظة",
+    scrollToTop: "العودة للأعلى",
   },
   hero: {
     scroll: "مرّر",
