@@ -135,9 +135,10 @@ export function PropertiesSection() {
                 />
                 <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                 <div className="absolute top-5 start-5 z-10 flex items-center justify-center rounded-full bg-[#0a0f1d] px-3 py-2 text-[17px] leading-none font-bold tracking-tight text-white">
-                  {prop.tag === "FOR RENT"
-                    ? t("properties.forRent")
-                    : t("properties.forSale")}
+                  {prop.type === "Luxury Apartment" ? t("properties.types.apartment") : 
+                   prop.type === "Modern Vila" || prop.type === "Modern Villa" ? t("properties.types.villa") :
+                   prop.type === "Family House" ? t("properties.types.house") : 
+                   prop.type}
                 </div>
               </div>
 

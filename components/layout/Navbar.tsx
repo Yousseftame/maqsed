@@ -18,9 +18,11 @@ export function Navbar() {
 
   const navLinks = [
     { name: t("nav.home"), href: "/" },
+    { name: t("nav.about"), href: "/about" },
     { name: t("nav.properties"), href: "/properties" },
     { name: t("nav.sell"), href: "/sell" },
     { name: t("nav.contact"), href: "/contact" },
+    { name: t("nav.faq"), href: "/faq" },
   ];
 
   const menuOrigin = isRtl ? "28px 32px" : "calc(100% - 28px) 32px";

@@ -72,16 +72,17 @@ export function PropertySearchBar({
 }) {
   const { t } = useLocale();
   const lookingOptions = [
-    t("search.options.buy"),
-    t("search.options.rent"),
-    t("search.options.invest"),
+    t("search.options.apt"),
+    t("search.options.villa"),
+    t("search.options.floor"),
+    t("search.options.commercial"),
   ];
   const bedroomOptions = [
-    t("search.options.single"),
-    t("search.options.bed1"),
-    t("search.options.bed2"),
-    t("search.options.bed3"),
-    t("search.options.bed4"),
+    t("search.options.ground"),
+    t("search.options.first"),
+    t("search.options.second"),
+    t("search.options.third"),
+    t("search.options.upper"),
   ];
   const locationOptions = [
     t("search.cities.riyadh"),
@@ -107,7 +108,7 @@ export function PropertySearchBar({
 
   return (
     <div
-      className="mt-4 flex w-full max-w-[1150px] flex-col items-end gap-4 sm:flex-row sm:gap-5"
+      className="mt-4 flex w-full max-w-[1150px] flex-col items-stretch gap-6 sm:flex-row sm:items-end sm:gap-5"
       data-aos="fade-up"
     >
       <SelectField
@@ -142,18 +143,18 @@ export function PropertySearchBar({
         tone={tone}
       />
 
-      <div className="mt-6 flex flex-shrink-0 items-end pb-1 sm:mt-0 sm:ms-6">
+      <div className="mt-6 flex w-full flex-shrink-0 pb-1 sm:mt-0 sm:w-auto sm:items-end sm:ms-6">
         <button
           type="button"
           className={cn(
-            "group flex h-14 items-center justify-center rounded-full px-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:px-5 active:scale-[0.98]",
+            "group flex h-14 w-full items-center justify-center rounded-full px-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:px-5 active:scale-[0.98] sm:w-auto",
             tone === "dark"
               ? "bg-white text-[#0a0f1d] hover:bg-white"
               : "bg-[#0a0f1d] text-white hover:bg-[#0a0f1d]"
           )}
           aria-label={t("search.search")}
         >
-          <span className="max-w-0 overflow-hidden text-sm font-medium tracking-wide whitespace-nowrap opacity-0 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:me-2.5 group-hover:max-w-[4.5rem] group-hover:opacity-100">
+          <span className="me-2.5 overflow-hidden text-sm font-medium tracking-wide whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] sm:me-0 sm:max-w-0 sm:opacity-0 sm:group-hover:me-2.5 sm:group-hover:max-w-[4.5rem] sm:group-hover:opacity-100">
             {t("search.search")}
           </span>
           <Search className="h-6 w-6 shrink-0" strokeWidth={2} />

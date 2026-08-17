@@ -1,10 +1,12 @@
-export type Dictionary = {
+export interface Dictionary {
   nav: {
     home: string;
+    about: string;
     properties: string;
     sell: string;
     blog: string;
     contact: string;
+    faq: string;
     signIn: string;
     dashboard: string;
     english: string;
@@ -31,14 +33,15 @@ export type Dictionary = {
     budget: string;
     search: string;
     options: {
-      buy: string;
-      rent: string;
-      invest: string;
-      single: string;
-      bed1: string;
-      bed2: string;
-      bed3: string;
-      bed4: string;
+      apt: string;
+      villa: string;
+      floor: string;
+      commercial: string;
+      ground: string;
+      first: string;
+      second: string;
+      third: string;
+      upper: string;
     };
     cities: {
       riyadh: string;
@@ -79,6 +82,11 @@ export type Dictionary = {
       villa: string;
       apartment: string;
     };
+    types: {
+      apartment: string;
+      villa: string;
+      house: string;
+    };
     forSale: string;
     forRent: string;
     page: {
@@ -98,17 +106,45 @@ export type Dictionary = {
   };
   faq: {
     pill: string;
-    titleLine1: string;
-    titleLine2: string;
+    title: string;
     intro: string;
     items: { q: string; a: string }[];
   };
   stats: {
     title: string;
-    homesForRent: string;
-    homesToBuy: string;
-    citiesCovered: string;
-    totalProperties: string;
+    items: {
+      sold: {
+        value: string;
+        suffix: string;
+        text: string;
+      };
+      loan: {
+        value: string;
+        suffix: string;
+        text: string;
+      };
+      clients: {
+        value: string;
+        suffix: string;
+        text: string;
+      };
+    };
+  };
+  visionMission: {
+    mission: {
+      title: string;
+      description: string;
+    };
+    vision: {
+      title: string;
+      description: string;
+    };
+  };
+  cta: {
+    title1: string;
+    titleHighlight: string;
+    title2: string;
+    button: string;
   };
   partners: {
     pill: string;
@@ -279,15 +315,36 @@ export type Dictionary = {
       };
     };
   };
-};
+  footer: {
+    newsletter: string;
+    emailPlaceholder: string;
+    discover: string;
+    quickLinks: string;
+    contactUs: string;
+    addressLine1: string;
+    addressLine2: string;
+    rights: string;
+    currency: string;
+    socials: {
+      facebook: string;
+      linkedin: string;
+      youtube: string;
+      instagram: string;
+    };
+    latestNews: string;
+    faqs: string;
+  };
+}
 
 export const en: Dictionary = {
   nav: {
     home: "Home",
+    about: "About Us",
     properties: "Properties",
     sell: "Sell Your Unit",
     blog: "The Blog",
     contact: "Contact Us",
+    faq: "FAQs",
     signIn: "Sign In",
     dashboard: "Dashboard",
     english: "English",
@@ -310,20 +367,21 @@ export const en: Dictionary = {
     title: "Find Your Dream Home",
     description:
       "We offer modern properties with the best quality that meet all your needs.",
-    lookingFor: "Looking for",
+    lookingFor: "Property Type",
     locations: "Locations",
-    bedrooms: "Bedrooms",
+    bedrooms: "Floors",
     budget: "Budget",
     search: "Search",
     options: {
-      buy: "Buy",
-      rent: "Rent",
-      invest: "Invest",
-      single: "Single",
-      bed1: "1 Bedroom",
-      bed2: "2 Bedrooms",
-      bed3: "3 Bedrooms",
-      bed4: "4+ Bedrooms",
+      apt: "Residential Apartment",
+      villa: "Villa",
+      floor: "Floor",
+      commercial: "Commercial",
+      ground: "Floor 1",
+      first: "Floor 2",
+      second: "Floor 3",
+      third: "Floor 4",
+      upper: "Floor 5+",
     },
     cities: {
       riyadh: "Riyadh",
@@ -383,8 +441,13 @@ export const en: Dictionary = {
     filters: {
       all: "All Properties",
       family: "Family House",
-      villa: "Modern Vila",
+      villa: "Modern Villa",
       apartment: "Luxury Apartment",
+    },
+    types: {
+      apartment: "Apartments",
+      villa: "Villas",
+      house: "Family Houses",
     },
     forSale: "FOR SALE",
     forRent: "FOR RENT",
@@ -406,11 +469,9 @@ export const en: Dictionary = {
     seeAll: "See All Units",
   },
   faq: {
-    pill: "Testimonial",
-    titleLine1: "Frequently Asked",
-    titleLine2: "Questions",
-    intro:
-      "Have questions about buying, selling, or renting with MAQSED? We've got the answers to help guide you through the process.",
+    pill: "Frequently Asked Questions",
+    title: "Browse the most common questions.",
+    intro: "",
     items: [
       {
         q: "How do I start searching for a property with MAQSED?",
@@ -432,14 +493,43 @@ export const en: Dictionary = {
   },
   stats: {
     title: "By the Numbers",
-    homesForRent: "Homes for Rent",
-    homesToBuy: "Homes to Buy",
-    citiesCovered: "Cities Covered",
-    totalProperties: "Total Properties",
+    items: {
+      sold: {
+        value: "800",
+        suffix: "+",
+        text: "We've successfully sold properties across the globe.",
+      },
+      loan: {
+        value: "100",
+        suffix: "+",
+        text: "We're pleased to offer affordable loan options.",
+      },
+      clients: {
+        value: "2000",
+        suffix: "+",
+        text: "We're proud to have over 2,000 satisfied clients",
+      },
+    },
+  },
+  visionMission: {
+    mission: {
+      title: "Our Mission",
+      description: "To redefine the real estate experience by providing innovative, transparent, and personalized solutions that empower our clients to make the best property decisions."
+    },
+    vision: {
+      title: "Our Vision",
+      description: "To be the leading and most trusted real estate platform globally, recognized for our commitment to excellence, integrity, and cutting-edge technology."
+    }
+  },
+  cta: {
+    title1: "Have a ",
+    titleHighlight: "Question?",
+    title2: " Don't Hesitate to Reach Out to Us!",
+    button: "Contact Us",
   },
   partners: {
     pill: "Trusted by Industry Leaders",
-    title: "Our Global Partners",
+    title: "Trusted Partners",
     description:
       "Built on strong alliances with leading brands and institutions that share our standard for trust, quality, and long-term value.",
   },
@@ -608,5 +698,24 @@ export const en: Dictionary = {
         fri: "Fri",
       },
     },
+  },
+  footer: {
+    newsletter: "Subscribe to our newsletter",
+    emailPlaceholder: "Enter your email",
+    discover: "Discover",
+    quickLinks: "Quick Links",
+    contactUs: "Contact Us",
+    addressLine1: "123 Business Tower, Financial District",
+    addressLine2: "Riyadh, Saudi Arabia",
+    rights: "© 2026 Maqsed. All Rights Reserved",
+    currency: "SAR",
+    socials: {
+      facebook: "Facebook",
+      linkedin: "LinkedIn",
+      youtube: "YouTube",
+      instagram: "Instagram",
+    },
+    latestNews: "Latest News",
+    faqs: "Faq's",
   },
 };

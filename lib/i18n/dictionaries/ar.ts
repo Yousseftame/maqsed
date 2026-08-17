@@ -3,10 +3,12 @@ import type { Dictionary } from "./en";
 export const ar: Dictionary = {
   nav: {
     home: "الرئيسية",
+    about: "من نحن",
     properties: "العقارات",
-    sell: "بع وحدتك",
+    sell: "اعرض وحدتك",
     blog: "المدونة",
     contact: "تواصل معنا",
+    faq: "الأسئلة الشائعة",
     signIn: "تسجيل الدخول",
     dashboard: "لوحة التحكم",
     english: "English",
@@ -28,20 +30,21 @@ export const ar: Dictionary = {
     pill: "ابحث عن عقارات",
     title: "اعثر على منزل أحلامك",
     description: "نقدم عقارات عصرية بأفضل جودة تلبي جميع احتياجاتك.",
-    lookingFor: "أبحث عن",
+    lookingFor: "نوع العقار",
     locations: "الموقع",
-    bedrooms: "غرف النوم",
+    bedrooms: "الادوار",
     budget: "الميزانية",
     search: "بحث",
     options: {
-      buy: "شراء",
-      rent: "إيجار",
-      invest: "استثمار",
-      single: "استوديو",
-      bed1: "غرفة واحدة",
-      bed2: "غرفتين",
-      bed3: "ثلاث غرف",
-      bed4: "أربع غرف فأكثر",
+      apt: "شقة سكنية",
+      villa: "فيلا",
+      floor: "دور",
+      commercial: "تجاري",
+      ground: "دور 1",
+      first: "دور 2",
+      second: "دور 3",
+      third: "دور 4",
+      upper: "دور 5+",
     },
     cities: {
       riyadh: "الرياض",
@@ -104,6 +107,11 @@ export const ar: Dictionary = {
       villa: "فيلا عصرية",
       apartment: "شقة فاخرة",
     },
+    types: {
+      apartment: "شقق سكنية",
+      villa: "فلل",
+      house: "منازل عائلية",
+    },
     forSale: "للبيع",
     forRent: "للإيجار",
     page: {
@@ -124,11 +132,9 @@ export const ar: Dictionary = {
     seeAll: "عرض كل الوحدات",
   },
   faq: {
-    pill: "آراء العملاء",
-    titleLine1: "الأسئلة",
-    titleLine2: "الشائعة",
-    intro:
-      "هل لديك أسئلة حول الشراء أو البيع أو الإيجار مع مقصد؟ لدينا الإجابات التي ترشدك خلال العملية.",
+    pill: "الأسئلة الشائعة",
+    title: "تصفح الأسئلة الأكثر شيوعًا.",
+    intro: "",
     items: [
       {
         q: "كيف أبدأ البحث عن عقار مع مقصد؟",
@@ -149,15 +155,44 @@ export const ar: Dictionary = {
     ],
   },
   stats: {
-    title: "بالأرقام",
-    homesForRent: "منازل للإيجار",
-    homesToBuy: "منازل للبيع",
-    citiesCovered: "مدن مغطاة",
-    totalProperties: "إجمالي العقارات",
+    title: "أرقامنا",
+    items: {
+      sold: {
+        value: "800",
+        suffix: "+",
+        text: "نجحنا في بيع عقارات في جميع أنحاء العالم.",
+      },
+      loan: {
+        value: "100",
+        suffix: "+",
+        text: "يسعدنا تقديم خيارات تمويل ميسرة.",
+      },
+      clients: {
+        value: "2000",
+        suffix: "+",
+        text: "نفتخر بخدمة أكثر من 2000 عميل راضٍ.",
+      },
+    },
+  },
+  visionMission: {
+    mission: {
+      title: "مهمتنا",
+      description: "إعادة تعريف تجربة العقارات من خلال تقديم حلول مبتكرة وشفافة ومخصصة تمكن عملائنا من اتخاذ أفضل القرارات العقارية."
+    },
+    vision: {
+      title: "رؤيتنا",
+      description: "أن نكون المنصة العقارية الرائدة والأكثر ثقة عالمياً، والمعروفة بالتزامها بالتميز والنزاهة والتكنولوجيا المتطورة."
+    }
+  },
+  cta: {
+    title1: "لديك ",
+    titleHighlight: "استفسار؟",
+    title2: " لا تتردد في التواصل معنا!",
+    button: "تواصل معنا",
   },
   partners: {
     pill: "موثوقون من رواد القطاع",
-    title: "شركاؤنا العالميون",
+    title: "شركاء موثوقون",
     description:
       "نبنى على تحالفات قوية مع علامات ومؤسسات رائدة تشاركنا معايير الثقة والجودة والقيمة طويلة الأمد.",
   },
@@ -326,5 +361,24 @@ export const ar: Dictionary = {
         fri: "الجمعة",
       },
     },
+  },
+  footer: {
+    newsletter: "اشترك في نشرتنا الإخبارية:",
+    emailPlaceholder: "أدخل بريدك الإلكتروني",
+    discover: "اكتشف",
+    quickLinks: "روابط سريعة",
+    contactUs: "تواصل معنا",
+    addressLine1: "٢٢٢٣ شارع الكالا سالامانكا،",
+    addressLine2: "مدريد، ٢٨٠٢٨",
+    rights: "© ٢٠٢٦ مقصد. جميع الحقوق محفوظة",
+    currency: "ريال سعودي",
+    socials: {
+      facebook: "فيسبوك",
+      linkedin: "لينكد إن",
+      youtube: "يوتيوب",
+      instagram: "إنستغرام",
+    },
+    latestNews: "آخر الأخبار",
+    faqs: "الأسئلة الشائعة",
   },
 };
