@@ -23,10 +23,13 @@ function syncLenisToPage(instance: Lenis, { toTop }: { toTop: boolean }) {
 
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
+  const disableSmooth =
+    pathname.startsWith("/admin") || pathname.startsWith("/developer");
   const lenisRef = useRef<Lenis | null>(null);
   const [lenis, setLenis] = useState<Lenis | null>(null);
 
   useEffect(() => {
+    if (disableSmooth) return;
     const instance = new Lenis({
       duration: 1.4,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
@@ -60,7 +63,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       lenisRef.current = null;
       setLenis(null);
     };
-  }, []);
+  }, [disableSmooth]);
 
   useEffect(() => {
     const instance = lenisRef.current;
@@ -84,7 +87,7 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   return (
     <>
       {children}
-      <ScrollToTopButton lenis={lenis} />
+      {disableSmooth ? null : <ScrollToTopButton lenis={lenis} />}
     </>
   );
 }

@@ -12,7 +12,7 @@ export default function Home() {
     <div className="flex flex-col w-full min-h-screen bg-white">
       <HeroSection />
       <SearchSection />
-      <AboutSection />
+      {/* <AboutSection /> */}
       
       <PropertiesSection />
       <AgentsSection />

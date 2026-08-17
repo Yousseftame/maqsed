@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import { useToast } from "@/components/providers/ToastProvider";
+import toast from "react-hot-toast";
 import { ArrowUpRight, Mail, Phone, MapPin } from "lucide-react";
 
 const subjects = ["General Inquiry", "Buy a Unit", "Sell a Unit", "Partnership", "Support"];
@@ -56,7 +56,6 @@ const initialForm = {
 };
 
 export function ContactPage() {
-  const { toast } = useToast();
   const [subject, setSubject] = useState(subjects[0]);
   const [form, setForm] = useState(initialForm);
 
@@ -66,10 +65,7 @@ export function ContactPage() {
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
-    toast({
-      title: "Message sent",
-      description: "A MAQSED specialist will reply within one business day.",
-    });
+    toast.success("Message sent");
     setForm(initialForm);
     setSubject(subjects[0]);
   };

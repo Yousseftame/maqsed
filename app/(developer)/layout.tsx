@@ -1,7 +1,9 @@
+import { RequireAuth } from "@/features/auth/RequireAuth";
+
 export default function DeveloperLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return children;
+  return <RequireAuth>{children}</RequireAuth>;
 }

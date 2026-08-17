@@ -156,9 +156,33 @@
   html.locale-ar select,
   html.locale-ar textarea,
   html.locale-ar nav,
+  html.locale-ar aside,
   html.locale-ar .font-ui-ar {
     font-family: var(--font-noto-kufi), var(--font-cairo), sans-serif;
   }
+  html.locale-ar .maqsed-toast {
+    font-family: var(--font-noto-kufi), sans-serif !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+    line-height: 1.7 !important;
+  }
+}
+
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+body.is-admin nextjs-portal,
+body.is-admin #chatbase-bubble-button,
+body.is-admin #chatbase-message-bubbles,
+body.is-admin #chatbase-bubble-window {
+  display: none !important;
 }
 
 #chatbase-bubble-button {
@@ -228,4 +252,18 @@
     right: 2rem !important;
     bottom: 6.75rem !important;
   }
+}
+
+/* Dashboard font = sidebar font. Unlayered so it beats Tailwind utilities. */
+body.is-admin :is(h1, h2, h3, h4, h5, h6),
+body.is-admin .font-heading {
+  font-family: var(--font-manrope), sans-serif !important;
+}
+
+html.locale-ar body.is-admin,
+html.locale-ar body.is-admin :is(h1, h2, h3, h4, h5, h6),
+html.locale-ar body.is-admin .font-heading,
+html.locale-ar body.is-admin * {
+  font-family: var(--font-noto-kufi), sans-serif !important;
+  letter-spacing: 0;
 }

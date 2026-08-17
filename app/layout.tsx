@@ -10,8 +10,10 @@ import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
 import { SplashProvider } from "@/components/providers/SplashProvider";
 import { AosProvider } from "@/components/providers/AosProvider";
-import { ToastProvider } from "@/components/providers/ToastProvider";
 import { LocaleProvider } from "@/components/providers/LocaleProvider";
+import { QueryProvider } from "@/components/providers/QueryProvider";
+import { AuthProvider } from "@/features/auth/AuthProvider";
+import { AppToaster } from "@/components/providers/AppToaster";
 
 export const metadata: Metadata = {
   title: " Maqsed | مقصد",
@@ -44,13 +46,16 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           {chatbaseEmbed}
         </Script>
         <LocaleProvider>
-          <SmoothScrollProvider>
-            <ToastProvider>
-              <SplashProvider>
-                <AosProvider>{children}</AosProvider>
-              </SplashProvider>
-            </ToastProvider>
-          </SmoothScrollProvider>
+          <QueryProvider>
+            <AuthProvider>
+              <SmoothScrollProvider>
+                <SplashProvider>
+                  <AosProvider>{children}</AosProvider>
+                </SplashProvider>
+                <AppToaster />
+              </SmoothScrollProvider>
+            </AuthProvider>
+          </QueryProvider>
         </LocaleProvider>
       </body>
     </html>

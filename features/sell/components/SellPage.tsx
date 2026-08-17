@@ -2,7 +2,7 @@
 
 import { useState, type FormEvent } from "react";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import { useToast } from "@/components/providers/ToastProvider";
+import toast from "react-hot-toast";
 import { ArrowUpRight } from "lucide-react";
 
 const propertyTypes = [
@@ -49,7 +49,6 @@ const initialForm = {
 };
 
 export function SellPage() {
-  const { toast } = useToast();
   const [form, setForm] = useState(initialForm);
 
   const update = (key: keyof typeof form, value: string) => {
@@ -58,10 +57,7 @@ export function SellPage() {
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
-    toast({
-      title: "Request received",
-      description: "A MAQSED specialist will contact you about marketing your unit.",
-    });
+    toast.success("Request received");
     setForm(initialForm);
   };
 

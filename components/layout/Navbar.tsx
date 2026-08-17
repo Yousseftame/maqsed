@@ -7,6 +7,9 @@ import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { useAuth } from "@/features/auth/AuthProvider";
+import { AFTER_LOGIN_PATH } from "@/lib/auth/constants";
+import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -73,49 +76,11 @@ export function Navbar() {
           </nav>
 
           <div className="hidden items-center gap-4 md:flex">
-            <button
-              type="button"
-              onClick={() => setLocale(locale === "en" ? "ar" : "en")}
-              className="group relative flex h-[40px] w-[76px] items-center justify-center overflow-hidden rounded-full bg-[#0a0f1d] text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
-              aria-label="Switch language"
-            >
-              <div
-                className={cn(
-                  "absolute top-1 bottom-1 w-[34px] rounded-full bg-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
-                  locale === "en" ? "start-1" : "start-[38px]"
-                )}
-              />
+            <LanguageToggle />
 
-              <div className="relative z-10 flex w-full justify-between px-3 text-[13px] font-bold tracking-wider">
-                <span
-                  className={cn(
-                    "transition-colors duration-500",
-                    locale === "en"
-                      ? "text-[#0a0f1d]"
-                      : "text-gray-400 group-hover:text-white"
-                  )}
-                >
-                  EN
-                </span>
-                <span
-                  className={cn(
-                    "transition-colors duration-500",
-                    locale === "ar"
-                      ? "text-[#0a0f1d]"
-                      : "text-gray-400 group-hover:text-white"
-                  )}
-                >
-                  AR
-                </span>
-              </div>
-            </button>
-
-            <Link
-              href="/login"
+            <AuthNavLink
               className="rounded-full border border-[#0a0f1d] px-6 py-2 text-[16px] font-medium text-[#0a0f1d] transition-colors duration-300 hover:bg-[#0a0f1d] hover:text-white"
-            >
-              {t("nav.signIn")}
-            </Link>
+            />
           </div>
 
           <div className="flex items-center md:hidden">
@@ -230,6 +195,7 @@ export function Navbar() {
           <div className="flex w-full flex-col gap-4 border-t border-gray-100 pt-6">
             <button
               type="button"
+              dir="ltr"
               onClick={() => setLocale(locale === "en" ? "ar" : "en")}
               className="relative flex h-14 w-full items-center justify-between overflow-hidden rounded-full border border-[#0a0f1d] p-1"
             >
@@ -257,13 +223,10 @@ export function Navbar() {
               </div>
             </button>
 
-            <Link
-              href="/login"
+            <AuthNavLink
               className="w-full rounded-full border border-[#0a0f1d] px-6 py-4 text-center text-lg font-medium text-[#0a0f1d] transition-colors duration-300 hover:bg-[#0a0f1d] hover:text-white"
               onClick={() => setIsMobileMenuOpen(false)}
-            >
-              {t("nav.signIn")}
-            </Link>
+            />
           </div>
 
           <div className="flex items-center justify-between pt-2 font-mono text-[11px] tracking-widest text-gray-400 uppercase">
@@ -273,5 +236,38 @@ export function Navbar() {
         </div>
       </div>
     </header>
+  );
+}
+
+function AuthNavLink({
+  className,
+  onClick,
+}: {
+  className: string;
+  onClick?: () => void;
+}) {
+  const { user, loading } = useAuth();
+  const { t } = useLocale();
+
+  if (loading) {
+    return (
+      <span className={cn(className, "pointer-events-none opacity-0")}>
+        {t("nav.signIn")}
+      </span>
+    );
+  }
+
+  if (user) {
+    return (
+      <Link href={AFTER_LOGIN_PATH} className={className} onClick={onClick}>
+        {t("nav.dashboard")}
+      </Link>
+    );
+  }
+
+  return (
+    <Link href="/login" className={className} onClick={onClick}>
+      {t("nav.signIn")}
+    </Link>
   );
 }

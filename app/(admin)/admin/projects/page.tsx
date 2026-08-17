@@ -1,3 +1,5 @@
+import { ProjectsSection } from "@/features/admin/projects/ProjectsSection";
+
 export default function AdminProjectsPage() {
-  return <div className="p-8">Admin projects coming soon.</div>;
+  return <ProjectsSection />;
 }
