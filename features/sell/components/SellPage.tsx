@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, type FormEvent } from "react";
+import toast from "react-hot-toast";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { ArrowUpRight } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";

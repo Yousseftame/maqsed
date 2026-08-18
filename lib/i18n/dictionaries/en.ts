@@ -58,6 +58,18 @@ export interface Dictionary {
     titleLine1: string;
     titleLine2: string;
     description: string;
+    features: {
+      pill: string;
+      title: string;
+      description1: string;
+      description2: string;
+      callUs: string;
+      phone: string;
+      corporate: { title: string; desc: string };
+      experts: { title: string; desc: string };
+      excellence: { title: string; desc: string };
+      learnMore: string;
+    };
     cards: {
       villa: { title: string; description: string; count: string };
       family: { title: string; description: string; count: string };
@@ -113,22 +125,10 @@ export interface Dictionary {
   stats: {
     title: string;
     items: {
-      sold: {
-        value: string;
-        suffix: string;
-        text: string;
-      };
-      loan: {
-        value: string;
-        suffix: string;
-        text: string;
-      };
-      clients: {
-        value: string;
-        suffix: string;
-        text: string;
-      };
-    };
+      value: string;
+      suffix: string;
+      text: string;
+    }[];
   };
   visionMission: {
     mission: {
@@ -141,9 +141,12 @@ export interface Dictionary {
     };
   };
   cta: {
-    title1: string;
-    titleHighlight: string;
-    title2: string;
+    pill: string;
+    title: string;
+    subtitle: string;
+    bullet1: string;
+    bullet2: string;
+    bullet3: string;
     button: string;
   };
   partners: {
