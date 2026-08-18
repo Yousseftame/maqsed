@@ -50,32 +50,32 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
 
   return (
     <div
-      className={`fixed inset-0 z-[9999] bg-[#0a0f1d] flex items-center justify-center transition-transform duration-[800ms] ease-[cubic-bezier(0.65,0,0.05,1)] ${
+      className={`fixed inset-0 z-[9999] flex items-center justify-center bg-[#F4F1F7] transition-transform duration-[800ms] ease-[cubic-bezier(0.65,0,0.05,1)] ${
         phase === "fade" ? "-translate-y-full" : "translate-y-0"
       }`}
       dir={isArabic ? "rtl" : "ltr"}
     >
-      <div className="relative flex flex-col items-center justify-center w-full max-w-lg h-40">
+      <div className="relative flex h-40 w-full max-w-lg flex-col items-center justify-center">
         {/* The Central Line/Dot */}
         <div
-          className={`absolute left-1/2 top-1/2 -translate-y-1/2 -translate-x-1/2 bg-white transition-all duration-[800ms] ease-[cubic-bezier(0.85,0,0.15,1)] z-10 ${
+          className={`absolute top-1/2 left-1/2 z-10 -translate-x-1/2 -translate-y-1/2 bg-[#17C3B3] transition-all duration-[800ms] ease-[cubic-bezier(0.85,0,0.15,1)] ${
             phase === "dot"
-              ? "w-[4px] h-[4px] rounded-full shadow-[0_0_15px_rgba(255,255,255,0.8)]"
+              ? "h-[4px] w-[4px] rounded-full shadow-[0_0_12px_rgba(23,195,179,0.25)]"
               : phase === "line" || phase === "text"
-                ? "w-[70%] sm:w-[300px] h-[1px] shadow-[0_0_20px_rgba(255,255,255,0.5)]"
-                : "w-[70%] sm:w-[300px] h-[1px] opacity-0 shadow-none"
+                ? "h-[1px] w-[70%] shadow-[0_0_10px_rgba(23,195,179,0.18)] sm:w-[300px]"
+                : "h-[1px] w-[70%] opacity-0 shadow-none sm:w-[300px]"
           }`}
         ></div>
 
         {/* Top Text: Brand */}
         <div
-          className={`absolute bottom-1/2 left-0 w-full flex justify-center items-end overflow-hidden transition-all duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`absolute bottom-1/2 left-0 flex w-full items-end justify-center overflow-hidden transition-all duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
             phase === "text" ? "h-20 opacity-100" : "h-0 opacity-0"
           }`}
         >
           <h1
             suppressHydrationWarning
-            className="text-white text-4xl sm:text-5xl font-bold translate-y-1 uppercase pb-[2px] tracking-normal"
+            className="translate-y-1 pb-[2px] text-4xl font-bold tracking-normal text-[#6A2B92] uppercase sm:text-5xl"
           >
             {displayBrand}
           </h1>
@@ -83,13 +83,13 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
 
         {/* Bottom Text: Subtitle */}
         <div
-          className={`absolute top-1/2 left-0 w-full flex justify-center items-start overflow-hidden transition-all duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+          className={`absolute top-1/2 left-0 flex w-full items-start justify-center overflow-hidden transition-all duration-[1000ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
             phase === "text" ? "h-16 opacity-100" : "h-0 opacity-0"
           }`}
         >
           <h2
             suppressHydrationWarning
-            className="text-gray-400 text-xs sm:text-sm font-medium -translate-y-1 uppercase pt-3 tracking-widest"
+            className="-translate-y-1 pt-3 text-xs font-medium tracking-widest text-[#9A8BA8] uppercase sm:text-sm"
           >
             {bottomText}
           </h2>

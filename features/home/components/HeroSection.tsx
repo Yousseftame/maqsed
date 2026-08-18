@@ -44,7 +44,7 @@ export function HeroSection() {
       className="sticky top-16 flex h-[calc(100vh-64px)] min-h-[700px] w-full flex-col justify-end overflow-hidden bg-white"
     >
       <div
-        className="pointer-events-none absolute top-0 left-0 z-[100] hidden h-[105px] w-[105px] items-center justify-center rounded-full bg-[#0a0f1d] text-center text-white shadow-xl lg:flex"
+        className="pointer-events-none absolute top-0 left-0 z-[100] hidden h-[105px] w-[105px] items-center justify-center rounded-full bg-[#17C3B3] text-center text-white shadow-xl lg:flex"
         style={{
           opacity: isHovered ? 1 : 0,
           transform: `translate(${mousePos.x - 52.5}px, ${mousePos.y - 52.5}px) scale(${isHovered ? 1 : 0})`,
@@ -65,15 +65,15 @@ export function HeroSection() {
         }`}
       >
         <h1
-          className="leading-none font-bold tracking-tighter text-[#0a0f1d] select-none"
+          className="leading-none font-bold tracking-tighter text-[#6A2B92] select-none"
           style={{ fontSize: "clamp(120px, 22vw, 400px)" }}
         >
           {splashDone ? (
             <DiaTextReveal
               key={`hero-maqsed-${locale}`}
               text={locale === "ar" ? "مقصد" : "MAQSED"}
-              textColor="#0a0f1d"
-              colors={["#0a0f1d"]}
+              textColor="#6A2B92"
+              colors={["#6A2B92"]}
               startOnView={false}
               once
               duration={1.6}

@@ -402,7 +402,11 @@ export interface Dictionary {
     importantLinks: string;
     contactUs: string;
     location: string;
-    rights: string;
+    brand: string;
+    rightsPrefix: string;
+    rightsSuffix: string;
+    email: string;
+    phone: string;
     privacyPolicy: string;
     termsConditions: string;
     techSupport: string;
@@ -410,6 +414,7 @@ export interface Dictionary {
       facebook: string;
       linkedin: string;
       twitter: string;
+      instagram: string;
     };
   };
 }
@@ -881,7 +886,11 @@ export const en: Dictionary = {
     importantLinks: "Important Links",
     contactUs: "Contact Us",
     location: "Riyadh, Saudi Arabia",
-    rights: "© 2026 MAQSED - All Rights Reserved",
+    brand: "MAQSED",
+    rightsPrefix: "© 2026",
+    rightsSuffix: "All Rights Reserved",
+    email: "marketing@maqsed.com",
+    phone: "+966 55 555 5555",
     privacyPolicy: "Privacy Policy",
     termsConditions: "Terms & Conditions",
     techSupport: "Tech Support",
@@ -889,6 +898,7 @@ export const en: Dictionary = {
       facebook: "Facebook",
       linkedin: "LinkedIn",
       twitter: "Twitter",
+      instagram: "Instagram",
     },
   },
 };

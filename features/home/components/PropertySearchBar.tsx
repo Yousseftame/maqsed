@@ -150,7 +150,7 @@ export function PropertySearchBar({
             "group flex h-14 w-full items-center justify-center rounded-full px-4 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:px-5 active:scale-[0.98] sm:w-auto",
             tone === "dark"
               ? "bg-white text-[#0a0f1d] hover:bg-white"
-              : "bg-[#0a0f1d] text-white hover:bg-[#0a0f1d]"
+              : "bg-[#17C3B3] text-white hover:bg-[#14b0a1]"
           )}
           aria-label={t("search.search")}
         >

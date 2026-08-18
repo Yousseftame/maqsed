@@ -88,24 +88,24 @@ export function AgentsSection() {
       <div className="mx-auto max-w-[1400px]">
         <div className="mb-16 flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
           <div className="max-w-2xl">
-            <div className="group mb-8 inline-flex cursor-default items-center gap-2 rounded-full border border-gray-200 px-3.5 py-1.5 transition-colors duration-300 hover:bg-[#0a0f1d]">
-              <div className="h-3 w-3 flex-shrink-0 rounded-full bg-[#0a0f1d] transition-colors duration-300 group-hover:bg-white" />
-              <span className="text-sm font-medium tracking-wide text-[#0a0f1d] transition-colors duration-300 group-hover:text-white">
+            <div className="group mb-8 inline-flex cursor-default items-center gap-2 rounded-full border border-gray-200 px-3.5 py-1.5 transition-colors duration-300 hover:bg-[#6A2B92]">
+              <div className="h-3 w-3 flex-shrink-0 rounded-full bg-[#6A2B92] transition-colors duration-300 group-hover:bg-white" />
+              <span className="text-sm font-medium tracking-wide text-[#6A2B92] transition-colors duration-300 group-hover:text-white">
                 {t("agents.pill")}
               </span>
             </div>
-            <h2 className="flex flex-col items-start text-5xl leading-tight font-bold tracking-tight text-[#0a0f1d] sm:text-6xl lg:text-6xl">
+            <h2 className="flex flex-col items-start text-5xl leading-tight font-bold tracking-tight text-[#6A2B92] sm:text-6xl lg:text-6xl">
               <DiaTextReveal
                 key={`agents-1-${locale}`}
                 text={t("agents.titleLine1")}
-                textColor="#0a0f1d"
-                colors={["#0a0f1d"]}
+                textColor="#6A2B92"
+                colors={["#6A2B92"]}
               />
               <DiaTextReveal
                 key={`agents-2-${locale}`}
                 text={t("agents.titleLine2")}
-                textColor="#0a0f1d"
-                colors={["#0a0f1d"]}
+                textColor="#6A2B92"
+                colors={["#6A2B92"]}
               />
             </h2>
           </div>
@@ -146,13 +146,13 @@ export function AgentsSection() {
 
                   <div className="mb-8 flex flex-col gap-4">
                     <div className="flex items-center gap-3 text-[#0a0f1d]">
-                      <MapPin className="h-6 w-6 stroke-[2.5]" />
+                      <MapPin className="h-6 w-6 stroke-[2.5] text-[#17C3B3]" />
                       <span className="text-base font-semibold">
                         {unit.location}
                       </span>
                     </div>
                     <div className="flex items-center gap-3 text-[#0a0f1d]">
-                      <Key className="h-6 w-6 stroke-[2.5]" />
+                      <Key className="h-6 w-6 stroke-[2.5] text-[#17C3B3]" />
                       <span className="text-base font-semibold">
                         {unit.status}
                       </span>
@@ -161,7 +161,7 @@ export function AgentsSection() {
 
                   <button
                     type="button"
-                    className="w-full rounded-xl border border-gray-300 py-4 text-lg font-extrabold text-[#0a0f1d] transition-colors duration-300 group-hover:border-[#0a0f1d] group-hover:bg-[#0a0f1d] group-hover:text-white"
+                    className="w-full rounded-xl border border-gray-300 py-4 text-lg font-extrabold text-[#6A2B92] transition-colors duration-300 group-hover:border-[#17C3B3] group-hover:bg-[#17C3B3] group-hover:text-white"
                   >
                     {t("agents.reserveUnit")}
                   </button>
@@ -174,7 +174,7 @@ export function AgentsSection() {
         <div className="mt-16 flex justify-center">
           <button
             type="button"
-            className="group inline-flex items-center gap-2.5 rounded-full bg-[#0a0f1d] px-6 py-3.5 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#0a0f1d] hover:ring-1 hover:ring-[#0a0f1d]/15 active:scale-[0.98]"
+            className="group inline-flex items-center gap-2.5 rounded-full bg-[#17C3B3] px-6 py-3.5 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98]"
           >
             {t("agents.seeAll")}
             <ArrowUpRight

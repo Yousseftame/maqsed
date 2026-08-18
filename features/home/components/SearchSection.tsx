@@ -25,19 +25,19 @@ export function SearchSection() {
       </div>
 
       <div className="relative z-10 flex w-full flex-col items-center">
-        <div className="group mb-8 inline-flex cursor-default items-center gap-2 rounded-full border border-gray-200 px-3.5 py-1.5 transition-colors duration-300 hover:bg-[#0a0f1d]">
-        <div className="h-3 w-3 flex-shrink-0 rounded-full bg-[#0a0f1d] transition-colors duration-300 group-hover:bg-white" />
-        <span className="text-sm font-medium tracking-wide text-[#0a0f1d] transition-colors duration-300 group-hover:text-white">
+        <div className="group mb-8 inline-flex cursor-default items-center gap-2 rounded-full border border-gray-200 px-3.5 py-1.5 transition-colors duration-300 hover:bg-[#6A2B92]">
+        <div className="h-3 w-3 flex-shrink-0 rounded-full bg-[#6A2B92] transition-colors duration-300 group-hover:bg-white" />
+        <span className="text-sm font-medium tracking-wide text-[#6A2B92] transition-colors duration-300 group-hover:text-white">
           {t("search.pill")}
         </span>
       </div>
 
-      <h2 className="mb-4 flex justify-center text-center text-[clamp(36px,6vw,72px)] leading-tight font-bold tracking-tight text-[#0a0f1d]">
+      <h2 className="mb-4 flex justify-center text-center text-[clamp(36px,6vw,72px)] leading-tight font-bold tracking-tight text-[#6A2B92]">
         <DiaTextReveal
           key={`search-title-${locale}`}
           text={t("search.title")}
-          textColor="#0a0f1d"
-          colors={["#0a0f1d"]}
+          textColor="#6A2B92"
+          colors={["#6A2B92"]}
         />
       </h2>
 

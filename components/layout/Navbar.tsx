@@ -58,18 +58,18 @@ export function Navbar() {
                     className={cn(
                       "relative flex items-center gap-1.5 text-[16px] transition-colors duration-200",
                       isActive
-                        ? "font-medium text-[#0a0f1d]"
-                        : "font-normal text-[#6B7280] group-hover:text-[#0a0f1d]"
+                        ? "font-medium text-[#6A2B92]"
+                        : "font-normal text-[#6B7280] group-hover:text-[#6A2B92]"
                     )}
                   >
                     {link.name}
 
                     {isActive && (
-                      <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-4 -translate-x-1/2 rounded-full bg-[#0a0f1d]" />
+                      <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-4 -translate-x-1/2 rounded-full bg-[#17C3B3]" />
                     )}
 
                     {!isActive && (
-                      <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-0 -translate-x-1/2 rounded-full bg-[#0a0f1d] transition-all duration-300 group-hover:w-full" />
+                      <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-0 -translate-x-1/2 rounded-full bg-[#17C3B3] transition-all duration-300 group-hover:w-full" />
                     )}
                   </Link>
                 </div>
@@ -81,7 +81,7 @@ export function Navbar() {
             <LanguageToggle />
 
             <AuthNavLink
-              className="rounded-full border border-[#0a0f1d] px-6 py-2 text-[16px] font-medium text-[#0a0f1d] transition-colors duration-300 hover:bg-[#0a0f1d] hover:text-white"
+              className="rounded-full bg-[#17C3B3] px-6 py-2 text-[16px] font-medium text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15"
             />
           </div>
 
@@ -89,7 +89,7 @@ export function Navbar() {
             <button
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="p-2 text-gray-600 hover:text-[#0a0f1d]"
+              className="p-2 text-gray-600 hover:text-[#6A2B92]"
               aria-label="Open menu"
             >
               {isMobileMenuOpen ? (
@@ -104,7 +104,7 @@ export function Navbar() {
 
       <div
         className={cn(
-          "fixed inset-0 z-[100] flex flex-col bg-white text-[#0a0f1d] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden",
+          "fixed inset-0 z-[100] flex flex-col bg-white text-[#6A2B92] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden",
           isMobileMenuOpen
             ? "pointer-events-auto opacity-100"
             : "pointer-events-none opacity-0"
@@ -135,7 +135,7 @@ export function Navbar() {
           <button
             type="button"
             onClick={() => setIsMobileMenuOpen(false)}
-            className="p-2 text-gray-400 transition-colors hover:text-[#0a0f1d]"
+            className="p-2 text-gray-400 transition-colors hover:text-[#6A2B92]"
           >
             <X className="h-8 w-8" />
           </button>
@@ -151,8 +151,8 @@ export function Navbar() {
                   className={cn(
                     "group flex items-end gap-4 text-[42px] font-light tracking-tighter transition-all duration-500 sm:text-[56px]",
                     pathname === link.href
-                      ? "text-[#0a0f1d]"
-                      : "text-gray-400 hover:text-[#0a0f1d]"
+                      ? "text-[#6A2B92]"
+                      : "text-gray-400 hover:text-[#6A2B92]"
                   )}
                   style={{
                     transform: isMobileMenuOpen
@@ -171,7 +171,7 @@ export function Navbar() {
                     {link.name}
                     <span
                       className={cn(
-                        "absolute bottom-0 start-0 h-[3px] bg-[#0a0f1d] transition-all duration-500 ease-out",
+                        "absolute bottom-0 start-0 h-[3px] bg-[#17C3B3] transition-all duration-500 ease-out",
                         pathname === link.href
                           ? "w-full"
                           : "w-0 group-hover:w-full"
@@ -199,18 +199,18 @@ export function Navbar() {
               type="button"
               dir="ltr"
               onClick={() => setLocale(locale === "en" ? "ar" : "en")}
-              className="relative flex h-14 w-full items-center justify-between overflow-hidden rounded-full border border-[#0a0f1d] p-1"
+              className="relative flex h-14 w-full items-center justify-between overflow-hidden rounded-full border border-[#6A2B92] p-1"
             >
               <div
                 className={cn(
-                  "absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-[#0a0f1d] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
+                  "absolute top-1 bottom-1 w-[calc(50%-4px)] rounded-full bg-[#6A2B92] transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]",
                   locale === "en" ? "start-1" : "start-[calc(50%+3px)]"
                 )}
               />
               <div
                 className={cn(
                   "relative z-10 w-1/2 text-center text-lg font-bold transition-colors duration-500",
-                  locale === "en" ? "text-white" : "text-[#0a0f1d]"
+                  locale === "en" ? "text-white" : "text-[#6A2B92]"
                 )}
               >
                 {t("nav.english")}
@@ -218,7 +218,7 @@ export function Navbar() {
               <div
                 className={cn(
                   "relative z-10 w-1/2 text-center text-lg font-bold transition-colors duration-500",
-                  locale === "ar" ? "text-white" : "text-[#0a0f1d]"
+                  locale === "ar" ? "text-white" : "text-[#6A2B92]"
                 )}
               >
                 {t("nav.arabic")}
@@ -226,7 +226,7 @@ export function Navbar() {
             </button>
 
             <AuthNavLink
-              className="w-full rounded-full border border-[#0a0f1d] px-6 py-4 text-center text-lg font-medium text-[#0a0f1d] transition-colors duration-300 hover:bg-[#0a0f1d] hover:text-white"
+              className="w-full rounded-full bg-[#17C3B3] px-6 py-4 text-center text-lg font-medium text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15"
               onClick={() => setIsMobileMenuOpen(false)}
             />
           </div>

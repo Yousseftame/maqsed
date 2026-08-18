@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { ArrowUpRight, Mail, Phone, MapPin } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { FAQSection } from "@/features/home/components/FAQSection";
 import { cn } from "@/lib/utils";
 
 const subjects = ["general", "buy", "sell", "partnership", "support"];
@@ -239,9 +238,6 @@ export function ContactPage() {
           </form>
         </div>
       </section>
-
-      {/* Add FAQ section to the bottom */}
-      <FAQSection />
     </div>
   );
 }

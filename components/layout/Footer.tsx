@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { MapPin, Mail } from "lucide-react";
+import { MapPin, Mail, Phone } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 const FacebookIcon = ({ className }: { className?: string }) => (
@@ -13,7 +13,7 @@ const FacebookIcon = ({ className }: { className?: string }) => (
 
 const TwitterIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.743l7.724-8.835L1.254 2.25H8.08l4.253 5.622L18.244 2.25zm-1.161 17.52h1.833L7.084 4.126H5.117L17.083 19.77z" />
   </svg>
 );
 
@@ -23,97 +23,175 @@ const LinkedinIcon = ({ className }: { className?: string }) => (
   </svg>
 );
 
+const InstagramIcon = ({ className }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z" />
+  </svg>
+);
+
+const socialIconClass =
+  "flex h-11 w-11 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors duration-300 hover:bg-[#6A2B92] hover:text-white";
+
 export function Footer() {
   const { t } = useLocale();
-  
+
+  const importantLinks = [
+    { label: t("nav.home"), href: "/" },
+    { label: t("nav.about"), href: "/about" },
+    { label: t("nav.properties"), href: "/properties" },
+    { label: t("nav.sell"), href: "/sell" },
+    { label: t("nav.contact"), href: "/contact" },
+  ];
+
+  const legalLinks = [
+    { label: t("footer.privacyPolicy"), href: "#" },
+    { label: t("footer.termsConditions"), href: "#" },
+    { label: t("nav.faq"), href: "/faq" },
+  ];
+
+  const contactItems = [
+    {
+      icon: Mail,
+      label: t("contactPage.contactDetails.email"),
+      value: t("footer.email"),
+      href: `mailto:${t("footer.email")}`,
+      dir: "ltr" as const,
+    },
+    {
+      icon: Phone,
+      label: t("contactPage.contactDetails.phone"),
+      value: t("footer.phone"),
+      href: `tel:${t("footer.phone").replace(/\s/g, "")}`,
+      dir: "ltr" as const,
+    },
+    {
+      icon: MapPin,
+      label: t("contactPage.contactDetails.office"),
+      value: t("footer.location"),
+      href: undefined,
+      dir: undefined,
+    },
+  ];
+
   return (
-    <footer className="relative w-full bg-[#0a0f1d] text-white pt-16 pb-8 border-t border-gray-700 rounded-t-[4rem]">
-      <div className="mx-auto w-full max-w-[1400px] px-6 md:px-12 lg:px-20 relative z-10">
-        
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
-          
-          {/* Col 1: Brand & Description */}
-          <div className="flex flex-col gap-6">
-            <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/lgoogg.png"
-                alt="MAQSED Logo"
-                width={160}
-                height={42}
-                className="object-contain"
-              />
-            </Link>
-            <p className="text-gray-300 text-sm leading-relaxed max-w-sm font-medium">
-              {t("footer.description")}
-            </p>
-          </div>
-
-          {/* Col 2: Contact Us */}
-          <div className="flex flex-col gap-5 lg:pe-12">
-            <h3 className="text-lg font-bold">{t("footer.contactUs")}</h3>
-            <hr className="border-gray-700" />
-            <div className="flex flex-col gap-4">
-              <a href="mailto:marketing@maqsed.com" className="flex items-center gap-3 text-gray-300 hover:text-white transition-colors text-sm w-fit">
-                <Mail className="w-4 h-4 shrink-0" />
-                <span dir="ltr">marketing@maqsed.com</span>
-              </a>
-              <div className="flex items-center gap-3 text-gray-300 text-sm w-fit">
-                <MapPin className="w-4 h-4 shrink-0" />
-                <span>{t("footer.location")}</span>
+    <footer className="relative z-30 w-full bg-[#0a0f1d] px-4 py-10 sm:px-6 md:px-8 lg:px-10 lg:py-16 xl:px-12">
+      <div className="mx-auto w-full max-w-[1680px]">
+        <div className="rounded-[2.5rem] bg-white px-8 py-14 sm:px-12 md:rounded-[3.5rem] md:px-16 md:py-16 lg:rounded-[4rem] lg:px-20 lg:py-20">
+          <div className="flex flex-col gap-12 lg:flex-row lg:items-stretch lg:gap-0">
+            <div className="flex flex-col gap-6 lg:w-[32%] lg:pe-12">
+              <Link href="/" className="w-fit">
+                <Image
+                  src="/lgoogg.png"
+                  alt="MAQSED Logo"
+                  width={200}
+                  height={52}
+                  className="h-auto w-[170px] object-contain md:w-[200px]"
+                />
+              </Link>
+              <p className="max-w-md text-lg leading-relaxed font-semibold text-gray-500">
+                {t("footer.description")}
+              </p>
+              <div className="mt-2 flex items-center gap-3">
+                <Link href="#" className={socialIconClass} aria-label={t("footer.socials.linkedin")}>
+                  <LinkedinIcon className="h-4 w-4" />
+                </Link>
+                <Link href="#" className={socialIconClass} aria-label={t("footer.socials.facebook")}>
+                  <FacebookIcon className="h-4 w-4" />
+                </Link>
+                <Link href="#" className={socialIconClass} aria-label={t("footer.socials.instagram")}>
+                  <InstagramIcon className="h-4 w-4" />
+                </Link>
+                <Link href="#" className={socialIconClass} aria-label={t("footer.socials.twitter")}>
+                  <TwitterIcon className="h-4 w-4" />
+                </Link>
               </div>
-              
-              <div className="flex items-center gap-4 mt-2">
-                <Link href="#" className="w-9 h-9 rounded-full border border-gray-600 flex items-center justify-center hover:bg-white hover:text-[#0a0f1d] transition-all" aria-label={t("footer.socials.linkedin")}>
-                  <LinkedinIcon className="w-4 h-4" />
-                </Link>
-                <Link href="#" className="w-9 h-9 rounded-full border border-gray-600 flex items-center justify-center hover:bg-white hover:text-[#0a0f1d] transition-all" aria-label={t("footer.socials.twitter")}>
-                  <TwitterIcon className="w-4 h-4" />
-                </Link>
-                <Link href="#" className="w-9 h-9 rounded-full border border-gray-600 flex items-center justify-center hover:bg-white hover:text-[#0a0f1d] transition-all" aria-label={t("footer.socials.facebook")}>
-                  <FacebookIcon className="w-4 h-4" />
-                </Link>
+            </div>
+
+            <div className="hidden w-px self-stretch bg-gray-200 lg:block" />
+
+            <div className="lg:w-[36%] lg:px-12">
+              <h3 className="mb-8 w-fit border-b-2 border-[#6A2B92] pb-2 text-2xl font-extrabold text-[#6A2B92]">
+                {t("footer.importantLinks")}
+              </h3>
+              <div className="grid grid-cols-2 gap-x-8">
+                <ul className="flex flex-col gap-4">
+                  {importantLinks.map((link) => (
+                    <li key={link.href}>
+                      <Link
+                        href={link.href}
+                        className="text-base font-semibold text-gray-600 transition-colors hover:text-[#6A2B92]"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+                <ul className="flex flex-col gap-4">
+                  {legalLinks.map((link) => (
+                    <li key={link.label}>
+                      <Link
+                        href={link.href}
+                        className="text-base font-semibold text-gray-600 transition-colors hover:text-[#6A2B92]"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+
+            <div className="hidden w-px self-stretch bg-gray-200 lg:block" />
+
+            <div className="lg:w-[32%] lg:ps-12">
+              <h3 className="mb-8 w-fit border-b-2 border-[#6A2B92] pb-2 text-2xl font-extrabold text-[#6A2B92]">
+                {t("footer.contactUs")}
+              </h3>
+              <div className="flex flex-col gap-6">
+                {contactItems.map((item) => {
+                  const Icon = item.icon;
+                  const content = (
+                    <>
+                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#17C3B3] text-white">
+                        <Icon className="h-5 w-5" strokeWidth={2.2} />
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-base font-bold text-[#0a0f1d]">{item.label}</p>
+                        <p
+                          className="text-sm font-semibold text-gray-500"
+                          dir={item.dir}
+                        >
+                          {item.value}
+                        </p>
+                      </div>
+                    </>
+                  );
+
+                  return item.href ? (
+                    <a
+                      key={item.label}
+                      href={item.href}
+                      className="flex items-start gap-3 transition-opacity hover:opacity-80"
+                    >
+                      {content}
+                    </a>
+                  ) : (
+                    <div key={item.label} className="flex items-start gap-3">
+                      {content}
+                    </div>
+                  );
+                })}
               </div>
             </div>
           </div>
 
-          {/* Col 3: Important Links */}
-          <div className="flex flex-col gap-5 lg:pe-12">
-            <h3 className="text-lg font-bold">{t("footer.importantLinks")}</h3>
-            <hr className="border-gray-700" />
-            
-            <div className="grid grid-cols-2 gap-x-4 gap-y-4 mt-1">
-              {[
-                { label: t("nav.home"), href: "#" },
-                { label: t("nav.contact"), href: "#" },
-                { label: t("nav.about"), href: "#" },
-                { label: t("nav.faq"), href: "#" },
-                { label: t("nav.properties"), href: "#" },
-                { label: t("nav.blog"), href: "#" },
-              ].map((link, idx) => (
-                <Link key={idx} href={link.href} className="flex items-center gap-2 text-gray-300 hover:text-white transition-colors text-sm">
-                  <div className="w-1.5 h-1.5 bg-gray-500 shrink-0" />
-                  {link.label}
-                </Link>
-              ))}
-            </div>
-          </div>
-          
-        </div>
+          <hr className="mt-12 mb-6 border-gray-200" />
 
-        <hr className="border-gray-700 mb-6" />
-
-        {/* Bottom Bar */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <p className="text-gray-400 text-sm font-medium">
-            {t("footer.rights")}
+          <p className="text-center text-base font-semibold text-gray-500">
+            {t("footer.rightsPrefix")}{" "}
+            <span className="font-extrabold text-[#6A2B92]">{t("footer.brand")}</span>{" "}
+            {t("footer.rightsSuffix")}
           </p>
-
-          <div className="flex flex-wrap justify-center items-center gap-6 text-sm text-gray-400 font-medium">
-            <Link href="#" className="hover:text-white transition-colors">{t("footer.privacyPolicy")}</Link>
-            <Link href="#" className="hover:text-white transition-colors">{t("footer.termsConditions")}</Link>
-            <Link href="#" className="hover:text-white transition-colors">{t("footer.techSupport")}</Link>
-          </div>
         </div>
       </div>
     </footer>

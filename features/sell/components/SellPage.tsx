@@ -5,7 +5,6 @@ import toast from "react-hot-toast";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { ArrowUpRight } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { FAQSection } from "@/features/home/components/FAQSection";
 import { cn } from "@/lib/utils";
 
 const propertyTypes = [
@@ -233,9 +232,6 @@ export function SellPage() {
           </form>
         </div>
       </section>
-
-      {/* Add FAQ section to the bottom */}
-      <FAQSection />
     </div>
   );
 }

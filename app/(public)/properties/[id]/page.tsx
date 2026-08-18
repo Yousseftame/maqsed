@@ -5,7 +5,6 @@ import {
   getPropertyById,
 } from "@/features/properties/data/listings";
 import { PropertyDetail } from "@/features/properties/components/PropertyDetail";
-import { FAQSection } from "@/features/home/components/FAQSection";
 
 type PageProps = {
   params: Promise<{ id: string }>;
@@ -44,7 +43,6 @@ export default async function PropertyDetailPage({ params }: PageProps) {
   return (
     <div className="flex w-full flex-col bg-white">
       <PropertyDetail property={property} />
-      <FAQSection />
     </div>
   );
 }

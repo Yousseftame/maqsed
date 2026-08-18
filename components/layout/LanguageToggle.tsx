@@ -12,7 +12,7 @@ export function LanguageToggle({ className }: { className?: string }) {
       dir="ltr"
       onClick={() => setLocale(locale === "en" ? "ar" : "en")}
       className={cn(
-        "group relative flex h-[40px] w-[76px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#0a0f1d] text-white shadow-sm transition-transform hover:scale-105 active:scale-95",
+        "group relative flex h-[40px] w-[76px] shrink-0 items-center justify-center overflow-hidden rounded-full bg-[#6A2B92] text-white shadow-sm transition-transform hover:scale-105 active:scale-95",
         className
       )}
       aria-label={t("nav.switchLanguage")}
@@ -28,7 +28,7 @@ export function LanguageToggle({ className }: { className?: string }) {
           className={cn(
             "transition-colors duration-500",
             locale === "en"
-              ? "text-[#0a0f1d]"
+              ? "text-[#6A2B92]"
               : "text-gray-400 group-hover:text-white"
           )}
         >
@@ -38,7 +38,7 @@ export function LanguageToggle({ className }: { className?: string }) {
           className={cn(
             "transition-colors duration-500",
             locale === "ar"
-              ? "text-[#0a0f1d]"
+              ? "text-[#6A2B92]"
               : "text-gray-400 group-hover:text-white"
           )}
         >
