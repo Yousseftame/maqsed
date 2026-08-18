@@ -2,10 +2,12 @@
 
 import { useState, type FormEvent } from "react";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import toast from "react-hot-toast";
 import { ArrowUpRight, Mail, Phone, MapPin } from "lucide-react";
+import { useLocale } from "@/components/providers/LocaleProvider";
+import { FAQSection } from "@/features/home/components/FAQSection";
+import { cn } from "@/lib/utils";
 
-const subjects = ["General Inquiry", "Buy a Unit", "Sell a Unit", "Partnership", "Support"];
+const subjects = ["general", "buy", "sell", "partnership", "support"];
 
 const Field = ({
   label,
@@ -30,19 +32,19 @@ const inputClass =
 const contactDetails = [
   {
     icon: Mail,
-    label: "Email",
+    label: "email",
     value: "marketing@maqsed.com",
     href: "mailto:marketing@maqsed.com",
   },
   {
     icon: Phone,
-    label: "Phone",
+    label: "phone",
     value: "(+34) 123-456-789",
     href: "tel:+34123456789",
   },
   {
     icon: MapPin,
-    label: "Office",
+    label: "office",
     value: "2223 Calle De Alcalá, Madrid",
     href: undefined,
   },
@@ -56,6 +58,7 @@ const initialForm = {
 };
 
 export function ContactPage() {
+  const { t, locale, isRtl } = useLocale();
   const [subject, setSubject] = useState(subjects[0]);
   const [form, setForm] = useState(initialForm);
 
@@ -65,14 +68,14 @@ export function ContactPage() {
 
   const onSubmit = (event: FormEvent) => {
     event.preventDefault();
-    toast.success("Message sent");
+    toast.success(t("contactPage.form.success"));
     setForm(initialForm);
     setSubject(subjects[0]);
   };
 
   return (
-    <div className="flex w-full flex-col bg-white">
-      <section className="relative overflow-hidden bg-[#0a0f1d] px-6 pb-28 pt-20 md:px-12 lg:px-20 lg:pb-32 lg:pt-28">
+    <div className={`flex w-full flex-col bg-white ${isRtl ? "text-right" : "text-left"}`}>
+      <section className="relative overflow-hidden bg-[#0a0f1d] rounded-b-[2.5rem] md:rounded-b-[3.5rem] lg:rounded-b-[4rem] px-6 pb-28 pt-20 md:px-12 lg:px-20 lg:pb-32 lg:pt-28">
         <div
           aria-hidden
           className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-[clamp(5rem,18vw,15rem)] font-bold leading-none tracking-tighter text-white/[0.04]"
@@ -84,13 +87,15 @@ export function ContactPage() {
           <div className="max-w-3xl">
             <h1 className="flex flex-col items-start text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
               <DiaTextReveal
-                text="Let's start a"
+                key={`contact-title1-${locale}`}
+                text={t("contactPage.hero.title1")}
                 textColor="#ffffff"
                 colors={["#ffffff"]}
                 startOnView={false}
               />
               <DiaTextReveal
-                text="conversation."
+                key={`contact-title2-${locale}`}
+                text={t("contactPage.hero.title2")}
                 textColor="#ffffff"
                 colors={["#ffffff"]}
                 startOnView={false}
@@ -98,8 +103,7 @@ export function ContactPage() {
               />
             </h1>
             <p className="mt-8 max-w-lg text-lg font-semibold leading-snug tracking-normal text-[#8c8c8c]">
-              Questions, opportunities, or next steps — send us a message and the
-              MAQSED team will get back to you promptly.
+              {t("contactPage.hero.description")}
             </p>
           </div>
 
@@ -109,7 +113,9 @@ export function ContactPage() {
                 <>
                   <div className="flex items-center gap-2 text-[#8c8c8c]">
                     <Icon className="h-4 w-4" strokeWidth={2} />
-                    <span className="text-sm font-medium tracking-wide">{label}</span>
+                    <span className="text-sm font-medium tracking-wide">
+                      {t(`contactPage.contactDetails.${label}`)}
+                    </span>
                   </div>
                   <span className="text-lg font-bold tracking-tight text-white sm:text-xl">
                     {value}
@@ -139,20 +145,20 @@ export function ContactPage() {
         <div className="mx-auto max-w-3xl rounded-3xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(10,15,29,0.08)] sm:px-10 sm:py-12 lg:px-14">
           <div className="mb-10 border-b border-gray-100 pb-8">
             <p className="mb-3 text-sm font-medium tracking-wide text-[#8c8c8c]">
-              Contact Form
+              {t("contactPage.form.pill")}
             </p>
             <h2 className="text-3xl font-bold tracking-tight text-[#0a0f1d] sm:text-4xl">
-              Send us a message
+              {t("contactPage.form.title")}
             </h2>
             <p className="mt-3 max-w-2xl text-base font-semibold leading-snug text-[#8c8c8c]">
-              Choose a topic, leave your details, and tell us how we can help.
+              {t("contactPage.form.description")}
             </p>
           </div>
 
           <form onSubmit={onSubmit} className="flex flex-col gap-8">
             <div className="flex flex-col gap-3">
               <span className="text-sm font-medium tracking-wide text-[#8c8c8c]">
-                Subject
+                {t("contactPage.form.subject")}
               </span>
               <div className="flex flex-wrap gap-2.5">
                 {subjects.map((item) => {
@@ -168,7 +174,7 @@ export function ContactPage() {
                           : "border-gray-200 bg-white text-[#0a0f1d] hover:border-[#0a0f1d]"
                       }`}
                     >
-                      {item}
+                      {t(`contactPage.subjects.${item}`)}
                     </button>
                   );
                 })}
@@ -176,61 +182,65 @@ export function ContactPage() {
             </div>
 
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-              <Field label="Full Name">
+              <Field label={t("contactPage.form.fullName")}>
                 <input
                   required
                   value={form.fullName}
                   onChange={(e) => update("fullName", e.target.value)}
                   className={inputClass}
-                  placeholder="Your full name"
+                  placeholder={t("contactPage.form.fullNamePlaceholder")}
                 />
               </Field>
-              <Field label="Email">
+              <Field label={t("contactPage.form.email")}>
                 <input
                   required
                   type="email"
                   value={form.email}
                   onChange={(e) => update("email", e.target.value)}
                   className={inputClass}
-                  placeholder="you@email.com"
+                  placeholder={t("contactPage.form.emailPlaceholder")}
                 />
               </Field>
-              <Field label="Phone" className="sm:col-span-2">
+              <Field label={t("contactPage.form.phone")} className="sm:col-span-2">
                 <input
                   type="tel"
                   value={form.phone}
                   onChange={(e) => update("phone", e.target.value)}
                   className={inputClass}
-                  placeholder="+966 ..."
+                  placeholder={t("contactPage.form.phonePlaceholder")}
+                  dir="ltr"
                 />
               </Field>
-              <Field label="Message" className="sm:col-span-2">
+              <Field label={t("contactPage.form.message")} className="sm:col-span-2">
                 <textarea
                   required
                   rows={5}
                   value={form.message}
                   onChange={(e) => update("message", e.target.value)}
                   className={`${inputClass} resize-none leading-relaxed`}
-                  placeholder="How can we help you?"
+                  placeholder={t("contactPage.form.messagePlaceholder")}
                 />
               </Field>
             </div>
 
             <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
               <p className="max-w-sm text-sm font-medium leading-snug text-[#8c8c8c]">
-                We typically respond within one business day.
+                {t("contactPage.form.agreement")}
               </p>
               <button
                 type="submit"
                 className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#0a0f1d] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#0a0f1d] hover:ring-1 hover:ring-[#0a0f1d]/15 active:scale-[0.98]"
               >
-                Send Message
-                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+                {t("contactPage.form.submit")}
+                <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
               </button>
             </div>
           </form>
         </div>
       </section>
+
+      {/* Add FAQ section to the bottom */}
+      <FAQSection />
     </div>
   );
 }

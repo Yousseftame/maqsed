@@ -38,13 +38,15 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${manrope.variable} ${cairo.variable} ${notoKufiArabic.variable} min-h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col" suppressHydrationWarning>
+      <head>
         <Script id="maqsed-locale-bootstrap" strategy="beforeInteractive">
           {localeBootstrap}
         </Script>
-        <Script id="chatbase-embed" strategy="afterInteractive">
+      </head>
+      <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        {/* <Script id="chatbase-embed" strategy="afterInteractive">
           {chatbaseEmbed}
-        </Script>
+        </Script> */}
         <LocaleProvider>
           <QueryProvider>
             <AuthProvider>

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { AboutHeader } from "@/components/shared/AboutHeader";
 import { AboutSection } from "@/features/home/components/AboutSection";
 import { VisionMissionSection } from "@/features/home/components/VisionMissionSection";
 import { StatsSection } from "@/features/home/components/StatsSection";
@@ -13,11 +14,13 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="flex w-full flex-col bg-white">
+      <AboutHeader />
       <AboutSection />
       <VisionMissionSection />
+      <CTASection />
+
       <StatsSection />
       <PartnersSection />
-      <CTASection />
     </div>
   );
 }

@@ -151,6 +151,85 @@ export interface Dictionary {
     title: string;
     description: string;
   };
+  sellPage: {
+    hero: {
+      title1: string;
+      title2: string;
+      description: string;
+    };
+    form: {
+      pill: string;
+      title: string;
+      description: string;
+      fullName: string;
+      fullNamePlaceholder: string;
+      email: string;
+      emailPlaceholder: string;
+      phone: string;
+      phonePlaceholder: string;
+      propertyType: string;
+      city: string;
+      cityPlaceholder: string;
+      address: string;
+      addressPlaceholder: string;
+      bedrooms: string;
+      bedroomsPlaceholder: string;
+      size: string;
+      sizePlaceholder: string;
+      price: string;
+      pricePlaceholder: string;
+      notes: string;
+      notesPlaceholder: string;
+      agreement: string;
+      submit: string;
+      success: string;
+    };
+    propertyTypes: {
+      apartment: string;
+      villa: string;
+      townhouse: string;
+      penthouse: string;
+      office: string;
+      land: string;
+      other: string;
+    };
+  };
+  contactPage: {
+    hero: {
+      title1: string;
+      title2: string;
+      description: string;
+    };
+    contactDetails: {
+      email: string;
+      phone: string;
+      office: string;
+    };
+    form: {
+      pill: string;
+      title: string;
+      description: string;
+      subject: string;
+      fullName: string;
+      fullNamePlaceholder: string;
+      email: string;
+      emailPlaceholder: string;
+      phone: string;
+      phonePlaceholder: string;
+      message: string;
+      messagePlaceholder: string;
+      agreement: string;
+      submit: string;
+      success: string;
+    };
+    subjects: {
+      general: string;
+      buy: string;
+      sell: string;
+      partnership: string;
+      support: string;
+    };
+  };
   auth: {
     welcomeBack: string;
     signInTitle1: string;
@@ -316,23 +395,19 @@ export interface Dictionary {
     };
   };
   footer: {
-    newsletter: string;
-    emailPlaceholder: string;
-    discover: string;
-    quickLinks: string;
+    description: string;
+    importantLinks: string;
     contactUs: string;
-    addressLine1: string;
-    addressLine2: string;
+    location: string;
     rights: string;
-    currency: string;
+    privacyPolicy: string;
+    termsConditions: string;
+    techSupport: string;
     socials: {
       facebook: string;
       linkedin: string;
-      youtube: string;
-      instagram: string;
+      twitter: string;
     };
-    latestNews: string;
-    faqs: string;
   };
 }
 
@@ -399,6 +474,29 @@ export const en: Dictionary = {
     titleLine2: "Our Expertise.",
     description:
       "At MAQSED, we are committed to helping individuals and families find their perfect homes and smart investment properties. Our approach blends personalized service, expert insights, and a dedication to excellence, ensuring your real estate journey is seamless, rewarding, and tailored to your unique needs.",
+    features: {
+      pill: "Who we are",
+      title: "We created historic real estate ventures.",
+      description1:
+        "We bring decades of experience to real estate strategy, advisory, and development. As one of the world's largest privately held real estate groups, we deliver tailored solutions that align with your long-term vision.",
+      description2:
+        "We bring decades of experience to real estate strategy, advisory, and development. As one of the world's largest privately held real estate groups, we deliver tailored solutions that align with your long-term vision.",
+      callUs: "Call Us For Any Inquiry",
+      phone: "+258 - 5485 - 4845",
+      corporate: {
+        title: "Corporate Responsibility",
+        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading.",
+      },
+      experts: {
+        title: "Experts with Team Spirit",
+        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading.",
+      },
+      excellence: {
+        title: "Commitment to Excellence",
+        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading.",
+      },
+      learnMore: "Learn More",
+    },
     cards: {
       villa: {
         title: "Luxury Villa",
@@ -492,46 +590,122 @@ export const en: Dictionary = {
     ],
   },
   stats: {
-    title: "By the Numbers",
-    items: {
-      sold: {
-        value: "800",
-        suffix: "+",
-        text: "We've successfully sold properties across the globe.",
-      },
-      loan: {
-        value: "100",
-        suffix: "+",
-        text: "We're pleased to offer affordable loan options.",
-      },
-      clients: {
-        value: "2000",
-        suffix: "+",
-        text: "We're proud to have over 2,000 satisfied clients",
-      },
-    },
+    title: "",
+    items: [
+      { value: "145", suffix: "+", text: "Completed Projects" },
+      { value: "129", suffix: "+", text: "Completed Projects" },
+      { value: "4.3B", suffix: "+", text: "Completed Projects" },
+      { value: "25M", suffix: "+", text: "Completed Projects" },
+    ],
   },
   visionMission: {
     mission: {
       title: "Our Mission",
-      description: "To redefine the real estate experience by providing innovative, transparent, and personalized solutions that empower our clients to make the best property decisions."
+      description: "To deliver projects in partnership with our clients: Safer, with zero loss time injuries. Better, with zero quality rejections. And faster, by always meeting deadlines."
     },
     vision: {
       title: "Our Vision",
-      description: "To be the leading and most trusted real estate platform globally, recognized for our commitment to excellence, integrity, and cutting-edge technology."
+      description: "To be the premier integrated project solutions provider across the energy, infrastructure, and buildings sectors, entrusted to transform ambitious visions into reality in Saudi Arabia and beyond."
     }
   },
   cta: {
-    title1: "Have a ",
-    titleHighlight: "Question?",
-    title2: " Don't Hesitate to Reach Out to Us!",
-    button: "Contact Us",
+    pill: "Register as a Service Provider",
+    title: "Join as a Certified Partner",
+    subtitle: "Do you own an engineering office or a contracting company and want access to thousands of projects?",
+    bullet1: "Offer your services on the largest contracting platform in Saudi Arabia",
+    bullet2: "Get projects that suit your specialization",
+    bullet3: "Increase your profits through a competitive commission system",
+    button: "Register Now",
   },
   partners: {
     pill: "Trusted by Industry Leaders",
     title: "Trusted Partners",
     description:
       "Built on strong alliances with leading brands and institutions that share our standard for trust, quality, and long-term value.",
+  },
+  sellPage: {
+    hero: {
+      title1: "Market your property",
+      title2: "with confidence.",
+      description:
+        "Submit your unit details and let MAQSED handle professional marketing, qualified buyers, and a clear path to closing.",
+    },
+    form: {
+      pill: "Request Form",
+      title: "Property Marketing / Sale Request",
+      description:
+        "Share a few details about your unit. Our team will review your request and follow up with the next steps.",
+      fullName: "Full Name",
+      fullNamePlaceholder: "Your full name",
+      email: "Email",
+      emailPlaceholder: "you@email.com",
+      phone: "Phone",
+      phonePlaceholder: "+966 ...",
+      propertyType: "Property Type",
+      city: "City",
+      cityPlaceholder: "Riyadh",
+      address: "Property Address",
+      addressPlaceholder: "Street, district, building",
+      bedrooms: "Bedrooms",
+      bedroomsPlaceholder: "e.g. 3",
+      size: "Size (sq ft)",
+      sizePlaceholder: "e.g. 1,850",
+      price: "Expected Price",
+      pricePlaceholder: "SAR 1,000,000",
+      notes: "Additional Notes",
+      notesPlaceholder: "Tell us anything that helps market your unit...",
+      agreement:
+        "By submitting, you agree to be contacted by MAQSED about your sale request.",
+      submit: "Submit Request",
+      success: "Request received",
+    },
+    propertyTypes: {
+      apartment: "Apartment",
+      villa: "Villa",
+      townhouse: "Townhouse",
+      penthouse: "Penthouse",
+      office: "Office",
+      land: "Land",
+      other: "Other",
+    },
+  },
+  contactPage: {
+    hero: {
+      title1: "Let's start a",
+      title2: "conversation.",
+      description:
+        "Questions, opportunities, or next steps — send us a message and the MAQSED team will get back to you promptly.",
+    },
+    contactDetails: {
+      email: "Email",
+      phone: "Phone",
+      office: "Office",
+    },
+    form: {
+      pill: "Contact Form",
+      title: "Send us a message",
+      description:
+        "Choose a topic, leave your details, and tell us how we can help.",
+      subject: "Subject",
+      fullName: "Full Name",
+      fullNamePlaceholder: "Your full name",
+      email: "Email",
+      emailPlaceholder: "you@email.com",
+      phone: "Phone",
+      phonePlaceholder: "+966 ...",
+      message: "Message",
+      messagePlaceholder: "How can we help you?",
+      agreement: "We typically respond within one business day.",
+      submit: "Send Message",
+      success: "Message sent",
+    },
+    subjects: {
+      general: "General Inquiry",
+      buy: "Buy a Unit",
+      sell: "Sell a Unit",
+      partnership: "Partnership",
+      support: "Support",
+    },
   },
   auth: {
     welcomeBack: "Welcome back",
@@ -700,22 +874,18 @@ export const en: Dictionary = {
     },
   },
   footer: {
-    newsletter: "Subscribe to our newsletter",
-    emailPlaceholder: "Enter your email",
-    discover: "Discover",
-    quickLinks: "Quick Links",
+    description: "An integrated digital platform for providing and managing corporate housing for workers and individuals, effectively connecting property owners, companies, and individuals.",
+    importantLinks: "Important Links",
     contactUs: "Contact Us",
-    addressLine1: "123 Business Tower, Financial District",
-    addressLine2: "Riyadh, Saudi Arabia",
-    rights: "© 2026 Maqsed. All Rights Reserved",
-    currency: "SAR",
+    location: "Riyadh, Saudi Arabia",
+    rights: "© 2026 MAQSED - All Rights Reserved",
+    privacyPolicy: "Privacy Policy",
+    termsConditions: "Terms & Conditions",
+    techSupport: "Tech Support",
     socials: {
       facebook: "Facebook",
       linkedin: "LinkedIn",
-      youtube: "YouTube",
-      instagram: "Instagram",
+      twitter: "Twitter",
     },
-    latestNews: "Latest News",
-    faqs: "Faq's",
   },
 };
