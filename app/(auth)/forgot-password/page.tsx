@@ -126,7 +126,7 @@ export default function ForgotPasswordPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t("auth.emailPlaceholder")}
-            className={inputClass}
+            className={cn(inputClass, locale === "ar" && "text-right")}
             dir="ltr"
           />
         </label>

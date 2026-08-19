@@ -126,7 +126,7 @@ function LoginForm() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder={t("auth.emailPlaceholder")}
-            className={inputClass}
+            className={cn(inputClass, locale === "ar" && "text-right")}
             dir="ltr"
           />
         </label>
@@ -151,13 +151,16 @@ function LoginForm() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className={cn(inputClass, locale === "ar" ? "ps-10" : "pe-10")}
+              className={cn(inputClass, locale === "ar" ? "text-right pl-10" : "pr-10")}
               dir="ltr"
             />
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-0 bottom-3 end-0 z-10 flex items-center text-[#8c8c8c] transition-colors duration-200 hover:text-[#3E1854]"
+              className={cn(
+                "absolute top-0 bottom-3 z-10 flex items-center text-[#8c8c8c] transition-colors duration-200 hover:text-[#3E1854]",
+                locale === "ar" ? "left-0" : "right-0"
+              )}
               tabIndex={-1}
               aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
             >
