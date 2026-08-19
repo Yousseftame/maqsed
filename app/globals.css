@@ -122,7 +122,39 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    scrollbar-width: thin;
+    scrollbar-color: #3E1854 #9ca3af;
   }
+  
+  /* Custom Webkit Scrollbar */
+  ::-webkit-scrollbar {
+    width: 12px !important;
+    height: 12px !important;
+    background-color: #9ca3af;
+  }
+  ::-webkit-scrollbar-button,
+  ::-webkit-scrollbar-button:start:decrement,
+  ::-webkit-scrollbar-button:end:increment {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+  }
+  ::-webkit-scrollbar-track {
+    background: #9ca3af !important;
+    border: none !important;
+    border-radius: 0 !important;
+    margin: 0 !important;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: #3E1854 !important;
+    border-radius: 10px !important;
+    border: none !important;
+    min-height: 40px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #2D113D !important;
+  }
+
   body {
     @apply bg-background text-foreground;
   }

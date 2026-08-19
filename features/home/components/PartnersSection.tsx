@@ -47,12 +47,12 @@ export function PartnersSection() {
 
       <div className="relative z-10 mx-auto max-w-[1400px] px-6 md:px-12 lg:px-20">
         <div className="mb-16 flex justify-center text-center">
-          <h2 className="text-3xl font-bold tracking-[0.02em] text-[#0a0f1d] sm:text-4xl">
+          <h2 className="text-3xl font-bold tracking-[0.02em] text-[#6A2B92] sm:text-4xl">
             <DiaTextReveal
               key={`partners-title-${locale}`}
               text={t("partners.title")}
-              textColor="#0a0f1d"
-              colors={["#0a0f1d"]}
+              textColor="#6A2B92"
+              colors={["#6A2B92"]}
             />
           </h2>
         </div>

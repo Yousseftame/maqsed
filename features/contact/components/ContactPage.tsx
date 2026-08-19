@@ -27,7 +27,7 @@ const Field = ({
 );
 
 const inputClass =
-  "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#0a0f1d] outline-none transition-colors duration-300 placeholder:text-[#0a0f1d]/30 focus:border-[#0a0f1d]";
+  "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#0a0f1d] outline-none transition-colors duration-300 placeholder:text-gray-400 focus:border-[#6A2B92]";
 
 const contactDetails = [
   {
@@ -75,15 +75,20 @@ export function ContactPage() {
 
   return (
     <div className={`flex w-full flex-col bg-white ${isRtl ? "text-right" : "text-left"}`}>
-      <section className="relative overflow-hidden bg-[#0a0f1d] rounded-b-[2.5rem] md:rounded-b-[3.5rem] lg:rounded-b-[4rem] px-6 pb-28 pt-20 md:px-12 lg:px-20 lg:pb-32 lg:pt-28">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-[clamp(5rem,18vw,15rem)] font-bold leading-none tracking-tighter text-white/[0.04]"
-        >
-          HELLO
-        </div>
+      <section className="relative overflow-hidden bg-[#3E1854] rounded-b-[2.5rem] md:rounded-b-[3.5rem] lg:rounded-b-[4rem] px-6 pb-28 pt-20 md:px-12 lg:px-20 lg:pb-32 lg:pt-28">
+        
+        {/* Background Pattern */}
+        <div 
+          className={`absolute inset-0 w-full h-full z-0 opacity-15 mix-blend-overlay pointer-events-none ${!isRtl ? "scale-x-[-1]" : ""}`}
+          style={{
+            backgroundImage: "url('/Gemini_Generated_Image_kax3jnkax3jnkax3.jpg')",
+            backgroundSize: "70%",
+            backgroundRepeat: "repeat",
+            backgroundPosition: "left top"
+          }}
+        />
 
-        <div className="relative mx-auto flex max-w-[1400px] flex-col gap-14 lg:flex-row lg:items-end lg:justify-between">
+        <div className="relative mx-auto flex max-w-[1400px] flex-col gap-14 lg:flex-row lg:items-end lg:justify-between z-10">
           <div className="max-w-3xl">
             <h1 className="flex flex-col items-start text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl lg:text-7xl">
               <DiaTextReveal
@@ -112,7 +117,7 @@ export function ContactPage() {
               const content = (
                 <>
                   <div className="flex items-center gap-2 text-[#8c8c8c]">
-                    <Icon className="h-4 w-4" strokeWidth={2} />
+                    <Icon className="h-4 w-4 text-[#17C3B3]" strokeWidth={2} />
                     <span className="text-sm font-medium tracking-wide">
                       {t(`contactPage.contactDetails.${label}`)}
                     </span>
@@ -147,7 +152,7 @@ export function ContactPage() {
             <p className="mb-3 text-sm font-medium tracking-wide text-[#8c8c8c]">
               {t("contactPage.form.pill")}
             </p>
-            <h2 className="text-3xl font-bold tracking-tight text-[#0a0f1d] sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-[#6A2B92] sm:text-4xl">
               {t("contactPage.form.title")}
             </h2>
             <p className="mt-3 max-w-2xl text-base font-semibold leading-snug text-[#8c8c8c]">
@@ -170,8 +175,8 @@ export function ContactPage() {
                       onClick={() => setSubject(item)}
                       className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-300 ${
                         active
-                          ? "border-[#0a0f1d] bg-[#0a0f1d] text-white"
-                          : "border-gray-200 bg-white text-[#0a0f1d] hover:border-[#0a0f1d]"
+                          ? "border-[#6A2B92] bg-[#6A2B92] text-white"
+                          : "border-gray-200 bg-white text-[#6A2B92] hover:border-[#6A2B92]"
                       }`}
                     >
                       {t(`contactPage.subjects.${item}`)}
@@ -229,7 +234,7 @@ export function ContactPage() {
               </p>
               <button
                 type="submit"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#0a0f1d] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#0a0f1d] hover:ring-1 hover:ring-[#0a0f1d]/15 active:scale-[0.98]"
+                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#17C3B3] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98]"
               >
                 {t("contactPage.form.submit")}
                 <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />

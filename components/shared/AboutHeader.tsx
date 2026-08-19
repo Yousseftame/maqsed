@@ -9,7 +9,8 @@ export function AboutHeader() {
   return (
     <PageHeader
       title={t("nav.about")}
-      backgroundImage="/about-bg.jpg"
+      backgroundImage="/Gemini_Generated_Image_kax3jnkax3jnkax3.jpg"
+      isPattern={true}
       breadcrumbPaths={[
         { name: t("nav.home"), url: "/" },
         { name: t("nav.about") }

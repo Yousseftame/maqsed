@@ -9,7 +9,7 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
 
 const inputClass =
-  "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#0a0f1d] outline-none transition-colors duration-300 placeholder:text-[#0a0f1d]/30 focus:border-[#0a0f1d]";
+  "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#3E1854] outline-none transition-colors duration-300 placeholder:text-[#3E1854]/30 focus:border-[#17C3B3]";
 
 const COOLDOWN_MS = 60_000;
 const COOLDOWN_KEY = "maqsed-reset-cooldown";
@@ -92,14 +92,14 @@ export default function ForgotPasswordPage() {
       <div className="mb-10">
         <Link
           href="/login"
-          className="group mb-6 inline-flex items-center gap-2 text-sm font-medium tracking-wide text-[#8c8c8c] transition-colors duration-200 hover:text-[#0a0f1d]"
+          className="group mb-6 inline-flex items-center gap-2 text-sm font-medium tracking-wide text-[#8c8c8c] transition-colors duration-200 hover:text-[#3E1854]"
         >
           <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" />
           {t("auth.backToSignIn")}
         </Link>
         <h1
           className={cn(
-            "mb-4 font-bold tracking-tight text-[#0a0f1d]",
+            "mb-4 font-bold tracking-tight text-[#3E1854]",
             locale === "ar"
               ? "text-[2.35rem] leading-[1.25]"
               : "text-[2.6rem] leading-[1.1]"
@@ -141,7 +141,7 @@ export default function ForgotPasswordPage() {
           <button
             type="submit"
             disabled={loading || coolingDown || !email}
-            className="group inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#0a0f1d] px-7 py-4 text-sm font-bold tracking-wide text-white transition-all duration-300 hover:bg-[#161c2d] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+            className="group inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#3E1854] px-7 py-4 text-sm font-bold tracking-wide text-white transition-all duration-300 hover:bg-[#2b1039] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
           >
             {loading ? (
               <>
@@ -155,7 +155,7 @@ export default function ForgotPasswordPage() {
             ) : (
               <>
                 {t("auth.sendReset")}
-                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5" />
+                <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", locale === "ar" ? "rotate-[-90deg] group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
               </>
             )}
           </button>
@@ -166,13 +166,13 @@ export default function ForgotPasswordPage() {
                 <span className="text-sm font-medium tracking-wide text-[#8c8c8c]">
                   {t("auth.waitResend")}
                 </span>
-                <span className="text-sm font-semibold tabular-nums text-[#0a0f1d]">
+                <span className="text-sm font-semibold tabular-nums text-[#3E1854]">
                   {formatCountdown(remainingSec)}
                 </span>
               </div>
-              <div className="h-[3px] w-full overflow-hidden bg-[#0a0f1d]/10">
+              <div className="h-[3px] w-full overflow-hidden bg-[#3E1854]/10">
                 <div
-                  className="h-full bg-[#0a0f1d] origin-start"
+                  className="h-full bg-[#3E1854] origin-start"
                   style={{
                     width: `${progress * 100}%`,
                     transition: "width 100ms linear",

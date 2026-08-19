@@ -35,19 +35,20 @@ const Field = ({
 );
 
 const inputClass =
-  "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#0a0f1d] outline-none transition-colors duration-300 placeholder:text-[#0a0f1d]/30 focus:border-[#0a0f1d]";
+  "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#0a0f1d] outline-none transition-colors duration-300 placeholder:text-gray-400 focus:border-[#6A2B92]";
 
 const initialForm = {
-  fullName: "",
-  email: "",
-  phone: "",
-  propertyType: "Apartment",
+  role: "Property Owner",
+  unitLocation: "Independent (Villa/Building...)",
   city: "",
-  address: "",
-  bedrooms: "",
-  size: "",
-  price: "",
-  notes: "",
+  neighborhood: "",
+  googleMapsLink: "",
+  roomsCount: "",
+  bathroomsCount: "",
+  propertyAge: "",
+  additionalFeatures: "",
+  fullNameAlt: "",
+  mobileNumber: "",
 };
 
 export function SellPage() {
@@ -66,15 +67,20 @@ export function SellPage() {
 
   return (
     <div className={`flex w-full flex-col bg-white ${isRtl ? "text-right" : "text-left"}`}>
-      <section className="relative overflow-hidden bg-[#0a0f1d] rounded-b-[2.5rem] md:rounded-b-[3.5rem] lg:rounded-b-[4rem] px-6 pb-24 pt-20 md:px-12 lg:px-20 lg:pb-28 lg:pt-28">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 select-none text-[clamp(5rem,16vw,14rem)] font-bold leading-none tracking-tighter text-white/[0.04]"
-        >
-          SELL
-        </div>
+      <section className="relative overflow-hidden bg-[#3E1854] rounded-b-[2.5rem] md:rounded-b-[3.5rem] lg:rounded-b-[4rem] px-6 pb-24 pt-20 md:px-12 lg:px-20 lg:pb-28 lg:pt-28">
+        
+        {/* Background Pattern */}
+        <div 
+          className={`absolute inset-0 w-full h-full z-0 opacity-15 mix-blend-overlay pointer-events-none ${!isRtl ? "scale-x-[-1]" : ""}`}
+          style={{
+            backgroundImage: "url('/Gemini_Generated_Image_kax3jnkax3jnkax3.jpg')",
+            backgroundSize: "70%",
+            backgroundRepeat: "repeat",
+            backgroundPosition: "left top"
+          }}
+        />
 
-        <div className="relative mx-auto flex max-w-[1400px] flex-col items-start lg:items-center lg:text-center">
+        <div className="relative mx-auto flex max-w-[1400px] flex-col items-start lg:items-center lg:text-center z-10">
           <h1 className="flex max-w-4xl flex-col items-start text-5xl font-bold leading-tight tracking-tight text-white sm:text-6xl lg:items-center lg:text-7xl">
             <DiaTextReveal
               key={`sell-title1-${locale}`}
@@ -105,7 +111,7 @@ export function SellPage() {
             <p className="mb-3 text-sm font-medium tracking-wide text-[#8c8c8c]">
               {t("sellPage.form.pill")}
             </p>
-            <h2 className="text-3xl font-bold tracking-tight text-[#0a0f1d] sm:text-4xl">
+            <h2 className="text-3xl font-bold tracking-tight text-[#6A2B92] sm:text-4xl">
               {t("sellPage.form.title")}
             </h2>
             <p className="mt-3 max-w-2xl text-base font-semibold leading-snug text-[#8c8c8c]">
@@ -115,106 +121,169 @@ export function SellPage() {
 
           <form onSubmit={onSubmit} className="flex flex-col gap-8">
             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-              <Field label={t("sellPage.form.fullName")}>
-                <input
-                  required
-                  value={form.fullName}
-                  onChange={(e) => update("fullName", e.target.value)}
-                  className={inputClass}
-                  placeholder={t("sellPage.form.fullNamePlaceholder")}
-                />
-              </Field>
-              <Field label={t("sellPage.form.email")}>
-                <input
-                  required
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => update("email", e.target.value)}
-                  className={inputClass}
-                  placeholder={t("sellPage.form.emailPlaceholder")}
-                />
-              </Field>
-              <Field label={t("sellPage.form.phone")}>
-                <input
-                  required
-                  type="tel"
-                  value={form.phone}
-                  onChange={(e) => update("phone", e.target.value)}
-                  className={inputClass}
-                  placeholder={t("sellPage.form.phonePlaceholder")}
-                  dir="ltr"
-                />
-              </Field>
-              <Field label={t("sellPage.form.propertyType")}>
+              <Field label={t("sellPage.form.role")}>
                 <div className="relative">
                   <select
                     required
-                    value={form.propertyType}
-                    onChange={(e) => update("propertyType", e.target.value)}
+                    value={form.role}
+                    onChange={(e) => update("role", e.target.value)}
                     className={`${inputClass} appearance-none pr-8`}
                   >
-                    {propertyTypes.map((type) => (
-                      <option key={type} value={type}>
-                        {t(`sellPage.propertyTypes.${type}`)}
+                    {(isRtl ? ["مالك العقار", "وكيل"] : ["Property Owner", "Agent"]).map((opt: string) => (
+                      <option key={opt} value={opt}>
+                        {opt}
                       </option>
                     ))}
                   </select>
-                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#0a0f1d]">
+                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#6A2B92]">
                     ▾
                   </span>
                 </div>
               </Field>
+
+              <Field label={t("sellPage.form.unitLocation")}>
+                <div className="relative">
+                  <select
+                    required
+                    value={form.unitLocation}
+                    onChange={(e) => update("unitLocation", e.target.value)}
+                    className={`${inputClass} appearance-none pr-8`}
+                  >
+                    {(isRtl ? ["مستقل (فيلا / عمارة...)", "ضمن مبنى"] : ["Independent (Villa/Building...)", "Within a building"]).map((opt: string) => (
+                      <option key={opt} value={opt}>
+                        {opt}
+                      </option>
+                    ))}
+                  </select>
+                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#6A2B92]">
+                    ▾
+                  </span>
+                </div>
+              </Field>
+
               <Field label={t("sellPage.form.city")}>
+                <div className="relative">
+                  <select
+                    required
+                    value={form.city}
+                    onChange={(e) => update("city", e.target.value)}
+                    className={`${inputClass} appearance-none pr-8 text-[#8c8c8c]`}
+                  >
+                    <option value="" disabled hidden>
+                      {t("sellPage.form.cityPlaceholder")}
+                    </option>
+                    <option value="riyadh">{isRtl ? "الرياض" : "Riyadh"}</option>
+                  </select>
+                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#6A2B92]">
+                    ▾
+                  </span>
+                </div>
+              </Field>
+
+              <Field label={t("sellPage.form.neighborhood")}>
+                <div className="relative">
+                  <select
+                    required
+                    value={form.neighborhood}
+                    onChange={(e) => update("neighborhood", e.target.value)}
+                    className={`${inputClass} appearance-none pr-8 text-[#8c8c8c]`}
+                  >
+                    <option value="" disabled hidden>
+                      {t("sellPage.form.neighborhoodPlaceholder")}
+                    </option>
+                    <option value="narjis">{isRtl ? "النرجس" : "An Narjis"}</option>
+                    <option value="malqa">{isRtl ? "الملقا" : "Al Malqa"}</option>
+                  </select>
+                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#6A2B92]">
+                    ▾
+                  </span>
+                </div>
+              </Field>
+
+              <Field label={t("sellPage.form.googleMapsLink")} className="sm:col-span-2">
                 <input
                   required
-                  value={form.city}
-                  onChange={(e) => update("city", e.target.value)}
+                  type="url"
+                  value={form.googleMapsLink}
+                  onChange={(e) => update("googleMapsLink", e.target.value)}
                   className={inputClass}
-                  placeholder={t("sellPage.form.cityPlaceholder")}
+                  placeholder={t("sellPage.form.googleMapsPlaceholder")}
+                  dir="ltr"
                 />
               </Field>
-              <Field label={t("sellPage.form.address")}>
+
+              <Field label={t("sellPage.form.roomsCount")}>
                 <input
                   required
-                  value={form.address}
-                  onChange={(e) => update("address", e.target.value)}
+                  type="number"
+                  min="0"
+                  value={form.roomsCount}
+                  onChange={(e) => update("roomsCount", e.target.value)}
                   className={inputClass}
-                  placeholder={t("sellPage.form.addressPlaceholder")}
                 />
               </Field>
-              <Field label={t("sellPage.form.bedrooms")}>
+
+              <Field label={t("sellPage.form.bathroomsCount")}>
                 <input
-                  value={form.bedrooms}
-                  onChange={(e) => update("bedrooms", e.target.value)}
+                  required
+                  type="number"
+                  min="0"
+                  value={form.bathroomsCount}
+                  onChange={(e) => update("bathroomsCount", e.target.value)}
                   className={inputClass}
-                  placeholder={t("sellPage.form.bedroomsPlaceholder")}
                 />
               </Field>
-              <Field label={t("sellPage.form.size")}>
+
+              <Field label={t("sellPage.form.propertyAge")}>
                 <input
-                  value={form.size}
-                  onChange={(e) => update("size", e.target.value)}
+                  required
+                  value={form.propertyAge}
+                  onChange={(e) => update("propertyAge", e.target.value)}
                   className={inputClass}
-                  placeholder={t("sellPage.form.sizePlaceholder")}
+                  placeholder={t("sellPage.form.propertyAgePlaceholder")}
                 />
               </Field>
-              <Field label={t("sellPage.form.price")} className="sm:col-span-2">
+
+              <Field label={t("sellPage.form.additionalFeatures")}>
                 <input
-                  value={form.price}
-                  onChange={(e) => update("price", e.target.value)}
+                  required
+                  value={form.additionalFeatures}
+                  onChange={(e) => update("additionalFeatures", e.target.value)}
                   className={inputClass}
-                  placeholder={t("sellPage.form.pricePlaceholder")}
+                  placeholder={t("sellPage.form.additionalFeaturesPlaceholder")}
                 />
               </Field>
-              <Field label={t("sellPage.form.notes")} className="sm:col-span-2">
-                <textarea
-                  rows={4}
-                  value={form.notes}
-                  onChange={(e) => update("notes", e.target.value)}
-                  className={`${inputClass} resize-none leading-relaxed`}
-                  placeholder={t("sellPage.form.notesPlaceholder")}
-                />
-              </Field>
+            </div>
+
+            <hr className="my-6 border-gray-300" />
+
+            <div className="flex flex-col gap-8">
+              <div className="flex items-center">
+                <h3 className="text-xl font-bold text-[#3E1854]">{t("sellPage.form.contactInfo")}</h3>
+              </div>
+
+              <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+                <Field label={t("sellPage.form.fullNameAlt")}>
+                  <input
+                    required
+                    value={form.fullNameAlt}
+                    onChange={(e) => update("fullNameAlt", e.target.value)}
+                    className={inputClass}
+                  />
+                </Field>
+
+                <Field label={t("sellPage.form.mobileNumber")}>
+                  <input
+                    required
+                    type="tel"
+                    value={form.mobileNumber}
+                    onChange={(e) => update("mobileNumber", e.target.value)}
+                    className={inputClass}
+                    placeholder={t("sellPage.form.mobileNumberPlaceholder")}
+                    dir="ltr"
+                  />
+                </Field>
+              </div>
             </div>
 
             <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
@@ -223,7 +292,7 @@ export function SellPage() {
               </p>
               <button
                 type="submit"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#0a0f1d] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#0a0f1d] hover:ring-1 hover:ring-[#0a0f1d]/15 active:scale-[0.98]"
+                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#17C3B3] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98]"
               >
                 {t("sellPage.form.submit")}
                 <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />

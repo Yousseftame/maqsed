@@ -59,7 +59,7 @@ export function CTASection() {
           <div className="w-full lg:w-[45%] flex items-center justify-center">
             <div className="relative w-full aspect-[4/3] max-w-[600px]">
               <Image
-                src="/add_partener.png"
+                src="/geometric/Construction worker-pana.svg"
                 alt={t("cta.title")}
                 fill
                 className="object-contain"

@@ -4,7 +4,7 @@ import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { PropertySearchBar } from "@/features/home/components/PropertySearchBar";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
-export function PropertiesHero() {
+export function UnitsHero() {
   const { t, locale } = useLocale();
 
   return (
@@ -19,22 +19,22 @@ export function PropertiesHero() {
           <div className="group mb-8 inline-flex cursor-default items-center gap-2 rounded-full border-2 border-[#6A2B92] px-4 py-2 transition-colors duration-300 hover:bg-[#6A2B92]">
             <div className="h-3 w-3 flex-shrink-0 rounded-full bg-[#6A2B92] transition-colors duration-300 group-hover:bg-white" />
             <span className="text-sm font-medium tracking-wide text-[#6A2B92] transition-colors duration-300 group-hover:text-white">
-              {t("properties.page.pill")}
+              {t("agents.pill")}
             </span>
           </div>
 
           <h1 className="mb-5 flex max-w-5xl flex-col items-center justify-center gap-1 overflow-visible text-center text-[clamp(36px,5.5vw,72px)] font-bold leading-[1.2] tracking-tight text-[#6A2B92]">
             <DiaTextReveal
-              key={`properties-page-1-${locale}`}
-              text={t("properties.page.titleLine1")}
+              key={`units-page-1-${locale}`}
+              text={t("agents.titleLine1")}
               textColor="#6A2B92"
               colors={["#6A2B92"]}
               startOnView={false}
               className="leading-[1.2]"
             />
             <DiaTextReveal
-              key={`properties-page-2-${locale}`}
-              text={t("properties.page.titleLine2")}
+              key={`units-page-2-${locale}`}
+              text={t("agents.titleLine2")}
               textColor="#6A2B92"
               colors={["#6A2B92"]}
               startOnView={false}
@@ -44,7 +44,7 @@ export function PropertiesHero() {
           </h1>
 
           <p className="mb-16 max-w-2xl text-center text-base font-semibold leading-snug tracking-normal text-[#8c8c8c] sm:text-lg">
-            {t("properties.page.description")}
+            {t("agents.description")}
           </p>
 
           <PropertySearchBar />

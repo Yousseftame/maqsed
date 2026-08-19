@@ -3,6 +3,7 @@ export interface Dictionary {
     home: string;
     about: string;
     properties: string;
+    units: string;
     sell: string;
     blog: string;
     contact: string;
@@ -15,13 +16,19 @@ export interface Dictionary {
     scrollToTop: string;
     switchLanguage: string;
   };
-  hero: {
-    scroll: string;
-    down: string;
+  notFound: {
+    title: string;
+    subtitle: string;
     description: string;
-    featureTitle: string;
-    featureAddress: string;
-    imageAlt: string;
+    backHome: string;
+  };
+  hero: {
+    title: string;
+    subtitle1: string;
+    subtitle2: string;
+    subtitle3: string;
+    primaryButton: string;
+    secondaryButton: string;
   };
   search: {
     pill: string;
@@ -248,6 +255,7 @@ export interface Dictionary {
     forgotTitle2: string;
     forgotDescription: string;
     backToSignIn: string;
+    backToWebsite: string;
     sendReset: string;
     sendingLink: string;
     waitResend: string;
@@ -424,6 +432,7 @@ export const en: Dictionary = {
     home: "Home",
     about: "About Us",
     properties: "Properties",
+    units: "Units",
     sell: "Sell Your Unit",
     blog: "The Blog",
     contact: "Contact Us",
@@ -436,14 +445,19 @@ export const en: Dictionary = {
     scrollToTop: "Scroll to top",
     switchLanguage: "Switch language",
   },
+  notFound: {
+    title: "Page Not Found",
+    subtitle: "We couldn't find the page you're looking for.",
+    description: "It might have been removed, had its name changed, or is temporarily unavailable.",
+    backHome: "Back to Home",
+  },
   hero: {
-    scroll: "Scroll",
-    down: "Down",
-    description:
-      "Discover meticulously crafted homes and properties, blending contemporary aesthetics with sustainable living.",
-    featureTitle: "Silverstone Residence",
-    featureAddress: "1234 Sunflower Lane",
-    imageAlt: "Modern House Architecture",
+    title: "Maqsed Platform: Your Ideal Choice for Real Estate Development",
+    subtitle1: "The relationship with the client is not just a service: it is a shared journey towards excellence, where the business relationship grows, presence flourishes, and efforts bear fruit.",
+    subtitle2: "The 'Maqsed' logo represents a towering tree, its roots deep in the ground, and its branches reaching towards the sky. This tree is not just a visual symbol, but an embodiment of the company's marketing philosophy: to be a destination everyone seeks for shade, benefit, and growth.",
+    subtitle3: "With Maqsed.. we grow together",
+    primaryButton: "Contact Us",
+    secondaryButton: "About Us",
   },
   search: {
     pill: "Search Properties",
@@ -643,25 +657,26 @@ export const en: Dictionary = {
       title: "Property Marketing / Sale Request",
       description:
         "Share a few details about your unit. Our team will review your request and follow up with the next steps.",
-      fullName: "Full Name",
-      fullNamePlaceholder: "Your full name",
-      email: "Email",
-      emailPlaceholder: "you@email.com",
-      phone: "Phone",
-      phonePlaceholder: "+966 ...",
-      propertyType: "Property Type",
-      city: "City",
-      cityPlaceholder: "Riyadh",
-      address: "Property Address",
-      addressPlaceholder: "Street, district, building",
-      bedrooms: "Bedrooms",
-      bedroomsPlaceholder: "e.g. 3",
-      size: "Size (sq ft)",
-      sizePlaceholder: "e.g. 1,850",
-      price: "Expected Price",
-      pricePlaceholder: "SAR 1,000,000",
-      notes: "Additional Notes",
-      notesPlaceholder: "Tell us anything that helps market your unit...",
+      role: 'Your Role',
+      unitLocation: 'Unit Location',
+      city: 'City',
+      neighborhood: 'Neighborhood',
+      googleMapsLink: 'Google Maps Link',
+      roomsCount: 'Number of Rooms',
+      bathroomsCount: 'Number of Bathrooms',
+      propertyAge: 'Property Age (Years)',
+      additionalFeatures: 'Additional Features',
+      contactInfo: 'Contact Information',
+      fullNameAlt: 'Full Name',
+      mobileNumber: 'Mobile Number',
+      roleOptions: ['Property Owner', 'Agent'],
+      unitLocationOptions: ['Independent (Villa/Building...)', 'Within a building'],
+      cityPlaceholder: 'Choose city...',
+      neighborhoodPlaceholder: 'Choose neighborhood...',
+      googleMapsPlaceholder: 'https://maps.google.com/...',
+      propertyAgePlaceholder: 'Example: 0 (if new)',
+      additionalFeaturesPlaceholder: 'Pool, elevator, roof...',
+      mobileNumberPlaceholder: '05XXXXXXXX',
       agreement:
         "By submitting, you agree to be contacted by MAQSED about your sale request.",
       submit: "Submit Request",
@@ -731,6 +746,7 @@ export const en: Dictionary = {
     forgotDescription:
       "Enter your email address below and we'll send you a link to reset it.",
     backToSignIn: "Back to sign in",
+    backToWebsite: "Back to website",
     sendReset: "Send reset link",
     sendingLink: "Sending link…",
     waitResend: "Please wait before sending again",

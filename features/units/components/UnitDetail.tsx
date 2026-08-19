@@ -2,8 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bed, Bath, LayoutGrid, CheckCircle2, Home, Share2, Printer } from "lucide-react";
+import { Bed, Bath, LayoutGrid, CheckCircle2, Home, Share2, Printer, Building2 } from "lucide-react";
 import type { UnitListing } from "@/features/units/data/units";
+import { getPropertyById } from "@/features/properties/data/listings";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useState } from "react";
 import { Lightbox } from "@/components/ui/Lightbox";
@@ -16,6 +17,7 @@ export function UnitDetail({ unit }: UnitDetailProps) {
   const { isRtl } = useLocale();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [mainImage, topImage, bottomImage] = unit.gallery;
+  const property = unit.propertyId ? getPropertyById(unit.propertyId) : undefined;
 
   return (
     <div className="w-full bg-white">
@@ -31,9 +33,9 @@ export function UnitDetail({ unit }: UnitDetailProps) {
       <div className="w-full px-6 pt-8 md:px-12 lg:px-20">
         <div className="mx-auto max-w-[1400px]">
           <nav className="flex items-center gap-2 text-sm font-medium text-gray-500">
-            <Link href="/" className="transition-colors hover:text-[#0a0f1d]">{isRtl ? "الرئيسية" : "Home"}</Link>
+            <Link href="/" className="transition-colors hover:text-[#6A2B92]">{isRtl ? "الرئيسية" : "Home"}</Link>
             <span className="text-gray-300">/</span>
-            <Link href="/#properties" className="transition-colors hover:text-[#0a0f1d]">{isRtl ? "العقارات" : "Properties"}</Link>
+            <Link href="/#properties" className="transition-colors hover:text-[#6A2B92]">{isRtl ? "العقارات" : "Properties"}</Link>
             <span className="text-gray-300">/</span>
             <span className="font-bold text-[#0a0f1d]">{isRtl ? "الوحدات" : "Units"}</span>
             <span className="text-gray-300">/</span>
@@ -104,51 +106,71 @@ export function UnitDetail({ unit }: UnitDetailProps) {
               }`}>
                 {isRtl ? unit.statusAr : unit.statusEn}
               </span>
-              <span className="flex items-center gap-2 rounded-full bg-gray-50 px-4 py-2 text-sm font-bold tracking-wide text-[#0a0f1d]">
+              <span className="flex items-center gap-2 rounded-full bg-gray-50 px-4 py-2 text-sm font-bold tracking-wide text-[#6A2B92]">
                 <Home className="h-4 w-4" />
                 {isRtl ? unit.typeAr : unit.typeEn}
               </span>
               
               <div className="flex-1" />
               
-              <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold tracking-wide text-[#0a0f1d] transition-colors hover:bg-gray-50">
+              <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold tracking-wide text-[#6A2B92] transition-colors hover:bg-gray-50">
                 <Share2 className="h-4 w-4" />
                 {isRtl ? "مشاركة" : "Share"}
               </button>
               
-              <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold tracking-wide text-[#0a0f1d] transition-colors hover:bg-gray-50">
+              <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold tracking-wide text-[#6A2B92] transition-colors hover:bg-gray-50">
                 <Printer className="h-4 w-4" />
                 {isRtl ? "طباعة" : "Print"}
               </button>
             </div>
 
-            <h1 className="mb-6 text-4xl font-bold tracking-tight whitespace-normal text-[#0a0f1d] sm:text-5xl md:whitespace-nowrap lg:text-[3.75rem] lg:leading-[1.15]">
-              {isRtl ? "وحدة رقم" : "Unit"} {unit.id}
-            </h1>
+            {property && (
+              <Link href={`/properties/${property.id}`} className="mt-4 inline-flex group/link items-center justify-between gap-3 rounded-xl bg-[#6A2B92]/10 border border-[#6A2B92]/20 px-4 py-3 transition-colors hover:bg-[#6A2B92]/20 w-full sm:w-auto">
+                <div className="flex items-center gap-3">
+                  <Building2 className="h-5 w-5 text-[#6A2B92]" />
+                  <span className="text-sm font-bold text-[#6A2B92]">
+                    {isRtl ? `جزء من مشروع: ${property.titleAr}` : `Part of Project: ${property.title}`}
+                  </span>
+                </div>
+              </Link>
+            )}
+
+            <div className="mb-6 flex flex-col items-start gap-3">
+              <h1 className="text-4xl font-bold tracking-tight whitespace-normal text-[#0a0f1d] sm:text-5xl md:whitespace-nowrap lg:text-[3.75rem] lg:leading-[1.15]">
+                {isRtl ? "وحدة رقم" : "Unit"} {unit.id}
+              </h1>
+              {unit.statusEn === "Sold" && (unit.buyerEn || unit.buyerAr) && (
+                <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-2">
+                  <span className="text-lg font-bold text-red-600">
+                    {isRtl ? `تم البيع للمالك: ${unit.buyerAr}` : `Sold to: ${unit.buyerEn}`}
+                  </span>
+                </div>
+              )}
+            </div>
 
             <div className="mb-12 max-w-2xl text-base leading-[1.75] font-medium text-[#8c8c8c] sm:text-lg sm:leading-[1.8]">
               <p>{isRtl ? unit.descriptionAr : unit.descriptionEn}</p>
             </div>
 
             <div className="mb-12">
-              <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#0a0f1d]">
+              <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#6A2B92]">
                 {isRtl ? "نظرة عامة" : "Unit Overview"}
               </h2>
               <div className="mb-8 flex flex-wrap items-center gap-x-10 gap-y-4 text-[#0a0f1d]">
                 <div className="flex items-center gap-3">
-                  <Bed className="h-6 w-6 stroke-[1.75]" />
+                  <Bed className="h-6 w-6 stroke-[1.75] text-[#17C3B3]" />
                   <span className="text-base font-semibold sm:text-lg">
                     {unit.beds} {isRtl ? "غرف نوم" : "Bedrooms"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Bath className="h-6 w-6 stroke-[1.75]" />
+                  <Bath className="h-6 w-6 stroke-[1.75] text-[#17C3B3]" />
                   <span className="text-base font-semibold sm:text-lg">
                     {unit.baths} {isRtl ? "حمامات" : "Bathrooms"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <LayoutGrid className="h-6 w-6 stroke-[1.75]" />
+                  <LayoutGrid className="h-6 w-6 stroke-[1.75] text-[#17C3B3]" />
                   <span className="text-base font-semibold sm:text-lg">
                     {unit.sqft} {isRtl ? "متر مربع" : "sq ft"}
                   </span>
@@ -166,7 +188,7 @@ export function UnitDetail({ unit }: UnitDetailProps) {
                   { ar: "عزل صوتي", en: "Sound Insulation" },
                 ].map((feature, idx) => (
                   <div key={idx} className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-[#0a0f1d] stroke-[2]" />
+                    <CheckCircle2 className="h-5 w-5 text-[#17C3B3] stroke-[2]" />
                     <span className="text-base font-medium text-[#8c8c8c]">{isRtl ? feature.ar : feature.en}</span>
                   </div>
                 ))}
@@ -175,7 +197,7 @@ export function UnitDetail({ unit }: UnitDetailProps) {
 
             {/* Floor Plan (Mock) */}
             <div>
-              <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#0a0f1d]">
+              <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#6A2B92]">
                 {isRtl ? "المخطط الهندسي" : "Floor Plan"}
               </h2>
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl border border-gray-100 bg-gray-50 flex items-center justify-center">
@@ -199,35 +221,22 @@ export function UnitDetail({ unit }: UnitDetailProps) {
                 </p>
                 <button
                   type="button"
-                  className="w-full rounded-xl bg-[#0a0f1d] px-6 py-4 text-base font-semibold tracking-wide text-white transition-colors duration-200 hover:bg-[#161c2d]"
+                  className="w-full rounded-xl bg-[#17C3B3] px-6 py-4 text-base font-semibold tracking-wide text-white transition-colors duration-200 hover:opacity-90"
                 >
                   {isRtl ? "تقديم عرض" : "Submit an Offer"}
                 </button>
               </div>
 
               <div className="rounded-3xl border border-gray-200 p-6 sm:p-8">
-                <h3 className="mb-5 text-xl font-bold tracking-tight text-[#0a0f1d] sm:text-2xl">
+                <h3 className="mb-5 text-xl font-bold tracking-tight text-[#6A2B92] sm:text-2xl">
                   {isRtl ? "هل تفكر في الشراء؟" : "Thinking of buying?"}
                 </h3>
 
-                <div className="mb-3 grid grid-cols-2 gap-3">
-                  <button
-                    type="button"
-                    className="rounded-xl bg-[#0a0f1d] px-4 py-3.5 text-base font-semibold text-white transition-colors duration-200 hover:bg-[#161c2d]"
-                  >
-                    {isRtl ? "جولة حضورية" : "Tour in Person"}
-                  </button>
-                  <button
-                    type="button"
-                    className="rounded-xl border border-gray-200 bg-white px-4 py-3.5 text-base font-semibold text-[#0a0f1d] transition-colors duration-200 hover:border-[#0a0f1d]"
-                  >
-                    {isRtl ? "جولة افتراضية" : "Virtual Tour"}
-                  </button>
-                </div>
+
 
                 <button
                   type="button"
-                  className="mb-6 w-full rounded-xl border-2 border-[#0a0f1d]/35 bg-white px-4 py-3.5 text-base font-semibold text-[#0a0f1d] transition-colors duration-200 hover:border-[#0a0f1d] hover:bg-gray-50"
+                  className="mb-6 w-full rounded-xl border-2 border-[#17C3B3]/35 bg-white px-4 py-3.5 text-base font-semibold text-[#17C3B3] transition-colors duration-200 hover:border-[#17C3B3] hover:bg-gray-50"
                 >
                   {isRtl ? "حدد موعد للزيارة" : "Schedule a Visit"}
                 </button>
@@ -242,7 +251,7 @@ export function UnitDetail({ unit }: UnitDetailProps) {
 
                 <button
                   type="button"
-                  className="w-full rounded-xl bg-[#0a0f1d] px-4 py-3.5 text-base font-semibold text-white transition-colors duration-200 hover:bg-[#161c2d]"
+                  className="w-full rounded-xl bg-[#6A2B92] px-4 py-3.5 text-base font-semibold text-white transition-colors duration-200 hover:opacity-90"
                 >
                   {isRtl ? "احصل على البرشور" : "Get the Brochure"}
                 </button>

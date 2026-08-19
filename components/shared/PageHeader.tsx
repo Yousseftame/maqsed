@@ -10,18 +10,33 @@ interface PageHeaderProps {
   title: string;
   breadcrumbPaths: { name: string; url?: string }[];
   backgroundImage: string;
+  isPattern?: boolean;
 }
 
-export function PageHeader({ title, breadcrumbPaths, backgroundImage }: PageHeaderProps) {
+export function PageHeader({ title, breadcrumbPaths, backgroundImage, isPattern = false }: PageHeaderProps) {
   const { isRtl } = useLocale();
 
   return (
-    <div 
-      className="relative flex h-[300px] w-full flex-col items-center justify-center bg-cover bg-center md:h-[400px]"
-      style={{ backgroundImage: `url('${backgroundImage}')` }}
-    >
-      {/* Dark overlay */}
-      <div className="absolute inset-0 bg-[#0a0f1d]/60"></div>
+    <div className={cn("relative flex h-[300px] w-full flex-col items-center justify-center overflow-hidden md:h-[400px]", isPattern ? "bg-[#3E1854]" : "")}>
+      
+      {/* Background Graphic */}
+      <div 
+        className={cn(
+          "absolute inset-0 w-full h-full z-0",
+          isPattern 
+            ? `opacity-15 mix-blend-overlay pointer-events-none ${!isRtl ? "scale-x-[-1]" : ""}` 
+            : "bg-cover bg-center"
+        )}
+        style={{
+          backgroundImage: `url('${backgroundImage}')`,
+          backgroundSize: isPattern ? "70%" : undefined,
+          backgroundRepeat: isPattern ? "repeat" : undefined,
+          backgroundPosition: isPattern ? "left top" : undefined
+        }}
+      />
+
+      {/* Dark overlay for non-pattern photos */}
+      {!isPattern && <div className="absolute inset-0 bg-[#0a0f1d]/60 z-0"></div>}
       
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center justify-center space-y-4 px-4 text-center mt-12 md:mt-16">
@@ -38,7 +53,7 @@ export function PageHeader({ title, breadcrumbPaths, backgroundImage }: PageHead
                 {path.url && !isLast ? (
                   <Link 
                     href={path.url} 
-                    className="text-white transition-colors hover:text-gray-300"
+                    className="text-white transition-colors hover:text-[#17C3B3]"
                   >
                     {path.name}
                   </Link>

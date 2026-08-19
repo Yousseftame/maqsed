@@ -10,7 +10,15 @@ import { allProperties } from "@/features/properties/data/listings";
 import useEmblaCarousel from "embla-carousel-react";
 
 // Display more properties to allow scrolling
-const featuredProjects = allProperties.slice(0, 8);
+const fakeBuyersAr = ["أحمد الفهد", "محمد السعود", "خالد الراشد", "سارة العبدالله", "عبدالرحمن الماجد", "نورة الدوسري", "فيصل السالم", "فهد التميمي"];
+const fakeBuyersEn = ["Ahmed Al-Fahad", "Mohammed Al-Saud", "Khalid Al-Rashed", "Sarah Al-Abdullah", "Abdulrahman Al-Majed", "Noura Al-Dawsari", "Faisal Al-Salem", "Fahad Al-Tamimi"];
+
+const featuredProjects = allProperties.slice(0, 8).map((p, i) => ({
+  ...p,
+  tag: "SOLD OUT" as const,
+  buyerAr: p.buyerAr || fakeBuyersAr[i % fakeBuyersAr.length],
+  buyerEn: p.buyerEn || fakeBuyersEn[i % fakeBuyersEn.length]
+}));
 
 export function CurrentPropertiesSection() {
   const { t, isRtl } = useLocale();
@@ -75,10 +83,10 @@ export function CurrentPropertiesSection() {
           <div className="flex backface-hidden touch-pan-y -ml-4 rtl:-ml-0 rtl:-mr-4">
             {featuredProjects.map((project) => (
               <div key={project.id} className="min-w-0 flex-[0_0_100%] sm:flex-[0_0_50%] lg:flex-[0_0_33.333%] pl-4 rtl:pl-0 rtl:pr-4">
-                <div className="flex flex-col bg-white h-full select-none">
+                <Link href={`/properties/${project.id}`} className="flex flex-col bg-white h-full select-none group/link cursor-pointer">
                   
                   {/* Image Container */}
-                  <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-5 group/card cursor-grab active:cursor-grabbing">
+                  <div className="relative w-full aspect-[4/3] rounded-2xl overflow-hidden mb-5 group-hover/link:shadow-lg transition-shadow duration-300 group/card">
                     <div className="absolute inset-0 bg-gray-200">
                       {/* Primary Image */}
                       <Image 
@@ -86,7 +94,7 @@ export function CurrentPropertiesSection() {
                         alt={project.title} 
                         fill 
                         draggable={false}
-                        className="object-cover transition-transform duration-700 group-hover/card:scale-105" 
+                        className="object-cover transition-transform duration-700 group-hover/link:scale-105" 
                       />
                       {/* Secondary Image (Fades in on hover) */}
                       <Image 
@@ -94,7 +102,7 @@ export function CurrentPropertiesSection() {
                         alt={`${project.title} secondary view`} 
                         fill 
                         draggable={false}
-                        className="object-cover opacity-0 transition-all duration-700 group-hover/card:opacity-100 group-hover/card:scale-105" 
+                        className="object-cover opacity-0 transition-all duration-700 group-hover/link:opacity-100 group-hover/link:scale-105" 
                       />
                     </div>
                     
@@ -116,6 +124,13 @@ export function CurrentPropertiesSection() {
                             ? (isRtl ? "اقتصادية" : "Economy") 
                             : (isRtl ? "متوسطة" : "Standard")}
                       </div>
+
+                      {/* Sold Out Badge */}
+                      {project.tag === "SOLD OUT" && (
+                        <div className="bg-red-500 text-white px-3 py-1.5 rounded-[10px] font-bold text-sm shadow-md">
+                          {isRtl ? "مباع" : "Sold Out"}
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -138,27 +153,34 @@ export function CurrentPropertiesSection() {
                   </div>
 
                   {/* Divider */}
-                  <hr className="border-gray-200 mb-6" />
+                  <hr className="border-gray-200 mb-6 group-hover/link:border-[#17C3B3]/30 transition-colors" />
 
                   {/* Bottom details */}
                   <div className="flex items-end justify-between gap-4 px-1 pb-4">
                     <div className="flex flex-col gap-2">
-                      <h3 className="text-xl font-bold text-[#0a0f1d]">{project.title}</h3>
+                      <div className="flex flex-col items-start gap-1">
+                        <h3 className="text-xl font-bold text-[#0a0f1d] group-hover/link:text-[#6A2B92] transition-colors">{isRtl ? project.titleAr : project.title}</h3>
+                      </div>
                       <div className="flex items-start gap-1.5 text-gray-500 text-sm">
-                        <MapPin className="w-4 h-4 shrink-0 mt-0.5" />
-                        <span className="whitespace-pre-line leading-relaxed">{project.address}</span>
+                        <MapPin className="w-4 h-4 shrink-0 mt-0.5 group-hover/link:text-[#17C3B3] transition-colors" />
+                        <span className="whitespace-pre-line leading-relaxed">{isRtl ? project.addressAr : project.address}</span>
                       </div>
                     </div>
                     
-                    <Link 
-                      href={`/properties/${project.id}`}
-                      className="bg-[#17C3B3] text-white text-sm font-bold px-6 py-2.5 rounded-[18px] whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98]"
-                      draggable={false}
-                    >
-                      {t("properties.view")} {t("properties.details")}
-                    </Link>
+                    <div className="flex flex-col items-end gap-2">
+                      {project.tag === "SOLD OUT" && (project.buyerEn || project.buyerAr) && (
+                        <p className="text-sm font-bold tracking-wide text-red-600">
+                          {isRtl ? `المالك: ${project.buyerAr}` : `Owned by: ${project.buyerEn}`}
+                        </p>
+                      )}
+                      <div 
+                        className="bg-[#17C3B3] text-white text-sm font-bold px-6 py-2.5 rounded-[18px] whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/link:bg-[#6A2B92] group-hover/link:scale-105"
+                      >
+                        {t("properties.view")} {t("properties.details")}
+                      </div>
+                    </div>
                   </div>
-                </div>
+                </Link>
               </div>
             ))}
           </div>

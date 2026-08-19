@@ -11,7 +11,7 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 const featuredProperties = allProperties.slice(0, 6);
 
 export function PropertiesSection() {
-  const { t, locale } = useLocale();
+  const { t, locale, isRtl } = useLocale();
   const [activeFilter, setActiveFilter] = useState("All Properties");
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHoveringCard, setIsHoveringCard] = useState(false);
@@ -134,23 +134,39 @@ export function PropertiesSection() {
                   className="object-cover transition-transform duration-700"
                 />
                 <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <div className="absolute top-5 start-5 z-10 flex items-center justify-center rounded-full bg-[#17C3B3] px-3 py-2 text-[17px] leading-none font-bold tracking-tight text-white">
-                  {prop.type === "Luxury Apartment" ? t("properties.types.apartment") : 
-                   prop.type === "Modern Vila" || prop.type === "Modern Villa" ? t("properties.types.villa") :
-                   prop.type === "Family House" ? t("properties.types.house") : 
-                   prop.type}
+                <div className="absolute top-5 start-5 z-10 flex flex-wrap gap-2 items-start pointer-events-none">
+                  <div className="flex items-center justify-center rounded-full bg-[#17C3B3] px-3 py-2 text-[17px] leading-none font-bold tracking-tight text-white shadow-md">
+                    {prop.type === "Luxury Apartment" ? t("properties.types.apartment") : 
+                     prop.type === "Modern Vila" || prop.type === "Modern Villa" ? t("properties.types.villa") :
+                     prop.type === "Family House" ? t("properties.types.house") : 
+                     prop.type}
+                  </div>
+                  {prop.tag === "SOLD OUT" && (
+                    <div className="flex items-center justify-center rounded-full bg-red-500 px-3 py-2 text-[17px] leading-none font-bold tracking-tight text-white shadow-md">
+                      {isRtl ? "مباع" : "Sold Out"}
+                    </div>
+                  )}
                 </div>
               </div>
 
               <div className="flex flex-col px-2">
-                <h3 className="mb-1 text-[2rem] leading-tight font-semibold text-[#0a0f1d]">
-                  {prop.price}
-                </h3>
-                <h4 className="mb-4 text-2xl font-bold text-[#0a0f1d]">
-                  {prop.title}
-                </h4>
+                <div className="flex items-center justify-between w-full mb-1">
+                  <h3 className="text-[2rem] leading-tight font-semibold text-[#0a0f1d]">
+                    {prop.price}
+                  </h3>
+                  {prop.tag === "SOLD OUT" && (prop.buyerEn || prop.buyerAr) && (
+                    <p className="text-sm font-bold tracking-wide text-red-600">
+                      {isRtl ? `المالك: ${prop.buyerAr}` : `Owned by: ${prop.buyerEn}`}
+                    </p>
+                  )}
+                </div>
+                <div className="mb-4 flex flex-col items-start gap-1">
+                  <h4 className="text-2xl font-bold text-[#0a0f1d]">
+                    {isRtl ? prop.titleAr : prop.title}
+                  </h4>
+                </div>
                 <p className="mb-6 text-[1.05rem] leading-relaxed font-semibold whitespace-pre-line text-[#8c8c8c]">
-                  {prop.address}
+                  {isRtl ? prop.addressAr : prop.address}
                 </p>
 
                 <div className="mt-auto flex items-center gap-6">

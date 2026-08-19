@@ -34,7 +34,13 @@ export default function FAQPage() {
           <h4 className="flex-1 text-start text-[15px] sm:text-[17px] font-bold text-[#333]">
             {faq.q}
           </h4>
-          <div className="flex items-center justify-center w-7 h-7 rounded-full border border-gray-400 flex-shrink-0 text-gray-500">
+          <div
+            className={`flex items-center justify-center w-7 h-7 rounded-full border flex-shrink-0 ${
+              isOpen
+                ? "border-[#17C3B3] bg-[#17C3B3] text-white"
+                : "border-[#17C3B3] text-[#17C3B3]"
+            }`}
+          >
             {isOpen ? <Minus className="h-4 w-4" /> : <Plus className="h-4 w-4" />}
           </div>
         </button>
@@ -88,20 +94,20 @@ export default function FAQPage() {
         <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-col items-center text-center">
           
           {/* Top Badge */}
-          <div className="group mb-6 inline-flex cursor-default items-center gap-2 rounded-full border border-gray-200 px-3.5 py-1.5 transition-colors duration-300 hover:bg-[#0a0f1d]">
-            <div className="h-3 w-3 flex-shrink-0 rounded-full bg-[#0a0f1d] transition-colors duration-300 group-hover:bg-white" />
-            <span className="text-sm font-medium tracking-wide text-[#0a0f1d] transition-colors duration-300 group-hover:text-white">
+          <div className="group mb-6 inline-flex cursor-default items-center gap-2 rounded-full border border-gray-200 px-3.5 py-1.5 transition-colors duration-300 hover:bg-[#6A2B92]">
+            <div className="h-3 w-3 flex-shrink-0 rounded-full bg-[#6A2B92] transition-colors duration-300 group-hover:bg-white" />
+            <span className="text-sm font-medium tracking-wide text-[#6A2B92] transition-colors duration-300 group-hover:text-white">
               {t("faq.pill")}
             </span>
           </div>
 
           {/* Title */}
-          <h1 className="mb-14 text-4xl font-bold leading-tight tracking-tight text-[#0a0f1d] sm:text-5xl lg:text-[3.5rem]">
+          <h1 className="mb-14 text-4xl font-bold leading-tight tracking-tight text-[#6A2B92] sm:text-5xl lg:text-[3.5rem]">
             <DiaTextReveal
               key={`faq-page-title-${locale}`}
               text={t("faq.title")}
-              textColor="#0a0f1d"
-              colors={["#0a0f1d"]}
+              textColor="#6A2B92"
+              colors={["#6A2B92"]}
             />
           </h1>
 

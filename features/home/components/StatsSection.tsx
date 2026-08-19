@@ -35,7 +35,7 @@ export function StatsSection() {
                 <span className="text-5xl font-bold tracking-tight text-white sm:text-6xl lg:text-[4rem]">
                   {stat.value}
                 </span>
-                <span className="text-4xl font-bold text-[#ef4444] sm:text-5xl lg:text-[3.5rem] ml-1">
+                <span className="text-4xl font-bold text-[#17C3B3] sm:text-5xl lg:text-[3.5rem] ml-1">
                   {stat.suffix}
                 </span>
               </div>

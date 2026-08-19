@@ -20,6 +20,7 @@ export function Navbar() {
     { name: t("nav.home"), href: "/" },
     { name: t("nav.about"), href: "/about" },
     { name: t("nav.properties"), href: "/properties" },
+    { name: t("nav.units"), href: "/units" },
     { name: t("nav.sell"), href: "/sell" },
     { name: t("nav.contact"), href: "/contact" },
     { name: t("nav.faq"), href: "/faq" },

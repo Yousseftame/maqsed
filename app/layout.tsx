@@ -39,9 +39,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${plusJakartaSans.variable} ${manrope.variable} ${cairo.variable} ${notoKufiArabic.variable} min-h-full antialiased`}
     >
       <head>
-        <Script id="maqsed-locale-bootstrap" strategy="beforeInteractive">
-          {localeBootstrap}
-        </Script>
+        <script
+          id="maqsed-locale-bootstrap"
+          dangerouslySetInnerHTML={{ __html: localeBootstrap }}
+        />
       </head>
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         {/* <Script id="chatbase-embed" strategy="afterInteractive">

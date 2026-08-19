@@ -17,7 +17,7 @@ const FilterDropdown = ({ label, value, options, onChange }: any) => {
         <select
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          className="w-full cursor-pointer appearance-none bg-transparent ps-3 pe-10 text-lg font-semibold focus:outline-none sm:text-xl text-[#0a0f1d]"
+          className="w-full cursor-pointer appearance-none bg-transparent ps-3 pe-10 text-lg font-semibold focus:outline-none sm:text-xl text-[#6A2B92]"
         >
           {options.map((opt: any) => (
             <option key={opt.value} value={opt.value}>
@@ -26,7 +26,7 @@ const FilterDropdown = ({ label, value, options, onChange }: any) => {
           ))}
         </select>
         <svg
-          className="pointer-events-none absolute top-1/2 end-3 h-4 w-4 flex-shrink-0 -translate-y-1/2 text-[#0a0f1d]"
+          className="pointer-events-none absolute top-1/2 end-3 h-4 w-4 flex-shrink-0 -translate-y-1/2 text-[#6A2B92]"
           fill="none"
           stroke="currentColor"
           viewBox="0 0 24 24"
@@ -45,9 +45,8 @@ const FilterDropdown = ({ label, value, options, onChange }: any) => {
 
 export function PropertiesListing() {
   const { t, isRtl } = useLocale();
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHoveringCard, setIsHoveringCard] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
+  const cursorRef = useRef<HTMLDivElement>(null);
   const isScrollingRef = useRef(false);
   const scrollTimeoutRef = useRef<number>(0);
 
@@ -63,15 +62,25 @@ export function PropertiesListing() {
 
     const handleMouseMove = (e: MouseEvent) => {
       const rect = section.getBoundingClientRect();
-      setMousePos({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top,
-      });
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      if (cursorRef.current) {
+        const isHovering = cursorRef.current.dataset.hovering === "true";
+        cursorRef.current.style.transform = `translate(${x - 52.5}px, ${y - 52.5}px) scale(${isHovering ? 1 : 0})`;
+      }
     };
 
     const handleScroll = () => {
       isScrollingRef.current = true;
-      setIsHoveringCard(false);
+      if (cursorRef.current) {
+        cursorRef.current.dataset.hovering = "false";
+        cursorRef.current.style.opacity = "0";
+        const transform = cursorRef.current.style.transform;
+        if (transform.includes("scale(1)")) {
+          cursorRef.current.style.transform = transform.replace("scale(1)", "scale(0)");
+        }
+      }
       window.clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = window.setTimeout(() => {
         isScrollingRef.current = false;
@@ -109,11 +118,8 @@ export function PropertiesListing() {
     setNeighborhood("All");
   };
 
-  const getTagLabel = (tag: string) => {
-    if (tag === "FOR SALE") return isRtl ? "للبيع" : "For Sale";
-    if (tag === "COMING SOON") return isRtl ? "قريباً" : "Coming Soon";
-    if (tag === "SOLD OUT") return isRtl ? "نفدت الوحدات" : "Sold Out";
-    return tag;
+  const getTagLabel = (prop: any) => {
+    return isRtl ? prop.tagAr : prop.tag;
   };
 
   return (
@@ -122,13 +128,13 @@ export function PropertiesListing() {
       className="relative z-30 w-full bg-white px-6 py-16 md:px-12 lg:px-20 lg:py-20"
     >
       <div
-        className="pointer-events-none absolute top-0 left-0 z-[100] hidden h-[105px] w-[105px] items-center justify-center rounded-full bg-[#0a0f1d] text-center text-white shadow-xl lg:flex"
+        ref={cursorRef}
+        data-hovering="false"
+        className="pointer-events-none absolute top-0 left-0 z-[100] hidden h-[105px] w-[105px] items-center justify-center rounded-full bg-[#17C3B3] text-center text-white shadow-xl lg:flex"
         style={{
-          opacity: isHoveringCard ? 1 : 0,
-          transform: `translate(${mousePos.x - 52.5}px, ${mousePos.y - 52.5}px) scale(${isHoveringCard ? 1 : 0})`,
-          transition: isHoveringCard
-            ? "transform 0.15s ease-out, opacity 0.3s ease"
-            : "opacity 0.15s ease",
+          opacity: 0,
+          transform: `translate(0px, 0px) scale(0)`,
+          transition: "transform 0.1s ease-out, opacity 0.2s ease",
         }}
       >
         <div className="flex flex-col items-center justify-center text-[19px] leading-none font-black tracking-tight">
@@ -142,7 +148,7 @@ export function PropertiesListing() {
         {/* Filter Bar */}
         <div className="mb-14 flex flex-col gap-10">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2 text-[#0a0f1d]">
+            <div className="flex items-center gap-2 text-[#6A2B92]">
               <Filter className="h-5 w-5" />
               <h2 className="text-2xl font-bold tracking-tight">
                 {isRtl ? "تصفية العقارات" : "Filter Properties"}
@@ -219,9 +225,25 @@ export function PropertiesListing() {
                 href={`/properties/${prop.id}`}
                 className="group flex cursor-pointer flex-col"
                 onMouseEnter={() => {
-                  if (!isScrollingRef.current) setIsHoveringCard(true);
+                  if (!isScrollingRef.current && cursorRef.current) {
+                    cursorRef.current.dataset.hovering = "true";
+                    cursorRef.current.style.opacity = "1";
+                    const transform = cursorRef.current.style.transform;
+                    if (transform.includes("scale(0)")) {
+                      cursorRef.current.style.transform = transform.replace("scale(0)", "scale(1)");
+                    }
+                  }
                 }}
-                onMouseLeave={() => setIsHoveringCard(false)}
+                onMouseLeave={() => {
+                  if (cursorRef.current) {
+                    cursorRef.current.dataset.hovering = "false";
+                    cursorRef.current.style.opacity = "0";
+                    const transform = cursorRef.current.style.transform;
+                    if (transform.includes("scale(1)")) {
+                      cursorRef.current.style.transform = transform.replace("scale(1)", "scale(0)");
+                    }
+                  }
+                }}
               >
                 <div className="relative mb-6 aspect-[15/16] w-full overflow-hidden rounded-2xl bg-[#ececec]">
                   <Image
@@ -233,35 +255,44 @@ export function PropertiesListing() {
                   />
                   <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
                   
-                  <div className="absolute top-5 start-5 z-10 flex items-center justify-center rounded-full bg-[#0a0f1d] px-4 py-2.5 text-[15px] leading-none font-bold tracking-tight text-white shadow-md">
-                    {getTagLabel(prop.tag)}
+                  <div className={`absolute top-5 start-5 z-10 flex items-center justify-center rounded-full px-4 py-2.5 text-[15px] leading-none font-bold tracking-tight text-white shadow-md ${prop.tag === "SOLD OUT" ? "bg-red-500" : "bg-[#17C3B3]"}`}>
+                    {getTagLabel(prop)}
                   </div>
                 </div>
 
                 <div className="flex flex-col px-2">
-                  <h3 className="mb-1 text-[2rem] leading-tight font-semibold text-[#0a0f1d]">
-                    {prop.price}
-                  </h3>
-                  <h4 className="mb-4 text-2xl font-bold text-[#0a0f1d]">{prop.title}</h4>
+                  <div className="flex items-center justify-between w-full mb-1">
+                    <h3 className="text-[2rem] leading-tight font-semibold text-[#0a0f1d]">
+                      {prop.price}
+                    </h3>
+                    {prop.tag === "SOLD OUT" && (prop.buyerEn || prop.buyerAr) && (
+                      <p className="text-sm font-bold tracking-wide text-red-600">
+                        {isRtl ? `المالك: ${prop.buyerAr}` : `Owned by: ${prop.buyerEn}`}
+                      </p>
+                    )}
+                  </div>
+                  <div className="mb-4 flex flex-col items-start gap-1">
+                    <h4 className="text-2xl font-bold text-[#0a0f1d]">{isRtl ? prop.titleAr : prop.title}</h4>
+                  </div>
                   <p className="mb-6 text-[1.05rem] leading-relaxed font-semibold whitespace-pre-line text-[#8c8c8c]">
-                    {prop.address}
+                    {isRtl ? prop.addressAr : prop.address}
                   </p>
 
                   <div className="mt-auto flex items-center gap-6">
                     <div className="flex items-center gap-2 text-[#8c8c8c]">
-                      <Bed className="h-6 w-6 stroke-[2]" />
+                      <Bed className="h-6 w-6 stroke-[2] text-[#17C3B3]" />
                       <span className="text-[1rem] font-bold">
                         {prop.beds} {t("properties.bed")}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-[#8c8c8c]">
-                      <Bath className="h-6 w-6 stroke-[2]" />
+                      <Bath className="h-6 w-6 stroke-[2] text-[#17C3B3]" />
                       <span className="text-[1rem] font-bold">
                         {prop.baths} {t("properties.bath")}
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-[#8c8c8c]">
-                      <Map className="h-6 w-6 stroke-[2]" />
+                      <Map className="h-6 w-6 stroke-[2] text-[#17C3B3]" />
                       <span className="text-[1rem] font-bold">
                         {prop.sqft} {t("properties.sqft")}
                       </span>
@@ -274,7 +305,7 @@ export function PropertiesListing() {
         ) : (
           <div className="flex flex-col items-center justify-center py-24 text-center">
             <Filter className="h-16 w-16 text-gray-200 mb-4" />
-            <h3 className="text-2xl font-bold text-[#0a0f1d] mb-2">
+            <h3 className="text-2xl font-bold text-[#6A2B92] mb-2">
               {isRtl ? "لا توجد عقارات مطابقة" : "No properties found"}
             </h3>
             <p className="text-gray-500">
@@ -282,7 +313,7 @@ export function PropertiesListing() {
             </p>
             <button
               onClick={clearFilters}
-              className="mt-6 rounded-full bg-[#0a0f1d] px-8 py-3 font-bold text-white transition-all hover:bg-black hover:scale-105"
+              className="mt-6 rounded-full bg-[#17C3B3] px-8 py-3 font-bold text-white transition-all hover:opacity-90 hover:scale-105"
             >
               {isRtl ? "مسح الفلاتر" : "Clear Filters"}
             </button>

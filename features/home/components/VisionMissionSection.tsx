@@ -7,7 +7,7 @@ export function VisionMissionSection() {
   const { t, isRtl } = useLocale();
 
   return (
-    <section className="relative w-full bg-[#1c2a27] py-16 lg:py-20 overflow-hidden">
+    <section className="relative w-full bg-[#6A2B92] py-16 lg:py-20 overflow-hidden">
       {/* Central Parallax Window */}
       {/* Absolute positioned in the center, spans full height */}
       <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">

@@ -12,7 +12,7 @@ import { createSessionCookie } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 
 const inputClass =
-  "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#0a0f1d] outline-none transition-colors duration-300 placeholder:text-[#0a0f1d]/30 focus:border-[#0a0f1d]";
+  "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#3E1854] outline-none transition-colors duration-300 placeholder:text-[#3E1854]/30 focus:border-[#17C3B3]";
 
 export default function LoginPage() {
   return (
@@ -25,7 +25,7 @@ export default function LoginPage() {
 function LoginPageFallback() {
   return (
     <div className="flex w-full max-w-[440px] items-center justify-center py-24">
-      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0a0f1d]/20 border-t-[#0a0f1d]" />
+      <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#3E1854]/20 border-t-[#3E1854]" />
     </div>
   );
 }
@@ -102,7 +102,7 @@ function LoginForm() {
         </p>
         <h1
           className={cn(
-            "font-bold tracking-tight text-[#0a0f1d]",
+            "font-bold tracking-tight text-[#3E1854]",
             locale === "ar"
               ? "text-[2.35rem] leading-[1.25]"
               : "text-[2.6rem] leading-[1.1]"
@@ -138,7 +138,7 @@ function LoginForm() {
             </span>
             <Link
               href="/forgot-password"
-              className="text-sm font-semibold text-[#0a0f1d] underline-offset-2 hover:underline"
+              className="text-sm font-semibold text-[#3E1854] underline-offset-2 hover:underline"
             >
               {t("auth.forgotPassword")}
             </Link>
@@ -157,7 +157,7 @@ function LoginForm() {
             <button
               type="button"
               onClick={() => setShowPassword(!showPassword)}
-              className="absolute top-0 bottom-3 end-0 z-10 flex items-center text-[#8c8c8c] transition-colors duration-200 hover:text-[#0a0f1d]"
+              className="absolute top-0 bottom-3 end-0 z-10 flex items-center text-[#8c8c8c] transition-colors duration-200 hover:text-[#3E1854]"
               tabIndex={-1}
               aria-label={showPassword ? t("auth.hidePassword") : t("auth.showPassword")}
             >
@@ -179,7 +179,7 @@ function LoginForm() {
         <button
           type="submit"
           disabled={loading}
-          className="group mt-2 inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#0a0f1d] px-7 py-4 text-sm font-bold tracking-wide text-white transition-all duration-300 hover:bg-[#161c2d] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
+          className="group mt-2 inline-flex w-full items-center justify-center gap-2.5 rounded-xl bg-[#3E1854] px-7 py-4 text-sm font-bold tracking-wide text-white transition-all duration-300 hover:bg-[#2b1039] active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60"
         >
           {loading ? (
             <>
@@ -189,7 +189,7 @@ function LoginForm() {
           ) : (
             <>
               {t("auth.signIn")}
-              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:group-hover:-translate-x-0.5" />
+              <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", locale === "ar" ? "rotate-[-90deg] group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
             </>
           )}
         </button>
