@@ -64,7 +64,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
           <img
             src="/iconheroimg.png"
-            alt="Maqsed Icon"
+            alt="Maqsed Icons"
             className="h-[350px] w-auto object-contain brightness-[3] contrast-200 grayscale lg:h-[550px] -translate-y-12 lg:-translate-y-24"
           />
         </div>
