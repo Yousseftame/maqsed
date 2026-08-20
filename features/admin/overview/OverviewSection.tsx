@@ -33,8 +33,8 @@ import { cn } from "@/lib/utils";
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const KPI_META = {
-  customers: { icon: Users, labelKey: "admin.customers" },
-  balance: { icon: Briefcase, labelKey: "admin.balance" },
+  customers: { icon: Users, labelKey: "admin.analytics.customers" },
+  balance: { icon: Briefcase, labelKey: "admin.analytics.balance" },
   projects: { icon: Folder, labelKey: "admin.analytics.projects" },
   units: { icon: Building2, labelKey: "admin.analytics.units" },
 } as const;
@@ -111,7 +111,7 @@ export function OverviewSection() {
               type="button"
               className="inline-flex items-center gap-2 rounded-full border border-[#0a0f1d]/8 bg-white px-4 py-2 text-sm font-semibold text-[#0a0f1d]"
             >
-              {t("admin.last7Days")}
+              {t("admin.analytics.last7Days")}
               <ChevronDown className="h-4 w-4 text-[#8c8c8c]" />
             </button>
           </div>
@@ -119,20 +119,20 @@ export function OverviewSection() {
           <div className="grid grid-cols-1 gap-4 rounded-[20px] bg-[#F4F4F4] p-3 sm:p-4 lg:grid-cols-2">
             <HeroPaper
               icon={Users}
-              label={t("admin.customers")}
+              label={t("admin.analytics.customers")}
               value={OVERVIEW_KPIS[0].value}
               change={OVERVIEW_KPIS[0].change}
               trend={OVERVIEW_KPIS[0].trend}
-              vs={t("admin.vsLastMonth")}
+              vs={t("admin.analytics.vsLastMonth")}
               className="bg-white shadow-[0_8px_24px_rgba(10,15,29,0.04)]"
             />
             <HeroPaper
               icon={Briefcase}
-              label={t("admin.balance")}
+              label={t("admin.analytics.balance")}
               value={OVERVIEW_KPIS[1].value}
               change={OVERVIEW_KPIS[1].change}
               trend={OVERVIEW_KPIS[1].trend}
-              vs={t("admin.vsLastMonth")}
+              vs={t("admin.analytics.vsLastMonth")}
             />
           </div>
         </section>
@@ -146,9 +146,9 @@ export function OverviewSection() {
               <StatCard
                 key={kpi.id}
                 icon={meta.icon}
-                label={t(meta.labelKey)}
+                label={t(meta.labelKey as any)}
                 value={kpi.value}
-                hint={t("admin.vsLastMonth")}
+                hint={t("admin.analytics.vsLastMonth")}
                 trend={{ value: kpi.change, direction: kpi.trend }}
               />
             );

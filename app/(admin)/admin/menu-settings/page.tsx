@@ -1,5 +1,5 @@
-import { AdminPagePlaceholder } from "@/features/admin/components/AdminPagePlaceholder";
+import { MenuSettingsSection } from "@/features/admin/menus/MenuSettingsSection";
 
 export default function AdminMenuSettingsPage() {
-  return <AdminPagePlaceholder />;
+  return <MenuSettingsSection />;
 }

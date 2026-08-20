@@ -1,5 +1,5 @@
-import { AdminPagePlaceholder } from "@/features/admin/components/AdminPagePlaceholder";
+import { UnitsSection } from "@/features/admin/units/UnitsSection";
 
 export default function AdminUnitsPage() {
-  return <AdminPagePlaceholder />;
+  return <UnitsSection />;
 }

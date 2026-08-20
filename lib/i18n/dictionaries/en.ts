@@ -297,10 +297,6 @@ export interface Dictionary {
     stay: string;
     comingSoon: string;
     overview: string;
-    last7Days: string;
-    customers: string;
-    balance: string;
-    vsLastMonth: string;
     openMenu: string;
     cancel: string;
     confirm: string;
@@ -318,7 +314,7 @@ export interface Dictionary {
       blog: string;
       additional: string;
       maintenance: string;
-      security: string;
+      developers: string;
       users: string;
     };
     ui: {
@@ -353,6 +349,26 @@ export interface Dictionary {
         upcoming: string;
       };
     };
+    units: {
+      add: string;
+      search: string;
+      total: string;
+      active: string;
+      views: string;
+      numberType: string;
+      project: string;
+      locationBuilding: string;
+      price: string;
+      status: string;
+      viewsCol: string;
+      deleteTitle: string;
+      deleteDescription: string;
+      statuses: {
+        active: string;
+        soldOut: string;
+        available: string;
+      };
+    };
     cities: {
       addTitle: string;
       addCity: string;
@@ -367,6 +383,81 @@ export interface Dictionary {
       emptyNeighborhoods: string;
       emptyCities: string;
       neighborhoods: string;
+    };
+    customers: {
+      search: string;
+      total: string;
+      newRequests: string;
+      purchase: string;
+      sell: string;
+      complaint: string;
+      customer: string;
+      unit: string;
+      status: string;
+      action: string;
+      date: string;
+      deleteTitle: string;
+      deleteDescription: string;
+      filterAll: string;
+      statuses: {
+        new: string;
+        contacted: string;
+        completed: string;
+        cancelled: string;
+      };
+      actions: {
+        process: string;
+      };
+    };
+    menus: {
+      unitFeatures: string;
+      unitComponents: string;
+      projectFeatures: string;
+      services: string;
+      guarantees: string;
+      specialOffers: string;
+      nearbyLocations: string;
+      addPlaceholder: string;
+      addButton: string;
+      deleteTitle: string;
+      deleteDescription: string;
+    };
+    interface: {
+      heroTitle: string;
+      heroTitlePlaceholder: string;
+      heroSubtitle: string;
+      heroSubtitlePlaceholder: string;
+      bgImage: string;
+      bgImageUpload: string;
+      bgImageHint: string;
+      partners: string;
+      partnersHint: string;
+      addPartner: string;
+    };
+    additionalInfo: {
+      legalTitle: string;
+      privacyPolicy: string;
+      privacyPolicyPlaceholder: string;
+      terms: string;
+      termsPlaceholder: string;
+      socialTitle: string;
+      instagram: string;
+      twitter: string;
+      snapchat: string;
+      linkedin: string;
+      tiktok: string;
+    };
+    maintenance: {
+      enableTitle: string;
+      enableDesc: string;
+      messageTitle: string;
+      messageTitlePlaceholder: string;
+      messageText: string;
+      messageTextPlaceholder: string;
+    };
+    developers: {
+      title: string;
+      description: string;
     };
     company: {
       logo: string;
@@ -383,6 +474,10 @@ export interface Dictionary {
       complaints: string;
     };
     analytics: {
+      customers: string;
+      balance: string;
+      last7Days: string;
+      vsLastMonth: string;
       inquiries: string;
       visits: string;
       projects: string;
@@ -789,10 +884,6 @@ export const en: Dictionary = {
     stay: "Stay",
     comingSoon: "Coming soon.",
     overview: "Overview",
-    last7Days: "Last 7 days",
-    customers: "Customers",
-    balance: "Balance",
-    vsLastMonth: "vs last month",
     openMenu: "Open sidebar",
     cancel: "Cancel",
     confirm: "Confirm",
@@ -810,7 +901,7 @@ export const en: Dictionary = {
       blog: "Blog Management",
       additional: "Additional Information",
       maintenance: "Maintenance Mode",
-      security: "Security Settings",
+      developers: "Developers",
       users: "Users",
     },
     ui: {
@@ -845,6 +936,26 @@ export const en: Dictionary = {
         upcoming: "Upcoming",
       },
     },
+    units: {
+      add: "Add unit",
+      search: "Search units...",
+      total: "Total units",
+      active: "Active units",
+      views: "Total views",
+      numberType: "Number/Type",
+      project: "Project",
+      locationBuilding: "Location/Building",
+      price: "Price",
+      status: "Status",
+      viewsCol: "Views",
+      deleteTitle: "Delete unit?",
+      deleteDescription: "This will remove the unit from the list.",
+      statuses: {
+        active: "Active",
+        soldOut: "Sold out",
+        available: "Available",
+      },
+    },
     cities: {
       addTitle: "Add a new city",
       addCity: "Add city",
@@ -859,6 +970,81 @@ export const en: Dictionary = {
       emptyNeighborhoods: "No neighborhoods yet.",
       emptyCities: "No cities yet.",
       neighborhoods: "Neighborhoods",
+    },
+    customers: {
+      search: "Search customers...",
+      total: "Total Requests",
+      newRequests: "New Requests",
+      purchase: "Purchase / Interest",
+      sell: "Sales Marketing",
+      complaint: "Complaints & Suggestions",
+      customer: "Customer",
+      unit: "Unit",
+      status: "Status",
+      action: "Action",
+      date: "Date",
+      deleteTitle: "Delete request?",
+      deleteDescription: "This will remove the request from the list.",
+      filterAll: "All",
+      statuses: {
+        new: "New",
+        contacted: "Contacted",
+        completed: "Completed",
+        cancelled: "Cancelled",
+      },
+      actions: {
+        process: "Process",
+      },
+    },
+    menus: {
+      unitFeatures: "Unit Features",
+      unitComponents: "Unit Additional Components",
+      projectFeatures: "Project Features",
+      services: "Services Management",
+      guarantees: "Guarantees Management",
+      specialOffers: "Special Offers",
+      nearbyLocations: "Nearby Locations",
+      addPlaceholder: "Add a new item...",
+      addButton: "Add to list",
+      deleteTitle: "Delete Item?",
+      deleteDescription: "Are you sure you want to delete this item?",
+    },
+    interface: {
+      heroTitle: "Hero Title",
+      heroTitlePlaceholder: "Your optimal choice...",
+      heroSubtitle: "Hero Subtitle",
+      heroSubtitlePlaceholder: "Notice! The platform is under development...",
+      bgImage: "Background Image",
+      bgImageUpload: "Click to upload a professional background",
+      bgImageHint: "Recommended size 1920x1080 (Horizontal) | Max: 700KB",
+      partners: "Success Partners Logos",
+      partnersHint: "It is preferred to upload transparent logos in SVG or PNG format to look professional.",
+      addPartner: "Add a new partner",
+    },
+    additionalInfo: {
+      legalTitle: "Legal Pages and Policies",
+      privacyPolicy: "Terms of Use and Privacy Policy",
+      privacyPolicyPlaceholder: "Enter privacy policy here...",
+      terms: "Terms and Conditions",
+      termsPlaceholder: "Enter terms and conditions here...",
+      socialTitle: "Social Media Platforms",
+      instagram: "Instagram Link",
+      twitter: "X (formerly Twitter) Link",
+      snapchat: "Snapchat Link",
+      linkedin: "LinkedIn Link",
+      tiktok: "TikTok Link",
+    },
+    maintenance: {
+      enableTitle: "Close site to visitors (Enable Maintenance)",
+      enableDesc: "When enabled, customers will not be able to browse projects and will only see the maintenance page.",
+      messageTitle: "Maintenance Message Title",
+      messageTitlePlaceholder: "Site under development",
+      messageText: "Explanatory Message Text for Visitors",
+      messageTextPlaceholder: "We are working on some technical updates to improve your experience.",
+    },
+    developers: {
+      title: "Developers Settings",
+      description: "Manage developers information and settings.",
     },
     company: {
       logo: "Company logo",
@@ -875,6 +1061,10 @@ export const en: Dictionary = {
       complaints: "Complaints number",
     },
     analytics: {
+      customers: "Customers",
+      balance: "Balance",
+      last7Days: "Last 7 days",
+      vsLastMonth: "vs last month",
       inquiries: "Inquiries",
       visits: "Visits",
       projects: "Projects",

@@ -156,25 +156,25 @@ export function CurrentPropertiesSection() {
                   <hr className="border-gray-200 mb-6 group-hover/link:border-[#17C3B3]/30 transition-colors" />
 
                   {/* Bottom details */}
-                  <div className="flex items-end justify-between gap-4 px-1 pb-4">
-                    <div className="flex flex-col gap-2">
+                  <div className="flex flex-col xl:flex-row xl:items-end justify-between gap-4 px-1 pb-4 flex-1">
+                    <div className="flex flex-col gap-2 flex-1 min-w-0">
                       <div className="flex flex-col items-start gap-1">
-                        <h3 className="text-xl font-bold text-[#0a0f1d] group-hover/link:text-[#6A2B92] transition-colors">{isRtl ? project.titleAr : project.title}</h3>
+                        <h3 className="text-xl font-bold text-[#0a0f1d] group-hover/link:text-[#6A2B92] transition-colors line-clamp-2">{isRtl ? project.titleAr : project.title}</h3>
                       </div>
                       <div className="flex items-start gap-1.5 text-gray-500 text-sm">
                         <MapPin className="w-4 h-4 shrink-0 mt-0.5 group-hover/link:text-[#17C3B3] transition-colors" />
-                        <span className="whitespace-pre-line leading-relaxed">{isRtl ? project.addressAr : project.address}</span>
+                        <span className="whitespace-pre-line leading-relaxed line-clamp-2">{isRtl ? project.addressAr : project.address}</span>
                       </div>
                     </div>
                     
-                    <div className="flex flex-col items-end gap-2">
+                    <div className="flex flex-col items-start xl:items-end gap-2 shrink-0">
                       {project.tag === "SOLD OUT" && (project.buyerEn || project.buyerAr) && (
                         <p className="text-sm font-bold tracking-wide text-red-600">
                           {isRtl ? `المالك: ${project.buyerAr}` : `Owned by: ${project.buyerEn}`}
                         </p>
                       )}
                       <div 
-                        className="bg-[#17C3B3] text-white text-sm font-bold px-6 py-2.5 rounded-[18px] whitespace-nowrap transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/link:bg-[#6A2B92] group-hover/link:scale-105"
+                        className="bg-[#17C3B3] text-white text-sm font-bold px-6 py-2.5 rounded-[18px] whitespace-nowrap w-full xl:w-auto text-center transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] group-hover/link:bg-[#6A2B92] group-hover/link:scale-105"
                       >
                         {t("properties.view")} {t("properties.details")}
                       </div>

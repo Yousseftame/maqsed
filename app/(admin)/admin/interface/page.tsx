@@ -1,5 +1,5 @@
-import { AdminPagePlaceholder } from "@/features/admin/components/AdminPagePlaceholder";
+import { InterfaceSettingsSection } from "@/features/admin/interface/InterfaceSettingsSection";
 
-export default function AdminInterfacePage() {
-  return <AdminPagePlaceholder />;
+export default function AdminInterfaceSettingsPage() {
+  return <InterfaceSettingsSection />;
 }

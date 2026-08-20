@@ -1,5 +1,5 @@
-import { AdminPagePlaceholder } from "@/features/admin/components/AdminPagePlaceholder";
+import { MaintenanceSection } from "@/features/admin/maintenance/MaintenanceSection";
 
 export default function AdminMaintenancePage() {
-  return <AdminPagePlaceholder />;
+  return <MaintenanceSection />;
 }

@@ -1,5 +1,5 @@
-import { AdminPagePlaceholder } from "@/features/admin/components/AdminPagePlaceholder";
+import { AdditionalInfoSection } from "@/features/admin/additional-info/AdditionalInfoSection";
 
 export default function AdminAdditionalInfoPage() {
-  return <AdminPagePlaceholder />;
+  return <AdditionalInfoSection />;
 }

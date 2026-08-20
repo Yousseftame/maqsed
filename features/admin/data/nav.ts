@@ -11,6 +11,7 @@ import {
   AppWindow,
   TriangleAlert,
   Users,
+  Terminal,
   type LucideIcon,
 } from "lucide-react";
 
@@ -61,7 +62,7 @@ export const ADMIN_NAV: AdminNavEntry[] = [
     icon: TriangleAlert,
     tone: "danger",
   },
-  { type: "link", labelKey: "admin.nav.security", href: "/admin/security", icon: Lock },
+  { type: "link", labelKey: "admin.nav.developers", href: "/admin/developers", icon: Terminal },
 ];
 
 export function getAdminNavLinks() {
