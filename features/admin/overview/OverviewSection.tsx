@@ -15,17 +15,21 @@ import {
   XAxis,
   YAxis,
 } from "recharts";
-import { Briefcase, Building2, ChevronDown, Folder, Users, ArrowDownRight, ArrowUpRight } from "lucide-react";
+import { Briefcase, Building2, ChevronDown, Folder, Users, ArrowDownRight, ArrowUpRight, Eye, CheckCircle2, Ban, Home, Building, Store, MapPin, Map, PieChart as PieChartIcon, DollarSign } from "lucide-react";
 import Link from "next/link";
 import { StatCard, StatGrid } from "@/features/admin/ui/StatCard";
 import { Panel } from "@/features/admin/ui/Panel";
 import { StatusBadge, type StatusTone } from "@/features/admin/ui/StatusBadge";
 import {
   CITY_PERFORMANCE,
+  NEIGHBORHOOD_PERFORMANCE,
+  HERO_KPIS,
   OVERVIEW_KPIS,
   PROJECT_STATUS,
   RECENT_INQUIRIES,
   WEEKLY_INQUIRIES,
+  REAL_ESTATE_INVENTORY,
+  INVENTORY_DISTRIBUTION,
 } from "@/features/admin/overview/data";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
@@ -34,9 +38,12 @@ const EASE = [0.22, 1, 0.36, 1] as const;
 
 const KPI_META = {
   customers: { icon: Users, labelKey: "admin.analytics.customers" },
-  balance: { icon: Briefcase, labelKey: "admin.analytics.balance" },
   projects: { icon: Folder, labelKey: "admin.analytics.projects" },
   units: { icon: Building2, labelKey: "admin.analytics.units" },
+  requests: { icon: Users, labelKey: "admin.analytics.requests" },
+  views: { icon: Eye, labelKey: "admin.analytics.views" },
+  sales: { icon: DollarSign, labelKey: "admin.analytics.sales" },
+  visits: { icon: Eye, labelKey: "admin.analytics.visits" },
 } as const;
 
 const INQUIRY_TONE: Record<(typeof RECENT_INQUIRIES)[number]["status"], StatusTone> = {
@@ -118,20 +125,20 @@ export function OverviewSection() {
 
           <div className="grid grid-cols-1 gap-4 rounded-[20px] bg-[#F4F4F4] p-3 sm:p-4 lg:grid-cols-2">
             <HeroPaper
-              icon={Users}
-              label={t("admin.analytics.customers")}
-              value={OVERVIEW_KPIS[0].value}
-              change={OVERVIEW_KPIS[0].change}
-              trend={OVERVIEW_KPIS[0].trend}
+              icon={DollarSign}
+              label={t("admin.analytics.sales")}
+              value={HERO_KPIS[0].value}
+              change={HERO_KPIS[0].change}
+              trend={HERO_KPIS[0].trend}
               vs={t("admin.analytics.vsLastMonth")}
               className="bg-white shadow-[0_8px_24px_rgba(10,15,29,0.04)]"
             />
             <HeroPaper
-              icon={Briefcase}
-              label={t("admin.analytics.balance")}
-              value={OVERVIEW_KPIS[1].value}
-              change={OVERVIEW_KPIS[1].change}
-              trend={OVERVIEW_KPIS[1].trend}
+              icon={Eye}
+              label={t("admin.analytics.visits")}
+              value={HERO_KPIS[1].value}
+              change={HERO_KPIS[1].change}
+              trend={HERO_KPIS[1].trend}
               vs={t("admin.analytics.vsLastMonth")}
             />
           </div>
@@ -154,6 +161,106 @@ export function OverviewSection() {
             );
           })}
         </StatGrid>
+      </FadeIn>
+
+      {/* Real Estate Inventory */}
+      <FadeIn delay={0.07}>
+        <section className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 px-2">
+            <Building className="h-5 w-5 text-[#8c8c8c]" />
+            <h3 className="text-lg font-bold text-[#0a0f1d]">{t("admin.analytics.inventory.title")}</h3>
+          </div>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <div className="flex flex-col justify-center gap-2 rounded-[20px] bg-[#0a0f1d] p-6 text-white sm:col-span-1 shadow-[0_8px_24px_rgba(10,15,29,0.12)]">
+              <span className="text-sm font-medium text-white/70">{t("admin.analytics.inventory.marketValue")}</span>
+              <div className="flex items-baseline gap-1">
+                <span className="text-3xl font-bold tracking-tight">{REAL_ESTATE_INVENTORY.marketValue}</span>
+                <span className="text-sm font-semibold text-white/70">{t("admin.analytics.inventory.marketValueHint")}</span>
+              </div>
+            </div>
+            
+            <div className="flex flex-col gap-4 rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-[#0a0f1d]/5">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-[#8c8c8c]">{t("admin.analytics.inventory.available")}</span>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#E8F8EF] text-[#83BF6E]">
+                  <CheckCircle2 className="h-4 w-4" />
+                </div>
+              </div>
+              <span className="text-2xl font-bold text-[#0a0f1d]">{REAL_ESTATE_INVENTORY.available}</span>
+            </div>
+            
+            <div className="flex flex-col gap-4 rounded-[20px] bg-white p-6 shadow-sm ring-1 ring-[#0a0f1d]/5">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-semibold text-[#8c8c8c]">{t("admin.analytics.inventory.soldOrRented")}</span>
+                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-[#F4F4F4] text-[#8c8c8c]">
+                  <Ban className="h-4 w-4" />
+                </div>
+              </div>
+              <span className="text-2xl font-bold text-[#0a0f1d]">{REAL_ESTATE_INVENTORY.soldOrRented}</span>
+            </div>
+          </div>
+        </section>
+      </FadeIn>
+
+      {/* Inventory Distribution */}
+      <FadeIn delay={0.075}>
+        <section className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 px-2">
+            <PieChartIcon className="h-5 w-5 text-[#8c8c8c]" />
+            <h3 className="text-lg font-bold text-[#0a0f1d]">{t("admin.analytics.inventory.distribution")}</h3>
+          </div>
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {INVENTORY_DISTRIBUTION.map((item, index) => {
+              const icons = [Building2, Home, Building, Store];
+              const Icon = icons[index];
+              return (
+                <div key={item.id} className="flex flex-col items-center justify-center gap-3 rounded-[20px] bg-white p-5 text-center shadow-sm ring-1 ring-[#0a0f1d]/5">
+                  <Icon className="h-6 w-6 text-[#8c8c8c]" />
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xl font-bold text-[#0a0f1d]">{item.value}</span>
+                    <span className="text-xs font-semibold text-[#8c8c8c]">{t(`admin.analytics.inventory.${item.id}` as any)}</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      </FadeIn>
+
+      {/* Geographic Distribution */}
+      <FadeIn delay={0.08}>
+        <section className="flex flex-col gap-4">
+          <div className="flex items-center gap-2 px-2">
+            <MapPin className="h-5 w-5 text-[#8c8c8c]" />
+            <h3 className="text-lg font-bold text-[#0a0f1d]">{t("admin.analytics.geographic")}</h3>
+          </div>
+          <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+            <Panel title={t("admin.analytics.byNeighborhood")} className="shadow-sm ring-1 ring-[#0a0f1d]/5">
+              <div className="flex flex-col gap-3">
+                {NEIGHBORHOOD_PERFORMANCE.map((item) => (
+                  <div key={item.id} className="flex items-center justify-between rounded-xl bg-[#F4F4F4] p-3">
+                    <span className="text-sm font-bold text-[#0a0f1d]">{item.name[locale as 'en' | 'ar']}</span>
+                    <span className="rounded-full bg-[#EDE9FE] px-2.5 py-1 text-xs font-bold text-[#6D5BD0]">
+                      {item.value} {t("admin.analytics.units")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+            <Panel title={t("admin.analytics.byCity")} className="shadow-sm ring-1 ring-[#0a0f1d]/5">
+              <div className="flex flex-col gap-3">
+                {CITY_PERFORMANCE.slice(0, 2).map((item) => (
+                  <div key={item.id} className="flex items-center justify-between rounded-xl bg-[#F4F4F4] p-3">
+                    <span className="text-sm font-bold text-[#0a0f1d]">{item.name[locale as 'en' | 'ar']}</span>
+                    <span className="rounded-full bg-[#E8F8EF] px-2.5 py-1 text-xs font-bold text-[#83BF6E]">
+                      {item.value} {t("admin.analytics.units")}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </div>
+        </section>
       </FadeIn>
 
       <div className="grid items-stretch gap-3 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,0.8fr)]">

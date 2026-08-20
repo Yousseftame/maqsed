@@ -475,7 +475,9 @@ export interface Dictionary {
     };
     analytics: {
       customers: string;
-      balance: string;
+      sales: string;
+      requests: string;
+      views: string;
       last7Days: string;
       vsLastMonth: string;
       inquiries: string;
@@ -484,12 +486,26 @@ export interface Dictionary {
       units: string;
       traffic: string;
       byCity: string;
+      byNeighborhood: string;
       recent: string;
       status: string;
       viewAll: string;
       new: string;
       pending: string;
       closed: string;
+      inventory: {
+        title: string;
+        marketValue: string;
+        marketValueHint: string;
+        available: string;
+        soldOrRented: string;
+        distribution: string;
+        apartments: string;
+        villas: string;
+        floors: string;
+        commercial: string;
+      };
+      geographic: string;
       days: {
         sat: string;
         sun: string;
@@ -1062,7 +1078,9 @@ export const en: Dictionary = {
     },
     analytics: {
       customers: "Customers",
-      balance: "Balance",
+      sales: "Sales",
+      requests: "All Requests",
+      views: "Views",
       last7Days: "Last 7 days",
       vsLastMonth: "vs last month",
       inquiries: "Inquiries",
@@ -1070,13 +1088,27 @@ export const en: Dictionary = {
       projects: "Projects",
       units: "Units",
       traffic: "Inquiries this week",
-      byCity: "Performance by city",
+      byCity: "Properties distribution by cities",
+      byNeighborhood: "Properties distribution by neighborhoods",
       recent: "Recent inquiries",
       status: "Project status",
       viewAll: "View all",
       new: "New",
       pending: "Pending",
       closed: "Closed",
+      inventory: {
+        title: "Real Estate Inventory",
+        marketValue: "Market value of available (approx.)",
+        marketValueHint: "SAR",
+        available: "Available for sale/rent",
+        soldOrRented: "Sold / Rented",
+        distribution: "Inventory Distribution",
+        apartments: "Apartments & Penthouses",
+        villas: "Residential Villas",
+        floors: "Residential Floors",
+        commercial: "Commercial Units",
+      },
+      geographic: "Geographic Distribution",
       days: {
         sat: "Sat",
         sun: "Sun",

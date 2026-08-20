@@ -1,8 +1,13 @@
+export const HERO_KPIS = [
+  { id: "sales", value: "32", change: "15.3%", trend: "up" as const },
+  { id: "visits", value: "14,293", change: "5.2%", trend: "up" as const },
+];
+
 export const OVERVIEW_KPIS = [
-  { id: "customers", value: "1,293", change: "36.8%", trend: "down" as const },
-  { id: "balance", value: "256k", change: "36.8%", trend: "up" as const },
   { id: "projects", value: "24", change: "12%", trend: "up" as const },
   { id: "units", value: "896", change: "8.4%", trend: "up" as const },
+  { id: "requests", value: "18", change: "5%", trend: "up" as const },
+  { id: "views", value: "165", change: "12%", trend: "up" as const },
 ];
 
 export const WEEKLY_INQUIRIES = [
@@ -21,6 +26,25 @@ export const CITY_PERFORMANCE = [
   { id: "dammam", name: { en: "Dammam", ar: "الدمام" }, value: 54 },
   { id: "neom", name: { en: "Neom", ar: "نيوم" }, value: 41 },
   { id: "mecca", name: { en: "Mecca", ar: "مكة" }, value: 29 },
+];
+
+export const NEIGHBORHOOD_PERFORMANCE = [
+  { id: "malqa", name: { en: "Al Malqa", ar: "الملقا" }, value: 5 },
+  { id: "aziziyah", name: { en: "Al Aziziyah", ar: "العزيزية" }, value: 2 },
+  { id: "sharafiyah", name: { en: "Al Sharafiyah", ar: "الشرفية" }, value: 1 },
+];
+
+export const REAL_ESTATE_INVENTORY = {
+  marketValue: "1,034,380",
+  available: 8,
+  soldOrRented: 0,
+};
+
+export const INVENTORY_DISTRIBUTION = [
+  { id: "apartments", value: 8 },
+  { id: "villas", value: 0 },
+  { id: "floors", value: 0 },
+  { id: "commercial", value: 0 },
 ];
 
 export const PROJECT_STATUS = [
