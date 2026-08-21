@@ -9,6 +9,8 @@ export type City = {
   id: string;
   name: Named;
   neighborhoods: Neighborhood[];
+  createdAt?: any;
+  updatedAt?: any;
 };
 
 export const CITIES: City[] = [

@@ -100,7 +100,7 @@ export function TableAction({
 }: {
   label: string;
   onClick?: () => void;
-  tone?: "default" | "danger";
+  tone?: "default" | "danger" | "primary";
 }) {
   return (
     <button
@@ -110,6 +110,8 @@ export function TableAction({
         "inline-flex h-8 items-center rounded-full px-3 text-xs font-bold transition-colors duration-200",
         tone === "danger"
           ? "text-[#FF6A55] hover:bg-[#FFE8E4]"
+          : tone === "primary"
+          ? "bg-[#0a0f1d] text-white hover:bg-[#161c2d]"
           : "text-[#0a0f1d] hover:bg-white"
       )}
     >

@@ -327,6 +327,8 @@ export interface Dictionary {
       actions: string;
       save: string;
       saved: string;
+      success: string;
+      error: string;
     };
     projects: {
       add: string;
@@ -930,6 +932,8 @@ export const en: Dictionary = {
       actions: "Actions",
       save: "Save changes",
       saved: "Changes saved",
+      success: "Operation successful",
+      error: "An error occurred",
     },
     projects: {
       add: "Add project",

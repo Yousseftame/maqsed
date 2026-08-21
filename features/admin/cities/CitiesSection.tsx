@@ -1,10 +1,13 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Layers, Map, Plus } from "lucide-react";
+import { useMemo, useState, useEffect } from "react";
+import { Layers, Map, Plus, Loader2 } from "lucide-react";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { StatCard, StatGrid } from "@/features/admin/ui/StatCard";
 import { TableAction } from "@/features/admin/ui/DataTable";
-import { CITIES, type City } from "@/features/admin/cities/data";
+import { type City, type Neighborhood } from "@/features/admin/cities/data";
+import { citiesService } from "@/features/admin/cities/cities.service";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
@@ -12,10 +15,22 @@ import { cn } from "@/lib/utils";
 export function CitiesSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
-  const [cities, setCities] = useState(CITIES);
-  const [selectedCityId, setSelectedCityId] = useState(CITIES[0]?.id ?? "");
+  const queryClient = useQueryClient();
+
+  const { data: cities = [], isLoading } = useQuery({
+    queryKey: ["cities"],
+    queryFn: citiesService.getCities,
+  });
+
+  const [selectedCityId, setSelectedCityId] = useState("");
   const [cityName, setCityName] = useState("");
   const [neighborhoodName, setNeighborhoodName] = useState("");
+
+  useEffect(() => {
+    if (!selectedCityId && cities.length > 0) {
+      setSelectedCityId(cities[0].id);
+    }
+  }, [cities, selectedCityId]);
 
   const label = (name: { en: string; ar: string }) => name[locale];
   const selectedCity = useMemo(
@@ -23,44 +38,84 @@ export function CitiesSection() {
     [cities, selectedCityId]
   );
   const neighborhoodCount = cities.reduce(
-    (sum, city) => sum + city.neighborhoods.length,
+    (sum, city) => sum + (city.neighborhoods?.length || 0),
     0
   );
 
+  const addCityMutation = useMutation({
+    mutationFn: citiesService.addCity,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+      toast.success(t("admin.ui.success") || "Success");
+    },
+    onError: (error: any) => {
+      console.error(error);
+      toast.error(error?.message || t("admin.ui.error") || "Error");
+    },
+  });
+
+  const deleteCityMutation = useMutation({
+    mutationFn: citiesService.deleteCity,
+    onSuccess: (_, deletedId) => {
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+      if (selectedCityId === deletedId) setSelectedCityId("");
+      toast.success(t("admin.ui.success") || "Success");
+    },
+    onError: (error: any) => {
+      console.error(error);
+      toast.error(error?.message || t("admin.ui.error") || "Error");
+    },
+  });
+
+  const addNeighborhoodMutation = useMutation({
+    mutationFn: ({ cityId, neighborhood }: { cityId: string; neighborhood: Neighborhood }) =>
+      citiesService.addNeighborhood(cityId, neighborhood),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+      toast.success(t("admin.ui.success") || "Success");
+    },
+    onError: (error: any) => {
+      console.error(error);
+      toast.error(error?.message || t("admin.ui.error") || "Error");
+    },
+  });
+
+  const removeNeighborhoodMutation = useMutation({
+    mutationFn: ({ cityId, neighborhood }: { cityId: string; neighborhood: Neighborhood }) =>
+      citiesService.removeNeighborhood(cityId, neighborhood),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["cities"] });
+      toast.success(t("admin.ui.success") || "Success");
+    },
+    onError: (error: any) => {
+      console.error(error);
+      toast.error(error?.message || t("admin.ui.error") || "Error");
+    },
+  });
+
   function addCity() {
     const value = cityName.trim();
-    if (!value) return;
+    if (!value || addCityMutation.isPending) return;
 
-    const id = `${value.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
-    const next: City = {
+    const id = citiesService.generateId();
+    addCityMutation.mutate({
       id,
       name: { en: value, ar: value },
       neighborhoods: [],
-    };
-
-    setCities((current) => [next, ...current]);
+    });
     setSelectedCityId(id);
     setCityName("");
   }
 
   function addNeighborhood() {
     const value = neighborhoodName.trim();
-    if (!value || !selectedCityId) return;
+    if (!value || !selectedCityId || addNeighborhoodMutation.isPending) return;
 
-    const id = `${value.toLowerCase().replace(/\s+/g, "-")}-${Date.now()}`;
-    setCities((current) =>
-      current.map((city) =>
-        city.id === selectedCityId
-          ? {
-              ...city,
-              neighborhoods: [
-                ...city.neighborhoods,
-                { id, name: { en: value, ar: value } },
-              ],
-            }
-          : city
-      )
-    );
+    const id = citiesService.generateId();
+    addNeighborhoodMutation.mutate({
+      cityId: selectedCityId,
+      neighborhood: { id, name: { en: value, ar: value } },
+    });
     setNeighborhoodName("");
   }
 
@@ -74,29 +129,15 @@ export function CitiesSection() {
     });
     if (!ok) return;
 
-    setCities((current) => {
-      const next = current.filter((item) => item.id !== city.id);
-      setSelectedCityId((selected) =>
-        selected === city.id ? (next[0]?.id ?? "") : selected
-      );
-      return next;
-    });
+    deleteCityMutation.mutate(city.id);
   }
 
-  function removeNeighborhood(neighborhoodId: string) {
+  function removeNeighborhood(neighborhood: Neighborhood) {
     if (!selectedCityId) return;
-    setCities((current) =>
-      current.map((city) =>
-        city.id === selectedCityId
-          ? {
-              ...city,
-              neighborhoods: city.neighborhoods.filter(
-                (item) => item.id !== neighborhoodId
-              ),
-            }
-          : city
-      )
-    );
+    removeNeighborhoodMutation.mutate({
+      cityId: selectedCityId,
+      neighborhood,
+    });
   }
 
   return (
@@ -142,7 +183,11 @@ export function CitiesSection() {
               </button>
             </form>
 
-            {cities.length === 0 ? (
+            {isLoading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="h-6 w-6 animate-spin text-[#8c8c8c]" />
+              </div>
+            ) : cities.length === 0 ? (
               <p className="px-2 py-8 text-sm font-medium text-[#8c8c8c]">
                 {t("admin.cities.emptyCities")}
               </p>
@@ -162,7 +207,7 @@ export function CitiesSection() {
                           : "text-[#0a0f1d] hover:bg-[#F4F4F4]"
                       )}
                     >
-                      <span className="block text-base font-bold tracking-tight lg:text-2xl">
+                      <span className="block truncate pb-1 text-base font-bold leading-normal tracking-tight lg:text-2xl lg:leading-normal">
                         {label(city.name)}
                       </span>
                       <span
@@ -188,7 +233,7 @@ export function CitiesSection() {
                     <p className="mb-1 text-xs font-semibold tracking-wide text-[#8c8c8c] sm:mb-2 sm:text-sm">
                       {t("admin.cities.neighborhoods")}
                     </p>
-                    <h2 className="truncate text-2xl font-bold tracking-tight text-[#0a0f1d] sm:text-4xl lg:text-5xl">
+                    <h2 className="truncate pb-2 text-2xl font-bold leading-normal tracking-tight text-[#0a0f1d] sm:text-4xl lg:text-5xl lg:leading-normal">
                       {label(selectedCity.name)}
                     </h2>
                   </div>
@@ -238,13 +283,13 @@ export function CitiesSection() {
                         key={neighborhood.id}
                         className="flex items-center justify-between gap-3 border-b border-[#0a0f1d]/8 py-4 last:border-b-0 sm:gap-4 sm:py-5"
                       >
-                        <span className="min-w-0 truncate text-base font-semibold text-[#0a0f1d] sm:text-lg">
+                        <span className="min-w-0 truncate pb-1 text-base font-semibold leading-normal text-[#0a0f1d] sm:text-lg">
                           {label(neighborhood.name)}
                         </span>
                         <TableAction
                           label={t("admin.ui.delete")}
                           tone="danger"
-                          onClick={() => removeNeighborhood(neighborhood.id)}
+                          onClick={() => removeNeighborhood(neighborhood)}
                         />
                       </li>
                     ))}

@@ -1,30 +1,105 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Building2, CircleCheck, Folder, Map, Plus, Search } from "lucide-react";
+import { useMemo, useState, useRef, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { Building2, CircleCheck, Folder, Map, Plus, Search, ChevronDown } from "lucide-react";
 import { DataTable, TableAction, type Column } from "@/features/admin/ui/DataTable";
 import { StatCard, StatGrid } from "@/features/admin/ui/StatCard";
 import { StatusBadge } from "@/features/admin/ui/StatusBadge";
 import { PROJECTS, PROJECT_STATUS_TONE, type Project } from "@/features/admin/projects/data";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { AddProjectModal } from "./AddProjectModal";
+import { EditProjectModal } from "./EditProjectModal";
+import { ViewProjectModal } from "./ViewProjectModal";
+import { ManageBuildingsModal } from "./ManageBuildingsModal";
+import { ManageModelsModal } from "./ManageModelsModal";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { propertiesService, type Property } from "@/features/admin/projects/properties.service";
+import { citiesService } from "@/features/admin/cities/cities.service";
+import { unitsService } from "@/features/admin/units/units.service";
+import toast from "react-hot-toast";
 
 export function ProjectsSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
+  const queryClient = useQueryClient();
+  
   const [query, setQuery] = useState("");
-  const [rows, setRows] = useState(PROJECTS);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [viewPropertyId, setViewPropertyId] = useState<string | null>(null);
+  const [editPropertyId, setEditPropertyId] = useState<string | null>(null);
+  const [manageBuildingsPropertyId, setManageBuildingsPropertyId] = useState<string | null>(null);
+  const [manageModelsPropertyId, setManageModelsPropertyId] = useState<string | null>(null);
 
-  const localized = useMemo(
-    () =>
-      rows.map((row) => ({
-        ...row,
-        nameLabel: row.name[locale],
-        cityLabel: row.city[locale],
-        updatedLabel: row.updated[locale],
-      })),
-    [locale, rows]
-  );
+  const { data: properties = [] } = useQuery({
+    queryKey: ["properties"],
+    queryFn: () => propertiesService.getProperties(),
+  });
+
+  const { data: cities = [] } = useQuery({
+    queryKey: ["cities"],
+    queryFn: () => citiesService.getCities(),
+  });
+
+  const { data: units = [] } = useQuery({
+    queryKey: ["units"],
+    queryFn: () => unitsService.getUnits(),
+  });
+
+  const viewProperty = properties.find(p => p.id === viewPropertyId) || null;
+  const editProperty = properties.find(p => p.id === editPropertyId) || null;
+  const manageBuildingsProperty = properties.find(p => p.id === manageBuildingsPropertyId) || null;
+  const manageModelsProperty = properties.find(p => p.id === manageModelsPropertyId) || null;
+
+  const deleteMutation = useMutation({
+    mutationFn: async (row: any) => {
+      if (row.images && row.images.length > 0) {
+        await Promise.all(row.images.map((url: string) => propertiesService.deleteImage(url)));
+      }
+      return propertiesService.deleteProperty(row.id);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["properties"] });
+      toast.success(t("admin.ui.success") || "Deleted successfully");
+    },
+    onError: () => {
+      toast.error(t("admin.ui.error") || "Error deleting");
+    },
+  });
+
+  const updateStatusMutation = useMutation({
+    mutationFn: (data: { id: string, status: string }) => {
+      return propertiesService.updateProperty(data.id, { status: data.status });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["properties"] });
+    },
+  });
+
+  const localized = useMemo(() => {
+    return properties.map((prop) => {
+      const city = cities.find((c) => c.id === prop.cityId);
+      const cityName = city?.name[locale] || prop.cityId;
+      
+      const date = prop.updatedAt?.toDate ? prop.updatedAt.toDate() : new Date();
+      const updatedLabel = new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-US", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+      }).format(date);
+
+      const realUnitsCount = units.filter((u) => u.projectId === prop.id).length;
+
+      return {
+        ...prop,
+        nameLabel: prop.name,
+        cityLabel: cityName,
+        updatedLabel,
+        computedUnitsCount: realUnitsCount,
+      };
+    });
+  }, [properties, cities, units, locale]);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -36,11 +111,11 @@ export function ProjectsSection() {
     );
   }, [localized, query]);
 
-  const totalUnits = rows.reduce((sum, row) => sum + row.units, 0);
-  const activeCount = rows.filter((row) => row.status === "active").length;
-  const cityCount = new Set(rows.map((row) => row.city.en)).size;
+  const totalUnits = localized.reduce((sum, row) => sum + row.computedUnitsCount, 0);
+  const activeCount = properties.filter((row) => row.status === "active").length;
+  const cityCount = new Set(properties.map((row) => row.cityId)).size;
 
-  async function handleDelete(row: Project) {
+  async function handleDelete(row: any) {
     const ok = await confirm({
       title: t("admin.projects.deleteTitle"),
       description: t("admin.projects.deleteDescription"),
@@ -49,7 +124,7 @@ export function ProjectsSection() {
       tone: "danger",
     });
     if (!ok) return;
-    setRows((current) => current.filter((item) => item.id !== row.id));
+    deleteMutation.mutate(row);
   }
 
   const columns: Column<(typeof localized)[number]>[] = [
@@ -58,8 +133,12 @@ export function ProjectsSection() {
       header: t("admin.projects.name"),
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-[#0a0f1d] text-sm font-bold text-white">
-            {row.nameLabel.slice(0, 1)}
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#0a0f1d] text-sm font-bold text-white">
+            {row.images && row.images.length > 0 ? (
+              <img src={row.images[0]} alt={row.nameLabel} className="h-full w-full object-cover" />
+            ) : (
+              row.nameLabel.slice(0, 1)
+            )}
           </span>
           <span className="font-semibold">{row.nameLabel}</span>
         </div>
@@ -73,16 +152,37 @@ export function ProjectsSection() {
     {
       id: "units",
       header: t("admin.projects.unitsCol"),
-      cell: (row) => <span className="tabular-nums">{row.units}</span>,
+      cell: (row) => <span className="tabular-nums font-semibold">{row.computedUnitsCount}</span>,
     },
     {
       id: "status",
       header: t("admin.projects.status"),
-      cell: (row) => (
-        <StatusBadge tone={PROJECT_STATUS_TONE[row.status]}>
-          {t(`admin.projects.statuses.${row.status}`)}
-        </StatusBadge>
-      ),
+      cell: (row) => {
+        // Fallback tone mapping since it's dynamic
+        const toneMap: Record<string, "success" | "warning" | "neutral" | "danger"> = {
+          active: "success",
+          soon: "warning",
+          draft: "neutral",
+          soldOut: "danger",
+        };
+        const tone = toneMap[row.status] || "neutral";
+        
+        const labels: Record<string, string> = {
+          active: "نشط",
+          soon: "قريباً",
+          draft: "مسودة",
+          soldOut: "مباع بالكامل",
+        };
+        
+        return (
+          <CustomStatusDropdown
+            row={row}
+            tone={tone}
+            labels={labels}
+            updateStatusMutation={updateStatusMutation}
+          />
+        );
+      },
     },
     {
       id: "updated",
@@ -97,7 +197,7 @@ export function ProjectsSection() {
         <StatCard
           icon={Folder}
           label={t("admin.projects.total")}
-          value={rows.length}
+          value={properties.length}
         />
         <StatCard
           icon={CircleCheck}
@@ -136,6 +236,7 @@ export function ProjectsSection() {
             </label>
             <button
               type="button"
+              onClick={() => setIsAddModalOpen(true)}
               className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#161c2d]"
             >
               <Plus className="h-4 w-4" strokeWidth={2.2} />
@@ -145,8 +246,10 @@ export function ProjectsSection() {
         }
         actions={(row) => (
           <>
-            <TableAction label={t("admin.ui.view")} />
-            <TableAction label={t("admin.ui.edit")} />
+            <TableAction label="المباني" onClick={() => setManageBuildingsPropertyId(row.id)} />
+            <TableAction label="النماذج" onClick={() => setManageModelsPropertyId(row.id)} />
+            <TableAction label={t("admin.ui.view")} onClick={() => setViewPropertyId(row.id)} />
+            <TableAction label={t("admin.ui.edit")} onClick={() => setEditPropertyId(row.id)} />
             <TableAction
               label={t("admin.ui.delete")}
               tone="danger"
@@ -155,6 +258,103 @@ export function ProjectsSection() {
           </>
         )}
       />
+      
+      <AddProjectModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+      />
+      <EditProjectModal
+        isOpen={!!editPropertyId}
+        onClose={() => setEditPropertyId(null)}
+        property={editProperty}
+      />
+      <ViewProjectModal
+        isOpen={!!viewPropertyId}
+        onClose={() => setViewPropertyId(null)}
+        property={viewProperty}
+        cities={cities}
+      />
+      <ManageBuildingsModal
+        isOpen={!!manageBuildingsPropertyId}
+        onClose={() => setManageBuildingsPropertyId(null)}
+        property={manageBuildingsProperty}
+      />
+      <ManageModelsModal
+        isOpen={!!manageModelsPropertyId}
+        onClose={() => setManageModelsPropertyId(null)}
+        property={manageModelsProperty}
+      />
     </div>
+  );
+}
+
+function CustomStatusDropdown({ row, tone, labels, updateStatusMutation }: any) {
+  const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        buttonRef.current && !buttonRef.current.contains(event.target as Node) &&
+        dropdownRef.current && !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+    
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        // Since we are floating to the right, we anchor right side to the right side of the button
+        setCoords({
+          top: rect.bottom + window.scrollY + 8,
+          left: rect.right + window.scrollX,
+        });
+      }
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen]);
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        onClick={() => setIsOpen(!isOpen)}
+        disabled={updateStatusMutation.isPending}
+        className="flex items-center gap-1 transition-opacity hover:opacity-80 disabled:opacity-50"
+      >
+        <StatusBadge tone={tone}>{labels[row.status] || row.status}</StatusBadge>
+        <ChevronDown className="h-4 w-4 text-[#8c8c8c]" />
+      </button>
+
+      {isOpen && typeof document !== "undefined" && createPortal(
+        <div 
+          ref={dropdownRef} 
+          style={{ position: 'absolute', top: coords.top, left: coords.left, transform: 'translateX(-100%)' }}
+          className="z-50 w-32 overflow-hidden rounded-[16px] border border-[#0a0f1d]/10 bg-white shadow-xl"
+        >
+          <div className="flex flex-col py-1">
+            {Object.entries(labels).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => {
+                  updateStatusMutation.mutate({ id: row.id, status: key });
+                  setIsOpen(false);
+                }}
+                className={`px-4 py-2 text-right text-sm font-bold transition-colors hover:bg-[#F4F4F4] ${row.status === key ? "text-[#0a0f1d] bg-[#F4F4F4]" : "text-[#8c8c8c]"}`}
+              >
+                {label as React.ReactNode}
+              </button>
+            ))}
+          </div>
+        </div>,
+        document.body
+      )}
+    </>
   );
 }

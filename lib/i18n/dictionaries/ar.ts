@@ -390,6 +390,8 @@ export const ar: Dictionary = {
       actions: "إجراءات",
       save: "حفظ التغييرات",
       saved: "تم حفظ التغييرات",
+      success: "تمت العملية بنجاح",
+      error: "حدث خطأ ما",
     },
     projects: {
       add: "إضافة مشروع",
