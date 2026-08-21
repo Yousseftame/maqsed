@@ -43,6 +43,10 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
       additionalComponents: [] as string[],
       features: [] as string[],
       facade: [] as string[],
+
+      condition: "جديدة",
+      age: "",
+      commissionOption: "بدون سعي",
     },
   });
 

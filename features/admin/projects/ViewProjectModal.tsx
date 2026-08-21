@@ -3,8 +3,8 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X } from "lucide-react";
-import type { Property } from "@/features/admin/projects/properties.service";
-import type { City } from "@/features/admin/cities/cities.service";
+import { type Property } from "@/features/admin/projects/properties.service";
+import { type City } from "@/features/admin/cities/data";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 type ViewProjectModalProps = {
@@ -31,7 +31,7 @@ export function ViewProjectModal({ isOpen, onClose, property, cities }: ViewProj
   if (!property) return null;
 
   const city = cities.find((c) => c.id === property.cityId);
-  const neighborhood = city?.neighborhoods.find((n) => n.id === property.neighborhoodId);
+  const neighborhood = city?.neighborhoods.find((n: any) => n.id === property.neighborhoodId);
 
   const cityName = city?.name[locale] || property.cityId;
   const neighborhoodName = neighborhood?.name[locale] || property.neighborhoodId;

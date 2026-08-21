@@ -38,7 +38,7 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                 <h2 className="text-2xl font-bold tracking-tight text-[#0a0f1d]">
                   تفاصيل الوحدة: {unit.unitNumber}
                 </h2>
-                <StatusBadge tone={unit.status === "available" ? "success" : "neutral"}>
+                <StatusBadge tone={unit.status === "available" ? "success" : "default"}>
                   {unit.status === "available" ? "متاحة" : "مباعة/مؤجرة"}
                 </StatusBadge>
               </div>
@@ -216,7 +216,7 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                 <div>
                   <h3 className="text-lg font-bold text-[#0a0f1d] mb-4">صور الوحدة</h3>
                   <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    {unit.images.map((url, idx) => (
+                    {unit.images.map((url: string, idx: number) => (
                       <div key={idx} className="aspect-video overflow-hidden rounded-[16px] border border-[#0a0f1d]/10 bg-white">
                         <img src={url} alt="" className="h-full w-full object-cover" />
                       </div>
