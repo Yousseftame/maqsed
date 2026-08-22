@@ -8,6 +8,8 @@ import { ADMIN_NAV, type AdminNavLink } from "@/features/admin/data/nav";
 import { useAdminSignOut } from "@/features/admin/hooks/useAdminSignOut";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
+import { useQuery } from "@tanstack/react-query";
+import { requestsService } from "@/features/admin/customers/requests.service";
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
 
@@ -25,6 +27,20 @@ export function AdminSidebar({
   const pathname = usePathname();
   const handleSignOut = useAdminSignOut();
   const { locale, t } = useLocale();
+
+  const { data: contactRequests = [] } = useQuery({
+    queryKey: ["contactRequests"],
+    queryFn: () => requestsService.getContactRequests(),
+    refetchInterval: 30000,
+  });
+
+  const { data: sellRequests = [] } = useQuery({
+    queryKey: ["sellRequests"],
+    queryFn: () => requestsService.getSellRequests(),
+    refetchInterval: 30000,
+  });
+
+  const newRequestsCount = contactRequests.filter((r) => r.status === "new").length + sellRequests.filter((r) => r.status === "new").length;
 
   return (
     <>
@@ -121,10 +137,14 @@ export function AdminSidebar({
               );
             }
 
+            const dynamicItem = entry.labelKey === "admin.nav.customers"
+              ? { ...entry, badge: newRequestsCount > 0 ? newRequestsCount : undefined }
+              : entry;
+
             return (
               <NavLink
                 key={entry.href}
-                item={entry}
+                item={dynamicItem}
                 label={t(entry.labelKey)}
                 collapsed={collapsed}
                 active={isNavActive(pathname, entry.href)}

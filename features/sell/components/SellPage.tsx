@@ -3,9 +3,10 @@
 import { useState, type FormEvent } from "react";
 import toast from "react-hot-toast";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Loader2 } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
+import { requestsService } from "@/features/admin/customers/requests.service";
 
 const propertyTypes = [
   "apartment",
@@ -54,15 +55,27 @@ const initialForm = {
 export function SellPage() {
   const { t, locale, isRtl } = useLocale();
   const [form, setForm] = useState(initialForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const update = (key: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    toast.success(t("sellPage.form.success"));
-    setForm(initialForm);
+    if (isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+      await requestsService.addSellRequest(form);
+      toast.success(t("sellPage.form.success"));
+      setForm(initialForm);
+    } catch (error) {
+      console.error("Error submitting sell request:", error);
+      toast.error(t("admin.ui.error") || "Error submitting request");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -162,42 +175,23 @@ export function SellPage() {
               </Field>
 
               <Field label={t("sellPage.form.city")}>
-                <div className="relative">
-                  <select
-                    required
-                    value={form.city}
-                    onChange={(e) => update("city", e.target.value)}
-                    className={`${inputClass} appearance-none pr-8 text-[#8c8c8c]`}
-                  >
-                    <option value="" disabled hidden>
-                      {t("sellPage.form.cityPlaceholder")}
-                    </option>
-                    <option value="riyadh">{isRtl ? "الرياض" : "Riyadh"}</option>
-                  </select>
-                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#6A2B92]">
-                    ▾
-                  </span>
-                </div>
+                <input
+                  required
+                  value={form.city}
+                  onChange={(e) => update("city", e.target.value)}
+                  className={inputClass}
+                  placeholder={t("sellPage.form.cityPlaceholder")}
+                />
               </Field>
 
               <Field label={t("sellPage.form.neighborhood")}>
-                <div className="relative">
-                  <select
-                    required
-                    value={form.neighborhood}
-                    onChange={(e) => update("neighborhood", e.target.value)}
-                    className={`${inputClass} appearance-none pr-8 text-[#8c8c8c]`}
-                  >
-                    <option value="" disabled hidden>
-                      {t("sellPage.form.neighborhoodPlaceholder")}
-                    </option>
-                    <option value="narjis">{isRtl ? "النرجس" : "An Narjis"}</option>
-                    <option value="malqa">{isRtl ? "الملقا" : "Al Malqa"}</option>
-                  </select>
-                  <span className="pointer-events-none absolute right-0 top-1/2 -translate-y-1/2 text-[#6A2B92]">
-                    ▾
-                  </span>
-                </div>
+                <input
+                  required
+                  value={form.neighborhood}
+                  onChange={(e) => update("neighborhood", e.target.value)}
+                  className={inputClass}
+                  placeholder={t("sellPage.form.neighborhoodPlaceholder")}
+                />
               </Field>
 
               <Field label={t("sellPage.form.googleMapsLink")} className="sm:col-span-2">
@@ -277,7 +271,7 @@ export function SellPage() {
                     required
                     type="tel"
                     value={form.mobileNumber}
-                    onChange={(e) => update("mobileNumber", e.target.value)}
+                    onChange={(e) => update("mobileNumber", e.target.value.replace(/[^\d+]/g, ""))}
                     className={inputClass}
                     placeholder={t("sellPage.form.mobileNumberPlaceholder")}
                     dir="ltr"
@@ -292,10 +286,17 @@ export function SellPage() {
               </p>
               <button
                 type="submit"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#17C3B3] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98]"
+                disabled={isSubmitting}
+                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#17C3B3] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none"
               >
-                {t("sellPage.form.submit")}
-                <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
+                {isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    {t("sellPage.form.submit")}
+                    <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
+                  </>
+                )}
               </button>
             </div>
           </form>

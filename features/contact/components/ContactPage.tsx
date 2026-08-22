@@ -3,9 +3,10 @@
 import { useState, type FormEvent } from "react";
 import toast from "react-hot-toast";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import { ArrowUpRight, Mail, Phone, MapPin } from "lucide-react";
+import { ArrowUpRight, Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
+import { requestsService } from "@/features/admin/customers/requests.service";
 
 const subjects = ["general", "buy", "sell", "partnership", "support"];
 
@@ -61,16 +62,31 @@ export function ContactPage() {
   const { t, locale, isRtl } = useLocale();
   const [subject, setSubject] = useState(subjects[0]);
   const [form, setForm] = useState(initialForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const update = (key: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const onSubmit = (event: FormEvent) => {
+  const onSubmit = async (event: FormEvent) => {
     event.preventDefault();
-    toast.success(t("contactPage.form.success"));
-    setForm(initialForm);
-    setSubject(subjects[0]);
+    if (isSubmitting) return;
+
+    try {
+      setIsSubmitting(true);
+      await requestsService.addContactRequest({
+        ...form,
+        subject,
+      });
+      toast.success(t("contactPage.form.success"));
+      setForm(initialForm);
+      setSubject(subjects[0]);
+    } catch (error) {
+      console.error("Error submitting contact request:", error);
+      toast.error(t("admin.ui.error") || "Error submitting request");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -209,8 +225,9 @@ export function ContactPage() {
               <Field label={t("contactPage.form.phone")} className="sm:col-span-2">
                 <input
                   type="tel"
+                  required
                   value={form.phone}
-                  onChange={(e) => update("phone", e.target.value)}
+                  onChange={(e) => update("phone", e.target.value.replace(/[^\d+]/g, ""))}
                   className={inputClass}
                   placeholder={t("contactPage.form.phonePlaceholder")}
                   dir="ltr"
@@ -234,10 +251,17 @@ export function ContactPage() {
               </p>
               <button
                 type="submit"
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#17C3B3] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98]"
+                disabled={isSubmitting}
+                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#17C3B3] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none"
               >
-                {t("contactPage.form.submit")}
-                <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
+                {isSubmitting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <>
+                    {t("contactPage.form.submit")}
+                    <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
+                  </>
+                )}
               </button>
             </div>
           </form>
