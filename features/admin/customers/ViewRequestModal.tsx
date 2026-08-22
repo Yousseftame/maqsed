@@ -96,7 +96,22 @@ export function ViewRequestModal({
                 <Field label={t("sellPage.form.bathroomsCount") || "Bathrooms"} value={(request as SellRequest).bathroomsCount} />
                 <Field label={t("sellPage.form.propertyAge") || "Age"} value={(request as SellRequest).propertyAge} />
                 <div className="sm:col-span-2">
-                  <Field label={t("sellPage.form.googleMapsLink") || "Maps Link"} value={(request as SellRequest).googleMapsLink} dir="ltr" />
+                  <Field 
+                    label={t("sellPage.form.googleMapsLink") || "Maps Link"} 
+                    value={
+                      (request as SellRequest).googleMapsLink ? (
+                        <a 
+                          href={(request as SellRequest).googleMapsLink.startsWith("http") ? (request as SellRequest).googleMapsLink : `https://${(request as SellRequest).googleMapsLink}`}
+                          target="_blank" 
+                          rel="noreferrer"
+                          className="text-blue-600 hover:underline break-all"
+                        >
+                          {(request as SellRequest).googleMapsLink}
+                        </a>
+                      ) : "-"
+                    } 
+                    dir="ltr" 
+                  />
                 </div>
                 <div className="sm:col-span-2">
                   <Field label={t("sellPage.form.additionalFeatures") || "Additional Features"} value={(request as SellRequest).additionalFeatures} />

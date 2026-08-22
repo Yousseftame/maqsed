@@ -37,9 +37,9 @@ export type AdminNavEntry = AdminNavLink | AdminNavDivider | AdminNavHeading;
 
 export const ADMIN_NAV: AdminNavEntry[] = [
   { type: "link", labelKey: "admin.nav.overview", href: "/admin/dashboard", icon: LayoutGrid },
+  { type: "link", labelKey: "admin.nav.cities", href: "/admin/cities", icon: Map },
   { type: "link", labelKey: "admin.nav.projects", href: "/admin/projects", icon: Folder },
   { type: "link", labelKey: "admin.nav.units", href: "/admin/units", icon: Building2 },
-  { type: "link", labelKey: "admin.nav.cities", href: "/admin/cities", icon: Map },
   { type: "divider" },
   {
     type: "link",
