@@ -16,7 +16,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         <div className="flex-shrink-0 flex items-center justify-between px-8 pt-8 pb-0">
           <Link href="/" className="inline-flex items-center">
             <Image
-              src="/lgoogg.png"
+              src="/svglogo.svg"
               alt="Maqsed"
               width={110}
               height={28}

@@ -3,8 +3,7 @@ import Script from "next/script";
 import {
   plusJakartaSans,
   manrope,
-  cairo,
-  notoKufiArabic,
+  ibmPlexSansArabic,
 } from "./fonts";
 import "./globals.css";
 import { SmoothScrollProvider } from "@/components/providers/SmoothScrollProvider";
@@ -36,7 +35,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} ${manrope.variable} ${cairo.variable} ${notoKufiArabic.variable} min-h-full antialiased`}
+      className={`${plusJakartaSans.variable} ${manrope.variable} ${ibmPlexSansArabic.variable} min-h-full antialiased`}
     >
       <head>
         <script

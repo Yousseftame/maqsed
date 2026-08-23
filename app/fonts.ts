@@ -1,8 +1,7 @@
 import {
   Plus_Jakarta_Sans,
   Manrope,
-  Cairo,
-  Noto_Kufi_Arabic,
+  IBM_Plex_Sans_Arabic,
 } from "next/font/google";
 
 export const plusJakartaSans = Plus_Jakarta_Sans({
@@ -19,18 +18,10 @@ export const manrope = Manrope({
   weight: ["400", "500", "600", "700"],
 });
 
-/** Arabic headings — bold & modern */
-export const cairo = Cairo({
+/** Arabic UI and Headings */
+export const ibmPlexSansArabic = IBM_Plex_Sans_Arabic({
   subsets: ["arabic", "latin"],
-  variable: "--font-cairo",
-  display: "swap",
-  weight: ["700", "800", "900"],
-});
-
-/** Arabic body / UI */
-export const notoKufiArabic = Noto_Kufi_Arabic({
-  subsets: ["arabic"],
-  variable: "--font-noto-kufi",
+  variable: "--font-ibm-plex-sans-arabic",
   display: "swap",
   weight: ["400", "500", "600", "700"],
 });

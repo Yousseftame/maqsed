@@ -16,33 +16,7 @@ export function FAQSection() {
   };
 
   return (
-    <section className="relative z-30 w-full overflow-hidden rounded-b-[2.5rem] bg-white px-6 py-24 md:rounded-b-[3.5rem] md:px-12 lg:rounded-b-[4rem] lg:px-20">
-      {/* Background Watermarks */}
-      <div
-        className="pointer-events-none absolute bottom-0 left-0 select-none"
-        aria-hidden
-      >
-        <Image
-          src="/faq_left.png"
-          alt=""
-          width={600}
-          height={600}
-          className="h-[200px] w-auto max-w-none object-contain opacity-100 md:h-[280px]"
-        />
-      </div>
-      <div
-        className="pointer-events-none absolute bottom-0 right-0 select-none"
-        aria-hidden
-      >
-        <Image
-          src="/faq_right.png"
-          alt=""
-          width={600}
-          height={600}
-          className="h-[200px] w-auto max-w-none object-contain opacity-100 md:h-[280px]"
-        />
-      </div>
-
+    <section className="relative z-30 w-full overflow-hidden bg-white px-6 py-24 md:px-12 lg:px-20">
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center text-center">
         
         {/* Top Badge */}

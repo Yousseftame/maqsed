@@ -4,7 +4,7 @@ import { useState, useEffect, useRef, useMemo } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import { Bed, Bath, Map, ArrowUpRight } from "lucide-react";
+import { Clock, Building2, ArrowUpLeft, ArrowUpRight } from "lucide-react";
 import { allProperties } from "@/features/properties/data/listings";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
@@ -122,71 +122,57 @@ export function PropertiesSection() {
             <Link
               key={prop.id}
               href={`/properties/${prop.id}`}
-              className="group flex cursor-pointer flex-col"
+              className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
               onMouseEnter={() => setIsHoveringCard(true)}
               onMouseLeave={() => setIsHoveringCard(false)}
             >
-              <div className="relative mb-6 aspect-[15/16] w-full overflow-hidden rounded-2xl">
+              <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200">
                 <Image
                   src={prop.image}
                   alt={prop.title}
                   fill
-                  className="object-cover transition-transform duration-700"
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
-                <div className="pointer-events-none absolute inset-0 bg-black/20 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                <div className="absolute top-5 start-5 z-10 flex flex-wrap gap-2 items-start pointer-events-none">
-                  <div className="flex items-center justify-center rounded-full bg-[#17C3B3] px-3 py-2 text-[17px] leading-none font-bold tracking-tight text-white shadow-md">
-                    {prop.type === "Luxury Apartment" ? t("properties.types.apartment") : 
-                     prop.type === "Modern Vila" || prop.type === "Modern Villa" ? t("properties.types.villa") :
-                     prop.type === "Family House" ? t("properties.types.house") : 
-                     prop.type}
-                  </div>
-                  {prop.tag === "SOLD OUT" && (
-                    <div className="flex items-center justify-center rounded-full bg-red-500 px-3 py-2 text-[17px] leading-none font-bold tracking-tight text-white shadow-md">
-                      {isRtl ? "مباع" : "Sold Out"}
-                    </div>
-                  )}
+                
+                {/* Top Badge: "قريباً" */}
+                <div className="absolute top-4 start-4 z-10 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-4 py-1.5 text-sm font-medium text-white shadow-sm backdrop-blur-md">
+                  <Clock className="h-4 w-4" />
+                  <span>{isRtl ? "قريباً" : "Soon"}</span>
                 </div>
               </div>
 
-              <div className="flex flex-col px-2">
-                <div className="flex items-center justify-between w-full mb-1">
-                  <h3 className="text-[2rem] leading-tight font-semibold text-[#0a0f1d]">
-                    {prop.price}
-                  </h3>
-                  {prop.tag === "SOLD OUT" && (prop.buyerEn || prop.buyerAr) && (
-                    <p className="text-sm font-bold tracking-wide text-red-600">
-                      {isRtl ? `المالك: ${prop.buyerAr}` : `Owned by: ${prop.buyerEn}`}
-                    </p>
-                  )}
+              <div className="flex flex-col p-5 text-start">
+                {/* Type Badge (e.g. أدوار) */}
+                <div className="mb-2 flex items-center gap-1.5 text-sm font-medium text-[#8c8c8c]">
+                  <Building2 className="h-4 w-4" />
+                  <span>{isRtl ? prop.typeAr : prop.type}</span>
                 </div>
-                <div className="mb-4 flex flex-col items-start gap-1">
-                  <h4 className="text-2xl font-bold text-[#0a0f1d]">
+
+                <div className="mb-3 flex flex-col">
+                  <h3 className="mb-1 text-2xl font-bold text-[#0a0f1d]">
                     {isRtl ? prop.titleAr : prop.title}
-                  </h4>
+                  </h3>
+                  <p className="text-sm font-medium text-[#8c8c8c]">
+                    {isRtl ? `${prop.addressAr.split('،')[0]} - الرياض` : `${prop.address.split(',')[0]} - Riyadh`}
+                  </p>
                 </div>
-                <p className="mb-6 text-[1.05rem] leading-relaxed font-semibold whitespace-pre-line text-[#8c8c8c]">
-                  {isRtl ? prop.addressAr : prop.address}
+
+                <p className="text-sm leading-relaxed text-[#8c8c8c] line-clamp-2">
+                  {isRtl 
+                    ? "مشروع جديد قيد الإعداد - سجل اهتمامك لتكون أول من يعرف عند الإطلاق." 
+                    : "New project in preparation - register your interest to be the first to know upon launch."}
                 </p>
 
-                <div className="mt-auto flex items-center gap-6">
-                  <div className="flex items-center gap-2 text-[#8c8c8c]">
-                    <Bed className="h-6 w-6 stroke-[2] text-[#17C3B3]" />
-                    <span className="text-[1rem] font-bold">
-                      {prop.beds} {t("properties.bed")}
-                    </span>
+                <hr className="my-5 border-gray-100" />
+
+                <div className="flex items-center justify-between text-sm font-bold">
+                  <div className="text-[#8c8c8c]">
+                    {isRtl ? "يتاح للحجز قريباً" : "Available for booking soon"}
                   </div>
-                  <div className="flex items-center gap-2 text-[#8c8c8c]">
-                    <Bath className="h-6 w-6 stroke-[2] text-[#17C3B3]" />
-                    <span className="text-[1rem] font-bold">
-                      {prop.baths} {t("properties.bath")}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[#8c8c8c]">
-                    <Map className="h-6 w-6 stroke-[2] text-[#17C3B3]" />
-                    <span className="text-[1rem] font-bold">
-                      {prop.sqft} {t("properties.sqft")}
-                    </span>
+                  <div className="flex items-center gap-1.5 text-[#0a0f1d] transition-colors group-hover:text-[#6A2B92]">
+                    {!isRtl && <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />}
+                    <span>{isRtl ? "اكتشف المزيد" : "Discover More"}</span>
+                    {isRtl && <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-x-0.5 group-hover:-translate-y-0.5" />}
                   </div>
                 </div>
               </div>

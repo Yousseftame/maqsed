@@ -23,38 +23,7 @@ export function HeroSection() {
         }}
       />
 
-      {/* Decorative Icons */}
-      <div className={`absolute bottom-0 end-0 hidden lg:flex flex-row items-end pointer-events-none z-0 pe-6 lg:pe-12 xl:pe-16`}>
-        
-        {/* 5 Small Icons (towards center) */}
-        <div className="flex flex-row items-end h-32 opacity-20">
-          {[...Array(5)].map((_, i) => (
-            <img 
-              key={i} 
-              src="/iconheroimg.png" 
-              alt="" 
-              className={`h-full w-auto object-contain shrink-0 ${!isRtl ? "scale-x-[-1]" : ""}`} 
-            />
-          ))}
-        </div>
 
-        {/* Large Side Icon */}
-        <img 
-          src="/iconheroimg.png" 
-          alt="" 
-          className={`h-[450px] w-auto object-contain opacity-100 brightness-200 shrink-0 ${!isRtl ? "scale-x-[-1]" : ""}`} 
-        />
-
-        {/* 1 Small Icon (on the far edge) */}
-        <div className="flex flex-row items-end h-32 opacity-20">
-          <img 
-            src="/iconheroimg.png" 
-            alt="" 
-            className={`h-full w-auto object-contain shrink-0 ${!isRtl ? "scale-x-[-1]" : ""}`} 
-          />
-        </div>
-
-      </div>
 
 
       <div className="mx-auto w-full max-w-[1400px] flex flex-col lg:flex-row items-center justify-start z-10 relative px-6 py-16 sm:px-12 lg:px-20 lg:py-20">

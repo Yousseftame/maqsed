@@ -3,12 +3,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { useAuth } from "@/features/auth/AuthProvider";
-import { AFTER_LOGIN_PATH } from "@/lib/auth/constants";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
 
 export function Navbar() {
@@ -16,14 +14,22 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { locale, isRtl, setLocale, t } = useLocale();
 
-  const navLinks = [
+  type NavLink = {
+    name: string;
+    href?: string;
+    dropdown?: { name: string; href: string }[];
+  };
+
+  const navLinks: NavLink[] = [
     { name: t("nav.home"), href: "/" },
     { name: t("nav.about"), href: "/about" },
-    { name: t("nav.properties"), href: "/properties" },
-    { name: t("nav.units"), href: "/units" },
-    { name: t("nav.sell"), href: "/sell" },
-    { name: t("nav.contact"), href: "/contact" },
-    { name: t("nav.faq"), href: "/faq" },
+    { 
+      name: isRtl ? "المشاريع" : "Projects", 
+      dropdown: [
+        { name: isRtl ? "وحدات مستقلة" : "Independent Units", href: "/properties" },
+        { name: isRtl ? "وحدات" : "Units", href: "/properties" },
+      ]
+    },
   ];
 
   const menuOrigin = isRtl ? "28px 32px" : "calc(100% - 28px) 32px";
@@ -35,11 +41,11 @@ export function Navbar() {
           <div className="flex flex-shrink-0 items-center">
             <Link href="/" className="flex items-center gap-2">
               <Image
-                src="/lgoogg.png"
+                src="/svglogo.svg"
                 alt="MAQSED Logo"
-                width={120}
-                height={32}
-                className="object-contain"
+                width={180}
+                height={48}
+                className="w-[150px] h-auto object-contain"
                 priority
               />
             </Link>
@@ -47,15 +53,53 @@ export function Navbar() {
 
           <nav className="hidden items-center gap-5 md:flex">
             {navLinks.map((link) => {
+              if (link.dropdown) {
+                const isActive = pathname.startsWith("/properties");
+                return (
+                  <div key={link.name} className="group relative flex h-16 items-center">
+                    <div
+                      className={cn(
+                        "relative flex cursor-pointer items-center gap-1.5 text-[16px] transition-colors duration-200",
+                        isActive
+                          ? "font-medium text-[#6A2B92]"
+                          : "font-normal text-[#6B7280] group-hover:text-[#6A2B92]"
+                      )}
+                    >
+                      {link.name}
+                      <ChevronDown className="h-4 w-4 opacity-50 transition-transform group-hover:rotate-180" />
+                      
+                      {isActive && (
+                        <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-4 -translate-x-1/2 rounded-full bg-[#17C3B3]" />
+                      )}
+                      {!isActive && (
+                        <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-0 -translate-x-1/2 rounded-full bg-[#17C3B3] transition-all duration-300 group-hover:w-full" />
+                      )}
+                    </div>
+                    
+                    <div className="absolute start-0 top-full hidden w-48 flex-col rounded-xl border border-gray-100 bg-white p-2 shadow-lg group-hover:flex">
+                      {link.dropdown.map((item) => (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          className="rounded-lg px-4 py-2.5 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-50 hover:text-[#6A2B92] hover:font-bold"
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                );
+              }
+
               const isActive =
                 link.href === "/"
                   ? pathname === "/"
                   : pathname === link.href || pathname.startsWith(`${link.href}/`);
 
               return (
-                <div key={link.href} className="group flex h-16 items-center">
+                <div key={link.name} className="group flex h-16 items-center">
                   <Link
-                    href={link.href}
+                    href={link.href!}
                     className={cn(
                       "relative flex items-center gap-1.5 text-[16px] transition-colors duration-200",
                       isActive
@@ -81,9 +125,12 @@ export function Navbar() {
           <div className="hidden items-center gap-4 md:flex">
             <LanguageToggle />
 
-            <AuthNavLink
+            <Link
+              href="/contact"
               className="rounded-full bg-[#17C3B3] px-6 py-2 text-[16px] font-medium text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15"
-            />
+            >
+              {t("nav.contact")}
+            </Link>
           </div>
 
           <div className="flex items-center md:hidden">
@@ -126,11 +173,11 @@ export function Navbar() {
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <Image
-              src="/lgoogg.png"
+              src="/svglogo.svg"
               alt="MAQSED Logo"
-              width={120}
-              height={32}
-              className="object-contain"
+              width={180}
+              height={48}
+              className="w-[150px] h-auto object-contain"
             />
           </Link>
           <button
@@ -145,41 +192,64 @@ export function Navbar() {
         <div className="flex flex-1 flex-col justify-center px-6 pb-10 sm:px-10">
           <nav className="flex flex-col gap-5">
             {navLinks.map((link, i) => (
-              <div key={link.href} className="overflow-hidden">
-                <Link
-                  href={link.href}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={cn(
-                    "group flex items-end gap-4 text-[42px] font-light tracking-tighter transition-all duration-500 sm:text-[56px]",
-                    pathname === link.href
-                      ? "text-[#6A2B92]"
-                      : "text-gray-400 hover:text-[#6A2B92]"
-                  )}
-                  style={{
-                    transform: isMobileMenuOpen
-                      ? "translateY(0)"
-                      : "translateY(100%)",
-                    opacity: isMobileMenuOpen ? 1 : 0,
-                    transition: `all 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${
-                      isMobileMenuOpen ? 0.2 + i * 0.1 : 0
-                    }s`,
-                  }}
-                >
-                  <span className="mb-3 font-mono text-sm text-gray-300 transition-colors duration-500 group-hover:text-gray-400 sm:mb-5">
-                    0{i + 1}
-                  </span>
-                  <span className="relative inline-block leading-none pb-2">
-                    {link.name}
-                    <span
-                      className={cn(
-                        "absolute bottom-0 start-0 h-[3px] bg-[#17C3B3] transition-all duration-500 ease-out",
-                        pathname === link.href
-                          ? "w-full"
-                          : "w-0 group-hover:w-full"
-                      )}
-                    />
-                  </span>
-                </Link>
+              <div key={link.name} className="overflow-hidden">
+                {link.dropdown ? (
+                  <div
+                    className="flex flex-col gap-2 transition-all duration-500"
+                    style={{
+                      transform: isMobileMenuOpen ? "translateY(0)" : "translateY(100%)",
+                      opacity: isMobileMenuOpen ? 1 : 0,
+                      transition: `all 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${isMobileMenuOpen ? 0.2 + i * 0.1 : 0}s`,
+                    }}
+                  >
+                    <div className="flex items-end gap-4 text-[42px] font-light tracking-tighter sm:text-[56px] text-[#6A2B92]">
+                      <span className="mb-3 font-mono text-sm text-gray-300 sm:mb-5">0{i + 1}</span>
+                      <span className="relative inline-block leading-none pb-2">
+                        {link.name}
+                        <span className="absolute bottom-0 start-0 h-[3px] w-full bg-[#17C3B3]" />
+                      </span>
+                    </div>
+                    <div className="ms-12 mt-2 flex flex-col gap-4">
+                      {link.dropdown.map((item) => (
+                        <Link
+                          key={item.name}
+                          href={item.href}
+                          onClick={() => setIsMobileMenuOpen(false)}
+                          className="text-2xl font-light text-gray-500 transition-colors hover:text-[#6A2B92]"
+                        >
+                          {item.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    href={link.href!}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={cn(
+                      "group flex items-end gap-4 text-[42px] font-light tracking-tighter transition-all duration-500 sm:text-[56px]",
+                      pathname === link.href ? "text-[#6A2B92]" : "text-gray-400 hover:text-[#6A2B92]"
+                    )}
+                    style={{
+                      transform: isMobileMenuOpen ? "translateY(0)" : "translateY(100%)",
+                      opacity: isMobileMenuOpen ? 1 : 0,
+                      transition: `all 0.7s cubic-bezier(0.22, 1, 0.36, 1) ${isMobileMenuOpen ? 0.2 + i * 0.1 : 0}s`,
+                    }}
+                  >
+                    <span className="mb-3 font-mono text-sm text-gray-300 transition-colors duration-500 group-hover:text-gray-400 sm:mb-5">
+                      0{i + 1}
+                    </span>
+                    <span className="relative inline-block leading-none pb-2">
+                      {link.name}
+                      <span
+                        className={cn(
+                          "absolute bottom-0 start-0 h-[3px] bg-[#17C3B3] transition-all duration-500 ease-out",
+                          pathname === link.href ? "w-full" : "w-0 group-hover:w-full"
+                        )}
+                      />
+                    </span>
+                  </Link>
+                )}
               </div>
             ))}
           </nav>
@@ -226,10 +296,13 @@ export function Navbar() {
               </div>
             </button>
 
-            <AuthNavLink
-              className="w-full rounded-full bg-[#17C3B3] px-6 py-4 text-center text-lg font-medium text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15"
+            <Link
+              href="/contact"
               onClick={() => setIsMobileMenuOpen(false)}
-            />
+              className="w-full rounded-full bg-[#17C3B3] px-6 py-4 text-center text-lg font-medium text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15"
+            >
+              {t("nav.contact")}
+            </Link>
           </div>
 
           <div className="flex items-center justify-between pt-2 font-mono text-[11px] tracking-widest text-gray-400 uppercase">
@@ -239,38 +312,5 @@ export function Navbar() {
         </div>
       </div>
     </header>
-  );
-}
-
-function AuthNavLink({
-  className,
-  onClick,
-}: {
-  className: string;
-  onClick?: () => void;
-}) {
-  const { user, loading } = useAuth();
-  const { t } = useLocale();
-
-  if (loading) {
-    return (
-      <span className={cn(className, "pointer-events-none opacity-0")}>
-        {t("nav.signIn")}
-      </span>
-    );
-  }
-
-  if (user) {
-    return (
-      <Link href={AFTER_LOGIN_PATH} className={className} onClick={onClick}>
-        {t("nav.dashboard")}
-      </Link>
-    );
-  }
-
-  return (
-    <Link href="/login" className={className} onClick={onClick}>
-      {t("nav.signIn")}
-    </Link>
   );
 }

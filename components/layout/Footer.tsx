@@ -30,15 +30,16 @@ const InstagramIcon = ({ className }: { className?: string }) => (
 );
 
 const socialIconClass =
-  "flex h-11 w-11 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-colors duration-300 hover:bg-[#6A2B92] hover:text-white";
+  "flex h-10 w-10 items-center justify-center rounded-full border border-gray-700 text-gray-400 transition-colors duration-300 hover:border-[#17C3B3] hover:text-[#17C3B3] hover:bg-[#17C3B3]/10";
 
 export function Footer() {
-  const { t } = useLocale();
+  const { t, locale } = useLocale();
 
   const importantLinks = [
     { label: t("nav.home"), href: "/" },
     { label: t("nav.about"), href: "/about" },
     { label: t("nav.properties"), href: "/properties" },
+    { label: t("nav.units"), href: "/units" },
     { label: t("nav.sell"), href: "/sell" },
     { label: t("nav.contact"), href: "/contact" },
   ];
@@ -51,17 +52,17 @@ export function Footer() {
 
   const contactItems = [
     {
-      icon: Mail,
-      label: t("contactPage.contactDetails.email"),
-      value: t("footer.email"),
-      href: `mailto:${t("footer.email")}`,
-      dir: "ltr" as const,
-    },
-    {
       icon: Phone,
       label: t("contactPage.contactDetails.phone"),
       value: t("footer.phone"),
       href: `tel:${t("footer.phone").replace(/\s/g, "")}`,
+      dir: "ltr" as const,
+    },
+    {
+      icon: Mail,
+      label: t("contactPage.contactDetails.email"),
+      value: t("footer.email"),
+      href: `mailto:${t("footer.email")}`,
       dir: "ltr" as const,
     },
     {
@@ -74,124 +75,101 @@ export function Footer() {
   ];
 
   return (
-    <footer className="relative z-30 w-full bg-[#0a0f1d] px-4 py-10 sm:px-6 md:px-8 lg:px-10 lg:py-16 xl:px-12">
-      <div className="mx-auto w-full max-w-[1680px]">
-        <div className="rounded-[2.5rem] bg-white px-8 py-14 sm:px-12 md:rounded-[3.5rem] md:px-16 md:py-16 lg:rounded-[4rem] lg:px-20 lg:py-20">
-          <div className="flex flex-col gap-12 lg:flex-row lg:items-stretch lg:gap-0">
-            <div className="flex flex-col gap-6 lg:w-[32%] lg:pe-12">
-              <Link href="/" className="w-fit">
-                <Image
-                  src="/lgoogg.png"
-                  alt="MAQSED Logo"
-                  width={200}
-                  height={52}
-                  className="h-auto w-[170px] object-contain md:w-[200px]"
-                />
+    <footer className="w-full bg-[#0a0f1d] px-6 py-12 lg:px-12 lg:py-16 text-gray-300">
+      <div className="mx-auto w-full max-w-[1400px]">
+        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+          
+          {/* Column 1: Logo & Description */}
+          <div className="flex flex-col gap-4">
+            <Link href="/" className="w-fit rounded-lg bg-white p-2">
+              <Image
+                src="/svglogo.svg"
+                alt="MAQSED Logo"
+                width={150}
+                height={40}
+                className="h-auto w-[150px] object-contain"
+              />
+            </Link>
+            <p className="max-w-xs text-sm leading-relaxed text-gray-400">
+              {t("footer.description")}
+            </p>
+          </div>
+
+          {/* Column 2: Quick Links */}
+          <div className="flex flex-col gap-5">
+            <h3 className="text-lg font-bold text-white">
+              {t("footer.importantLinks")}
+            </h3>
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-3">
+              {[...importantLinks, ...legalLinks].map((link) => (
+                <li key={link.label}>
+                  <Link
+                    href={link.href}
+                    className="text-sm text-gray-400 transition-colors hover:text-[#17C3B3]"
+                  >
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* Column 3: Contact */}
+          <div className="flex flex-col gap-5">
+            <h3 className="text-lg font-bold text-white">
+              {t("footer.contactUs")}
+            </h3>
+            <ul className="flex flex-col gap-4">
+              {contactItems.map((item, idx) => {
+                const Icon = item.icon;
+                return (
+                  <li key={idx}>
+                    {item.href ? (
+                      <a href={item.href} className="flex items-start gap-3 transition-colors hover:text-[#17C3B3]">
+                        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#17C3B3]" />
+                        <span className="text-sm text-gray-400" dir={item.dir}>{item.value}</span>
+                      </a>
+                    ) : (
+                      <div className="flex items-start gap-3">
+                        <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#17C3B3]" />
+                        <span className="text-sm text-gray-400" dir={item.dir}>{item.value}</span>
+                      </div>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+
+          {/* Column 4: Socials */}
+          <div className="flex flex-col gap-5">
+            <h3 className="text-lg font-bold text-white">
+              {locale === 'ar' ? 'تابعنا' : 'Follow Us'}
+            </h3>
+            <div className="flex items-center gap-3">
+              <Link href="#" className={socialIconClass} aria-label={t("footer.socials.linkedin")}>
+                <LinkedinIcon className="h-4 w-4" />
               </Link>
-              <p className="max-w-md text-lg leading-relaxed font-semibold text-gray-500">
-                {t("footer.description")}
-              </p>
-              <div className="mt-2 flex items-center gap-3">
-                <Link href="#" className={socialIconClass} aria-label={t("footer.socials.linkedin")}>
-                  <LinkedinIcon className="h-4 w-4" />
-                </Link>
-                <Link href="#" className={socialIconClass} aria-label={t("footer.socials.facebook")}>
-                  <FacebookIcon className="h-4 w-4" />
-                </Link>
-                <Link href="#" className={socialIconClass} aria-label={t("footer.socials.instagram")}>
-                  <InstagramIcon className="h-4 w-4" />
-                </Link>
-                <Link href="#" className={socialIconClass} aria-label={t("footer.socials.twitter")}>
-                  <TwitterIcon className="h-4 w-4" />
-                </Link>
-              </div>
-            </div>
-
-            <div className="hidden w-px self-stretch bg-gray-200 lg:block" />
-
-            <div className="lg:w-[36%] lg:px-12">
-              <h3 className="mb-8 w-fit border-b-2 border-[#6A2B92] pb-2 text-2xl font-extrabold text-[#6A2B92]">
-                {t("footer.importantLinks")}
-              </h3>
-              <div className="grid grid-cols-2 gap-x-8">
-                <ul className="flex flex-col gap-4">
-                  {importantLinks.map((link) => (
-                    <li key={link.href}>
-                      <Link
-                        href={link.href}
-                        className="text-base font-semibold text-gray-600 transition-colors hover:text-[#6A2B92]"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-                <ul className="flex flex-col gap-4">
-                  {legalLinks.map((link) => (
-                    <li key={link.label}>
-                      <Link
-                        href={link.href}
-                        className="text-base font-semibold text-gray-600 transition-colors hover:text-[#6A2B92]"
-                      >
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-
-            <div className="hidden w-px self-stretch bg-gray-200 lg:block" />
-
-            <div className="lg:w-[32%] lg:ps-12">
-              <h3 className="mb-8 w-fit border-b-2 border-[#6A2B92] pb-2 text-2xl font-extrabold text-[#6A2B92]">
-                {t("footer.contactUs")}
-              </h3>
-              <div className="flex flex-col gap-6">
-                {contactItems.map((item) => {
-                  const Icon = item.icon;
-                  const content = (
-                    <>
-                      <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-[#17C3B3] text-white">
-                        <Icon className="h-5 w-5" strokeWidth={2.2} />
-                      </div>
-                      <div className="min-w-0">
-                        <p className="text-base font-bold text-[#0a0f1d]">{item.label}</p>
-                        <p
-                          className="text-sm font-semibold text-gray-500"
-                          dir={item.dir}
-                        >
-                          {item.value}
-                        </p>
-                      </div>
-                    </>
-                  );
-
-                  return item.href ? (
-                    <a
-                      key={item.label}
-                      href={item.href}
-                      className="flex items-start gap-3 transition-opacity hover:opacity-80"
-                    >
-                      {content}
-                    </a>
-                  ) : (
-                    <div key={item.label} className="flex items-start gap-3">
-                      {content}
-                    </div>
-                  );
-                })}
-              </div>
+              <Link href="#" className={socialIconClass} aria-label={t("footer.socials.facebook")}>
+                <FacebookIcon className="h-4 w-4" />
+              </Link>
+              <Link href="#" className={socialIconClass} aria-label={t("footer.socials.instagram")}>
+                <InstagramIcon className="h-4 w-4" />
+              </Link>
+              <Link href="#" className={socialIconClass} aria-label={t("footer.socials.twitter")}>
+                <TwitterIcon className="h-4 w-4" />
+              </Link>
             </div>
           </div>
 
-          <hr className="mt-12 mb-6 border-gray-200" />
+        </div>
 
-          <p className="text-center text-base font-semibold text-gray-500">
-            {t("footer.rightsPrefix")}{" "}
-            <span className="font-extrabold text-[#6A2B92]">{t("footer.brand")}</span>{" "}
-            {t("footer.rightsSuffix")}
-          </p>
+        <hr className="my-8 border-gray-800" />
+        
+        <div className="text-center text-sm text-gray-500">
+          {t("footer.rightsPrefix")}{" "}
+          <span className="font-semibold text-white">{t("footer.brand")}</span>{" "}
+          {t("footer.rightsSuffix")}
         </div>
       </div>
     </footer>

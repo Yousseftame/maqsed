@@ -7,6 +7,7 @@ import { ArrowUpRight, Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
 import { requestsService } from "@/features/admin/customers/requests.service";
+import { SellForm } from "@/features/sell/components/SellForm";
 
 const subjects = ["general", "buy", "sell", "partnership", "support"];
 
@@ -163,7 +164,8 @@ export function ContactPage() {
       </section>
 
       <section className="relative z-10 -mt-10 px-6 pb-24 md:px-12 lg:px-20 lg:pb-32">
-        <div className="mx-auto max-w-3xl rounded-3xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(10,15,29,0.08)] sm:px-10 sm:py-12 lg:px-14">
+        <div className="mx-auto max-w-[1400px] grid grid-cols-1 gap-8 xl:grid-cols-2 xl:gap-12 items-start">
+          <div className="rounded-3xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(10,15,29,0.08)] sm:px-10 sm:py-12 lg:px-14">
           <div className="mb-10 border-b border-gray-100 pb-8">
             <p className="mb-3 text-sm font-medium tracking-wide text-[#8c8c8c]">
               {t("contactPage.form.pill")}
@@ -265,6 +267,10 @@ export function ContactPage() {
               </button>
             </div>
           </form>
+          </div>
+          
+          {/* Sell Form Component */}
+          <SellForm />
         </div>
       </section>
     </div>

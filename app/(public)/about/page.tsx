@@ -19,7 +19,7 @@ export default function AboutPage() {
       <VisionMissionSection />
       <CTASection />
 
-      <StatsSection />
+      {/* <StatsSection /> */}
       <PartnersSection />
     </div>
   );
