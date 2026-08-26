@@ -59,21 +59,22 @@ export function Navbar() {
                   <div key={link.name} className="group relative flex h-16 items-center">
                     <div
                       className={cn(
-                        "relative flex cursor-pointer items-center gap-1.5 text-[16px] transition-colors duration-200",
+                        "flex cursor-pointer items-center gap-1.5 text-[16px] transition-colors duration-200",
                         isActive
                           ? "font-medium text-[#6A2B92]"
                           : "font-normal text-[#6B7280] group-hover:text-[#6A2B92]"
                       )}
                     >
-                      {link.name}
+                      <span className="relative">
+                        {link.name}
+                        {isActive && (
+                          <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-4 -translate-x-1/2 rounded-full bg-[#17C3B3]" />
+                        )}
+                        {!isActive && (
+                          <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-0 -translate-x-1/2 rounded-full bg-[#17C3B3] transition-all duration-300 group-hover:w-full" />
+                        )}
+                      </span>
                       <ChevronDown className="h-4 w-4 opacity-50 transition-transform group-hover:rotate-180" />
-                      
-                      {isActive && (
-                        <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-4 -translate-x-1/2 rounded-full bg-[#17C3B3]" />
-                      )}
-                      {!isActive && (
-                        <div className="absolute -bottom-[2px] left-1/2 h-[3px] w-0 -translate-x-1/2 rounded-full bg-[#17C3B3] transition-all duration-300 group-hover:w-full" />
-                      )}
                     </div>
                     
                     <div className="absolute start-0 top-full hidden w-48 flex-col rounded-xl border border-gray-100 bg-white p-2 shadow-lg group-hover:flex">

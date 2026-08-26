@@ -1,6 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
-import { Bed, Bath, LayoutGrid, MapPin, Building2, ArrowUpRight } from "lucide-react";
+import { Bed, Bath, MapPin, Building2, ArrowUpRight } from "lucide-react";
 import type { UnitListing } from "@/features/units/data/units";
 
 interface UnitCardProps {
@@ -62,16 +62,9 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
             )}
           </div>
 
-          <div className="mb-6 flex flex-wrap gap-4 text-sm font-semibold text-[#6A2B92]">
-            <div className="flex items-center gap-1.5">
-              <Bed className="h-4 w-4 text-gray-400 stroke-[2]" /> {unit.beds}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Bath className="h-4 w-4 text-gray-400 stroke-[2]" /> {unit.baths}
-            </div>
-            <div className="flex items-center gap-1.5">
-              <LayoutGrid className="h-4 w-4 text-gray-400 stroke-[2]" /> {unit.sqft} {isRtl ? "م²" : "sqm"}
-            </div>
+          <div className="mb-6 flex items-center gap-2 text-sm font-semibold text-gray-500">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#17C3B3]" />
+            <span>{isRtl ? "المساحة:" : "Area:"} {unit.sqft} {isRtl ? "م²" : "sqm"}</span>
           </div>
         </div>
 
@@ -158,19 +151,9 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
         </div>
 
         {/* Stats */}
-        <div className="mb-2 flex items-center gap-5 text-sm font-bold text-[#0a0f1d]">
-          <div className="flex items-center gap-2">
-            <Bed className="h-4 w-4 stroke-[2.5] text-[#17C3B3]" />
-            <span>{unit.beds}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <Bath className="h-4 w-4 stroke-[2.5] text-[#17C3B3]" />
-            <span>{unit.baths}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <LayoutGrid className="h-4 w-4 stroke-[2.5] text-[#17C3B3]" />
-            <span>{unit.sqft} {isRtl ? "م²" : "sqm"}</span>
-          </div>
+        <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-500">
+          <div className="h-1.5 w-1.5 rounded-full bg-[#17C3B3]" />
+          <span>{isRtl ? "المساحة:" : "Area:"} {unit.sqft} {isRtl ? "م²" : "sqm"}</span>
         </div>
 
         <hr className="my-5 border-gray-100" />

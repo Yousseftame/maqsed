@@ -1,27 +1,43 @@
 "use client";
 
 import Image from "next/image";
-import { Bed, Bath, LayoutGrid, MapPin, CheckCircle2, Car, Clock, Handshake, Share2, Home, ArrowUpRight, ArrowUpLeft } from "lucide-react";
+import { Bed, Bath, LayoutGrid, MapPin, CheckCircle2, Car, Clock, Handshake, Share2, Home, ArrowUpRight, ArrowUpLeft, Heart, FileText, Calendar, ChevronRight, ChevronLeft, Building2 } from "lucide-react";
 import type { PropertyListing } from "@/features/properties/data/listings";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useState } from "react";
 import { Lightbox } from "@/components/ui/Lightbox";
 import Link from "next/link";
 import { getUnitsByPropertyId } from "@/features/units/data/units";
-import { UnitCard } from "@/features/units/components/UnitCard";
+import { cn } from "@/lib/utils";
 
 type PropertyDetailProps = {
   property: PropertyListing;
 };
 
 export function PropertyDetail({ property }: PropertyDetailProps) {
-  const { isRtl } = useLocale();
+  const { t, isRtl } = useLocale();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
-  const [mainImage, topImage, bottomImage] = property.gallery;
+  const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [unitFilter, setUnitFilter] = useState<"All" | "Available" | "Reserved" | "Sold">("All");
+  
   const addressLines = (isRtl ? property.addressAr : property.address).split("\n");
+  const allUnits = getUnitsByPropertyId(property.id);
+  
+  const filteredUnits = allUnits.filter(unit => {
+    if (unitFilter === "All") return true;
+    return unit.statusEn === unitFilter;
+  });
+
+  const nextImage = () => {
+    setCurrentImageIdx((prev) => (prev + 1) % property.gallery.length);
+  };
+
+  const prevImage = () => {
+    setCurrentImageIdx((prev) => (prev - 1 + property.gallery.length) % property.gallery.length);
+  };
 
   return (
-    <div className="w-full bg-white">
+    <div className="w-full bg-[#fcfcfc] pb-24">
       {lightboxIndex !== null && (
         <Lightbox 
           images={property.gallery} 
@@ -30,314 +46,346 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
         />
       )}
 
-      {/* Breadcrumbs */}
-      <div className="w-full px-6 pt-8 md:px-12 lg:px-20">
-        <div className="mx-auto max-w-[1400px]">
-          <nav className="flex items-center gap-2 text-sm font-medium text-gray-500">
-            <Link href="/" className="transition-colors hover:text-[#6A2B92]">{isRtl ? "الرئيسية" : "Home"}</Link>
-            <span className="text-gray-300">/</span>
-            <Link href="/properties" className="transition-colors hover:text-[#6A2B92]">{isRtl ? "المشاريع" : "Projects"}</Link>
-            <span className="text-gray-300">/</span>
-            <span className="font-bold text-[#6A2B92]">{isRtl ? property.titleAr : property.title}</span>
-          </nav>
-        </div>
-      </div>
-
-      {/* Gallery */}
-      <section className="w-full px-6 pt-6 pb-12 md:px-12 lg:px-20">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-4 md:grid-cols-12 md:gap-5">
-          <div 
-            className="relative min-h-[320px] overflow-hidden rounded-3xl md:col-span-8 md:min-h-[520px] lg:min-h-[560px] cursor-pointer group"
-            onClick={() => setLightboxIndex(0)}
-          >
-            <Image
-              src={mainImage}
-              alt={property.title}
-              fill
-              priority
-              className="object-cover transition-transform duration-500 group-hover:scale-105"
-              sizes="(max-width: 768px) 100vw, 65vw"
-            />
-            <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+      {/* Top Header Section */}
+      <section className="w-full px-6 pt-12 pb-8 md:px-12 lg:px-20">
+        <div className="mx-auto max-w-[1400px] flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6">
+          
+          {/* Right Side (Title & Subtitle) - First in DOM appears on right in RTL */}
+          <div className="flex flex-col items-start text-start">
+            <nav className="mb-2 flex items-center gap-1 text-xs font-semibold text-gray-400">
+              <Link href="/" className="hover:text-[#6A2B92]">{isRtl ? "الرئيسية" : "Home"}</Link>
+              <span>/</span>
+              <Link href="/properties" className="hover:text-[#6A2B92]">{isRtl ? "المشاريع" : "Projects"}</Link>
+              <span>/</span>
+              <span className="text-gray-600">{isRtl ? property.titleAr : property.title}</span>
+            </nav>
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-[#2e2e2e] tracking-tight mb-2">
+              {isRtl ? property.titleAr : property.title}
+            </h1>
+            <p className="text-lg font-medium text-gray-500 mb-2">
+              {isRtl ? `${addressLines[0]}، - الرياض` : `${addressLines[0]}, - Riyadh`}
+            </p>
+            <p className="text-lg font-bold text-gray-700">
+              {isRtl ? "تبدأ الأسعار من " : "Prices start from "} 
+              <span className="text-[#6A2B92] font-black" dir="ltr">{property.price}</span>
+            </p>
           </div>
 
-          <div className="flex flex-col gap-4 md:col-span-4 md:gap-5">
-            <div 
-              className="relative min-h-[200px] flex-1 overflow-hidden rounded-3xl md:min-h-0 cursor-pointer group"
-              onClick={() => setLightboxIndex(1)}
-            >
-              <Image
-                src={topImage}
-                alt={`${property.title} interior 1`}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 35vw"
-              />
-              <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+          {/* Left Side (Badges & Buttons) - Second in DOM appears on left in RTL */}
+          <div className="flex flex-col items-start lg:items-end gap-4">
+            <div className="flex flex-wrap items-center gap-2 flex-row-reverse">
+              <span className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-gray-50 px-3 py-1.5 text-xs font-bold text-gray-700">
+                <Home className="h-3.5 w-3.5" />
+                {isRtl ? property.typeAr : property.type}
+              </span>
+              <span className="flex items-center gap-1.5 rounded-full bg-green-100/60 px-3 py-1.5 text-xs font-bold text-green-700">
+                {isRtl ? "بدأ البيع" : "Started Selling"}
+              </span>
+              <span className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-600">
+                {isRtl ? "مميز" : "Featured"}
+              </span>
             </div>
-            <div 
-              className="relative min-h-[200px] flex-1 overflow-hidden rounded-3xl md:min-h-0 cursor-pointer group"
-              onClick={() => setLightboxIndex(2)}
-            >
-              <Image
-                src={bottomImage}
-                alt={`${property.title} interior 2`}
-                fill
-                className="object-cover transition-transform duration-500 group-hover:scale-105"
-                sizes="(max-width: 768px) 100vw, 35vw"
-              />
-              <div className="absolute inset-0 bg-black/0 transition-colors duration-300 group-hover:bg-black/10" />
+            
+            <div className="flex flex-wrap items-center gap-3">
+              <button 
+                onClick={() => document.getElementById('units-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#6A2B92]"
+              >
+                {isRtl ? "عرض الوحدات" : "View Units"}
+                {isRtl ? <ArrowUpLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+              </button>
+              <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#6A2B92]">
+                <Share2 className="h-4 w-4" />
+                {isRtl ? "مشاركة" : "Share"}
+              </button>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Content */}
-      <section className="w-full px-6 pb-20 md:px-12 lg:px-20">
-        <div className="mx-auto grid max-w-[1400px] grid-cols-1 gap-12 lg:grid-cols-12 lg:gap-12">
-          {/* Left — still the larger column */}
-          <div className="lg:col-span-7">
-            {/* Top Chips Row */}
-            <div className="mb-6 flex flex-wrap items-center gap-3">
-              <span className="flex items-center gap-2 rounded-full bg-green-100/80 px-4 py-2 text-sm font-bold tracking-wide text-green-800">
-                {isRtl ? "بدأ البيع" : "Started Selling"}
-              </span>
-              <span className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold tracking-wide text-gray-600">
-                {isRtl ? "مميز" : "Featured"}
-              </span>
-              <span className="flex items-center gap-2 rounded-full bg-gray-50 px-4 py-2 text-sm font-bold tracking-wide text-[#6A2B92]">
-                <Home className="h-4 w-4" />
-                {isRtl ? property.typeAr : property.type}
-              </span>
+      {/* Gallery Section */}
+      <section className="w-full px-6 pb-12 md:px-12 lg:px-20">
+        <div className="mx-auto max-w-[1400px]">
+          <div className="relative aspect-[16/7] w-full overflow-hidden rounded-3xl bg-gray-200 group">
+            <Image
+              src={property.gallery[currentImageIdx]}
+              alt={property.title}
+              fill
+              priority
+              className="object-cover"
+              onClick={() => setLightboxIndex(currentImageIdx)}
+            />
+            {/* Gallery Navigation Arrows */}
+            <button 
+              onClick={(e) => { e.stopPropagation(); prevImage(); }}
+              className="absolute start-6 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:scale-105 opacity-0 group-hover:opacity-100"
+            >
+              <ChevronLeft className="h-6 w-6 text-gray-800 rtl:rotate-180" />
+            </button>
+            <button 
+              onClick={(e) => { e.stopPropagation(); nextImage(); }}
+              className="absolute end-6 top-1/2 -translate-y-1/2 flex h-12 w-12 items-center justify-center rounded-full bg-white/80 shadow-sm backdrop-blur-sm transition-all hover:bg-white hover:scale-105 opacity-0 group-hover:opacity-100"
+            >
+              <ChevronRight className="h-6 w-6 text-gray-800 rtl:rotate-180" />
+            </button>
+          </div>
+        </div>
+      </section>
+      {/* Main Content & Sidebar */}
+      <section className="w-full px-6 md:px-12 lg:px-20">
+        <div className="mx-auto flex max-w-[1400px] flex-col-reverse gap-10 lg:flex-row lg:gap-16">
+          
+          {/* Left Sidebar (30%) */}
+          <aside className="w-full lg:w-[350px] shrink-0">
+            <div className="flex flex-col gap-5 sticky top-24">
               
-              <div className="flex-1" /> {/* Spacer */}
-              
-              <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold tracking-wide text-[#6A2B92] transition-colors hover:bg-gray-50">
-                <Share2 className="h-4 w-4" />
-                {isRtl ? "مشاركة" : "Share"}
-              </button>
-              
-              <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold tracking-wide text-[#6A2B92] transition-colors hover:bg-gray-50">
-                {isRtl ? "عرض الوحدات" : "View Units"}
-                {isRtl ? <ArrowUpLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
-              </button>
-            </div>
-
-            <div className="mb-6 flex flex-col items-start gap-3">
-              <h1 className="text-4xl font-bold tracking-tight whitespace-normal text-[#0a0f1d] sm:text-5xl md:whitespace-nowrap lg:text-[3.75rem] lg:leading-[1.15]">
-                {isRtl ? property.titleAr : property.title}
-              </h1>
-              {property.tag === "SOLD OUT" && (property.buyerEn || property.buyerAr) && (
-                <div className="rounded-xl bg-red-50 border border-red-100 px-4 py-2">
-                  <span className="text-lg font-bold text-red-600">
-                    {isRtl ? `تم البيع للمالك: ${property.buyerAr}` : `Sold to: ${property.buyerEn}`}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            <div className="mb-12 max-w-2xl text-base leading-[1.75] font-medium text-[#8c8c8c] sm:text-lg sm:leading-[1.8]">
-              <p>{isRtl ? property.descriptionAr : property.description}</p>
-              <br />
-              <p>{isRtl ? property.descriptionSecondaryAr : property.descriptionSecondary}</p>
-            </div>
-
-            <div className="mb-12">
-              <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#6A2B92]">
-                {isRtl ? "نظرة عامة" : "Property Overview"}
-              </h2>
-              <div className="mb-8 flex flex-wrap items-center gap-x-10 gap-y-4 text-[#0a0f1d]">
-                <div className="flex items-center gap-3">
-                  <Bed className="h-6 w-6 stroke-[1.75] text-[#17C3B3]" />
-                  <span className="text-base font-semibold sm:text-lg">
-                    {property.beds} {isRtl ? "غرف نوم" : "Bedrooms"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <Bath className="h-6 w-6 stroke-[1.75] text-[#17C3B3]" />
-                  <span className="text-base font-semibold sm:text-lg">
-                    {property.baths} {isRtl ? "حمامات" : "Bathrooms"}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
-                  <LayoutGrid className="h-6 w-6 stroke-[1.75] text-[#17C3B3]" />
-                  <span className="text-base font-semibold sm:text-lg">
-                    {property.sqft} {isRtl ? "متر مربع" : "sq ft"}
-                  </span>
-                </div>
+              {/* Card 1: Register Interest */}
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <button className="flex w-full items-center justify-center gap-2 rounded-full bg-[#f7f7f7] px-6 py-4 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-100">
+                  <Heart className="h-5 w-5" />
+                  {isRtl ? "سجل اهتمامك في المشروع" : "Register your interest"}
+                </button>
+                <p className="mt-4 text-xs font-medium text-gray-400 text-center">
+                  {isRtl ? "سجل اهتمامك وسيتواصل معك فريقنا" : "Register and our team will contact you"}
+                </p>
               </div>
 
-              {/* Property Features */}
-              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {/* Card 2: Brochure */}
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <button className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-200 bg-white px-6 py-4 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50">
+                  <FileText className="h-5 w-5" />
+                  {isRtl ? "احصل على البروشور" : "Get the Brochure"}
+                </button>
+                <p className="mt-4 text-xs font-medium text-gray-400 text-center">
+                  {isRtl ? "احصل على كافة تفاصيل المشروع" : "Get all project details"}
+                </p>
+              </div>
+
+              {/* Card 3: Schedule Visit */}
+              <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
+                <button className="flex w-full items-center justify-center gap-2 rounded-full bg-[#6A2B92] px-6 py-4 text-sm font-bold text-white transition-all hover:bg-[#522070] shadow-md">
+                  <Calendar className="h-5 w-5" />
+                  {isRtl ? "حدد موعد للزيارة" : "Schedule a Visit"}
+                </button>
+                <p className="mt-4 text-xs leading-relaxed font-medium text-gray-400 text-center">
+                  {isRtl ? "الزيارة متاحة من الساعة 10 صباحًا وحتى 10 مساءً. حدد موعد للزيارة لتضمن وجود موظف المبيعات برفقتك." : "Visits available from 10 AM to 10 PM. Schedule a visit to ensure a sales representative is with you."}
+                </p>
+              </div>
+              
+            </div>
+          </aside>
+
+          {/* Right Main Content (70%) */}
+          <div className="flex-1 flex flex-col gap-16">
+            
+            {/* Story of the place */}
+            <div>
+              <div className="flex flex-col mb-4 items-end text-end">
+                <span className="text-xs font-bold text-gray-400 mb-1">{isRtl ? "عن المشروع" : "About the project"}</span>
+                <h2 className="text-3xl font-black text-[#2e2e2e]">
+                  {isRtl ? "حكاية المكان" : "Story of the Place"}
+                </h2>
+              </div>
+              <p className="text-base font-semibold leading-loose text-gray-500 text-end">
+                {isRtl ? property.descriptionAr : property.description}
+                <br /><br />
+                {isRtl ? property.descriptionSecondaryAr : property.descriptionSecondary}
+              </p>
+            </div>
+
+            {/* Features */}
+            <div>
+              <div className="flex flex-col mb-6 items-end text-end">
+                <span className="text-xs font-bold text-gray-400 mb-1">{isRtl ? "المميزات" : "Features"}</span>
+                <h2 className="text-3xl font-black text-[#2e2e2e]">
+                  {isRtl ? "مميزات المشروع" : "Project Features"}
+                </h2>
+              </div>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
                 {(isRtl ? property.featuresAr : property.features).map((feature, idx) => (
-                  <div key={idx} className="flex items-center gap-3">
-                    <CheckCircle2 className="h-5 w-5 text-[#17C3B3] stroke-[2]" />
-                    <span className="text-base font-medium text-[#8c8c8c]">{feature}</span>
+                  <div key={idx} className="flex items-center gap-3 rounded-xl border border-gray-100 bg-white p-4 shadow-sm transition-colors hover:border-[#17C3B3]">
+                    <CheckCircle2 className="h-5 w-5 shrink-0 text-[#17C3B3]" />
+                    <span className="text-sm font-bold text-gray-600">{feature}</span>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Project Units */}
-            <div className="mb-16">
-              <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#6A2B92]">
-                {isRtl ? "الوحدات" : "Units"}
-              </h2>
-              <p className="mb-8 text-base font-medium text-[#8c8c8c]">
-                {isRtl ? "وحدات المشروع" : "Project Units"}
-              </p>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {getUnitsByPropertyId(property.id).length > 0 ? (
-                  getUnitsByPropertyId(property.id).map((unit) => (
-                    <UnitCard key={unit.id} unit={unit} isRtl={isRtl} variant="compact" />
-                  ))
-                ) : (
-                  <div className="col-span-full py-8 text-center text-gray-500">
-                    {isRtl ? "لا توجد وحدات متاحة حالياً." : "No units currently available."}
-                  </div>
-                )}
+            {/* Location */}
+            <div>
+              <div className="flex flex-col mb-6 items-end text-end">
+                <span className="text-xs font-bold text-gray-400 mb-1">{isRtl ? "الموقع" : "Location"}</span>
+                <h2 className="text-3xl font-black text-[#2e2e2e]">
+                  {isRtl ? "موقع المشروع" : "Project Location"}
+                </h2>
               </div>
-            </div>
-
-            <div className="mb-12">
-              <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#6A2B92]">
-                {isRtl ? "الموقع" : "Location"}
-              </h2>
-              <div className="mb-6 flex items-start gap-3">
-                <MapPin className="mt-1 h-5 w-5 flex-shrink-0 text-red-500" />
-                <p className="max-w-sm text-base leading-relaxed font-medium whitespace-pre-line text-[#8c8c8c]">
-                  {addressLines.join(",\n")}
-                </p>
-              </div>
-              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-2xl">
+              <div className="relative aspect-[16/7] w-full overflow-hidden rounded-3xl border border-gray-200">
                 <Image
                   src="/properites/map.avif"
                   alt={`Map location for ${property.title}`}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 1024px) 100vw, 55vw"
                 />
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
+                  <button className="flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-bold text-gray-700 shadow-lg hover:text-[#17C3B3] transition-colors">
+                    <MapPin className="h-4 w-4" />
+                    {isRtl ? "افتح الموقع" : "Open Location"}
+                  </button>
+                </div>
               </div>
             </div>
 
             {/* Nearby Places */}
-            <div className="mb-16">
-              <h2 className="mb-6 text-2xl font-bold tracking-tight text-[#6A2B92]">
-                {isRtl ? "الأماكن القريبة" : "Nearby Places"}
-              </h2>
-              <p className="mb-6 text-base font-medium text-[#8c8c8c]">
-                {isRtl ? "على بُعد دقائق" : "Just minutes away"}
-              </p>
-              
-              <div className="ms-2.5 mt-6 border-s-2 border-gray-100 py-2 space-y-6">
+            <div>
+              <div className="flex flex-col mb-6 items-end text-end">
+                <span className="text-xs font-bold text-gray-400 mb-1">{isRtl ? "الأماكن القريبة" : "Nearby places"}</span>
+                <h2 className="text-3xl font-black text-[#2e2e2e]">
+                  {isRtl ? "على بُعد دقائق" : "Minutes Away"}
+                </h2>
+              </div>
+              <div className="flex flex-col">
                 {[
                   { nameAr: "المطار", nameEn: "Airport", time: "10" },
                   { nameAr: "النخيل مول", nameEn: "Al Nakheel Mall", time: "13" },
                   { nameAr: "جامعة الإمام", nameEn: "Imam University", time: "13" },
-                  { nameAr: "المركز المالي", nameEn: "Financial District", time: "7" },
-                  { nameAr: "مستشفى الحمادي", nameEn: "Al Hammadi Hospital", time: "5" },
+                  { nameAr: "محطة المترو", nameEn: "Metro Station", time: "4" },
                 ].map((place, idx) => (
-                  <div key={idx} className="relative flex items-center group">
-                    {/* Timeline Dot */}
-                    <div className="absolute -start-[9px] top-1/2 h-4 w-4 -translate-y-1/2 rounded-full border-[3.5px] border-white bg-gray-200 transition-colors duration-300 group-hover:bg-[#17C3B3] group-hover:scale-125" />
-                    
-                    {/* Content Card */}
-                    <div className="ms-8 flex flex-1 items-center justify-between rounded-2xl bg-white p-4 sm:p-5 shadow-[0_2px_15px_-5px_rgba(0,0,0,0.05)] border border-gray-50 transition-all duration-300 hover:shadow-[0_10px_30px_-5px_rgba(0,0,0,0.12)] hover:-translate-y-1">
-                      <div className="flex items-center gap-3 sm:gap-4">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-50 text-[#17C3B3] transition-colors group-hover:bg-[#17C3B3] group-hover:text-white">
-                          <MapPin className="h-5 w-5" />
-                        </div>
-                        <span className="text-base font-bold text-[#6A2B92] sm:text-lg">
-                          {isRtl ? place.nameAr : place.nameEn}
-                        </span>
-                      </div>
-                      
-                      <div className="flex items-center gap-2 rounded-xl bg-gray-50 px-3 py-2 text-gray-500 transition-colors group-hover:bg-gray-100">
-                        <Car className="h-4 w-4 sm:h-5 sm:w-5" />
-                        <span className="text-sm font-bold sm:text-base">
-                          {place.time} {isRtl ? "دقائق" : "mins"}
-                        </span>
-                      </div>
+                  <div key={idx} className="flex items-center justify-between border-b border-gray-100 py-4 last:border-0">
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-gray-400">{place.time} {isRtl ? "دقائق" : "mins"}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-base font-bold text-gray-700 flex-row-reverse">
+                      <Car className="h-4 w-4 text-[#17C3B3]" />
+                      {isRtl ? place.nameAr : place.nameEn}
                     </div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Partners */}
+            {/* Partners of Success */}
             <div>
-              <div className="mb-8 flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#17C3B3]">
-                  <Handshake className="h-6 w-6 text-white" />
+              <div className="flex flex-col mb-6 items-end text-end">
+                <span className="text-xs font-bold text-gray-400 mb-1">{isRtl ? "شركاؤنا في هذا المشروع" : "Our partners in this project"}</span>
+                <h2 className="text-3xl font-black text-[#2e2e2e]">
+                  {isRtl ? "شركاء النجاح" : "Partners of Success"}
+                </h2>
+              </div>
+              <div className="flex flex-wrap items-center justify-end gap-4">
+                <div className="flex items-center justify-center w-36 h-36 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow p-6">
+                  <Image src="/1779208393076_P25.svg" alt="Partner 1" width={100} height={100} className="object-contain" />
                 </div>
-                <div>
-                  <h2 className="text-2xl font-bold tracking-tight text-[#6A2B92]">
-                    {isRtl ? "شركاء النجاح" : "Success Partners"}
-                  </h2>
-                  <p className="text-sm font-medium text-[#8c8c8c]">
-                    {isRtl ? "شركاؤنا في هذا المشروع" : "Our partners in this project"}
-                  </p>
+                <div className="flex items-center justify-center w-36 h-36 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow p-6">
+                  <Image src="/masakn.svg" alt="Masakn" width={100} height={100} className="object-contain" />
                 </div>
+                <div className="flex items-center justify-center w-36 h-36 rounded-2xl border border-gray-100 bg-white shadow-sm hover:shadow-md transition-shadow p-6">
+                  <Image src="/lbab.svg" alt="Lbab" width={100} height={100} className="object-contain" />
+                </div>
+              </div>
+            </div>
+
+            {/* Units */}
+            <div id="units-section">
+              <div className="flex flex-col mb-6 items-end text-end">
+                <span className="text-xs font-bold text-gray-400 mb-1">{isRtl ? "الوحدات" : "Units"}</span>
+                <h2 className="text-3xl font-black text-[#2e2e2e]">
+                  {isRtl ? "وحدات المشروع" : "Project Units"}
+                </h2>
               </div>
               
-              <div className="flex flex-wrap items-center gap-8 md:gap-12 rounded-3xl border border-gray-200 p-8 sm:p-10">
-                <Image src="/masakn.svg" alt="Partner" width={140} height={60} className="h-10 w-auto opacity-70 transition-opacity hover:opacity-100" />
-                <Image src="/lbab.svg" alt="Partner" width={140} height={60} className="h-10 w-auto opacity-70 transition-opacity hover:opacity-100" />
-                <Image src="/1779208393076_P25.svg" alt="Partner" width={140} height={60} className="h-10 w-auto opacity-70 transition-opacity hover:opacity-100" />
+              <div className="mb-6 flex flex-wrap items-center justify-end gap-2 text-end">
+                <button 
+                  onClick={() => setUnitFilter("Sold")}
+                  className={cn(
+                    "rounded-full px-4 py-1.5 text-xs font-bold transition-colors",
+                    unitFilter === "Sold" ? "bg-[#2e2e2e] text-white" : "bg-[#f7f7f7] text-gray-500 hover:bg-gray-200"
+                  )}
+                >
+                  {isRtl ? "مباعة" : "Sold"} {allUnits.filter(u => u.statusEn === 'Sold').length}
+                </button>
+                <button 
+                  onClick={() => setUnitFilter("Reserved")}
+                  className={cn(
+                    "rounded-full px-4 py-1.5 text-xs font-bold transition-colors",
+                    unitFilter === "Reserved" ? "bg-[#2e2e2e] text-white" : "bg-[#f7f7f7] text-gray-500 hover:bg-gray-200"
+                  )}
+                >
+                  {isRtl ? "محجوزة" : "Reserved"} {allUnits.filter(u => u.statusEn === 'Reserved').length}
+                </button>
+                <button 
+                  onClick={() => setUnitFilter("Available")}
+                  className={cn(
+                    "rounded-full px-4 py-1.5 text-xs font-bold transition-colors",
+                    unitFilter === "Available" ? "bg-[#2e2e2e] text-white" : "bg-[#f7f7f7] text-gray-500 hover:bg-gray-200"
+                  )}
+                >
+                  {isRtl ? "متاحة" : "Available"} {allUnits.filter(u => u.statusEn === 'Available').length}
+                </button>
+                <button 
+                  onClick={() => setUnitFilter("All")}
+                  className={cn(
+                    "rounded-full px-4 py-1.5 text-xs font-bold transition-colors",
+                    unitFilter === "All" ? "bg-[#2e2e2e] text-white" : "bg-[#f7f7f7] text-gray-500 hover:bg-gray-200"
+                  )}
+                >
+                  {isRtl ? "الكل" : "All"} {allUnits.length}
+                </button>
+              </div>
+
+              <div className="w-full overflow-x-auto rounded-2xl border border-gray-100 bg-white">
+                <table className="w-full text-center text-sm font-bold text-gray-700">
+                  <thead className="bg-gray-50 text-xs font-semibold text-gray-400">
+                    <tr>
+                      <th className="py-4 px-4"></th>
+                      <th className="py-4 px-4">{isRtl ? "المساحة" : "Area"}</th>
+                      <th className="py-4 px-4">{isRtl ? "السعر" : "Price"}</th>
+                      <th className="py-4 px-4">{isRtl ? "الحالة" : "Status"}</th>
+                      <th className="py-4 px-4">{isRtl ? "اسم الوحدة" : "Unit Name"}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {filteredUnits.map((unit) => (
+                      <tr key={unit.id} className="transition-colors hover:bg-gray-50">
+                        <td className="py-4 px-4 text-start">
+                          <Link href={`/units/${unit.id}`} className="inline-flex items-center gap-1.5 rounded-full bg-[#6A2B92] px-4 py-2 text-xs font-bold text-white transition-colors hover:bg-[#522070]">
+                            {isRtl ? <ArrowUpLeft className="h-3.5 w-3.5" /> : <ArrowUpRight className="h-3.5 w-3.5" />}
+                            {isRtl ? "تفاصيل الوحدة" : "Unit Details"}
+                          </Link>
+                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap" dir="ltr">
+                          {unit.sqft} m²
+                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap">
+                          {unit.statusEn === "Available" ? unit.price : "—"}
+                        </td>
+                        <td className="py-4 px-4">
+                          <span className={cn(
+                            "inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-bold border",
+                            unit.statusEn === "Available" ? "bg-green-100/60 text-green-700 border-green-200" :
+                            unit.statusEn === "Reserved" ? "bg-yellow-100/60 text-yellow-700 border-yellow-200" :
+                            "bg-red-50 text-red-500 border-red-100"
+                          )}>
+                            {isRtl ? unit.statusAr : unit.statusEn}
+                          </span>
+                        </td>
+                        <td className="py-4 px-4 whitespace-nowrap text-end">
+                          {isRtl ? property.titleAr : property.title} - {unit.id}
+                        </td>
+                      </tr>
+                    ))}
+                    {filteredUnits.length === 0 && (
+                      <tr>
+                        <td colSpan={5} className="py-8 text-center font-medium text-gray-500">
+                          {isRtl ? "لا توجد وحدات" : "No units found"}
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
               </div>
             </div>
+
           </div>
-
-          {/* Right sidebar — wider than 1/3, still smaller than left */}
-          <aside className="lg:col-span-5">
-            <div className="flex flex-col gap-5 lg:sticky lg:top-24">
-              <div className="rounded-3xl border border-gray-200 p-6 sm:p-8">
-                <p className="mb-2 text-base font-medium text-[#8c8c8c] sm:text-lg">
-                  {isRtl ? "السعر" : "Price"}
-                </p>
-                <p className="mb-6 text-4xl font-bold tracking-tight text-[#0a0f1d] sm:text-5xl lg:text-[3.5rem]">
-                  {property.price}
-                </p>
-                <button
-                  type="button"
-                  className="w-full rounded-xl bg-[#17C3B3] px-6 py-4 text-base font-semibold tracking-wide text-white transition-colors duration-200 hover:opacity-90"
-                >
-                  {isRtl ? "تقديم عرض" : "Submit an Offer"}
-                </button>
-              </div>
-
-              <div className="rounded-3xl border border-gray-200 p-6 sm:p-8">
-                <h3 className="mb-5 text-xl font-bold tracking-tight text-[#6A2B92] sm:text-2xl">
-                  {isRtl ? "هل تفكر في الشراء؟" : "Thinking of buying?"}
-                </h3>
-
-
-
-                <button
-                  type="button"
-                  className="mb-6 w-full rounded-xl border-2 border-[#17C3B3]/35 bg-white px-4 py-3.5 text-base font-semibold text-[#17C3B3] transition-colors duration-200 hover:border-[#17C3B3] hover:bg-gray-50"
-                >
-                  {isRtl ? "حدد موعد للزيارة" : "Schedule a Visit"}
-                </button>
-
-                <div className="mb-6 flex items-center gap-4">
-                  <div className="h-px flex-1 bg-gray-300" />
-                  <span className="text-sm font-semibold tracking-wide text-[#8c8c8c] sm:text-base">
-                    {isRtl ? "أو أكمل" : "or continue"}
-                  </span>
-                  <div className="h-px flex-1 bg-gray-300" />
-                </div>
-
-                <button
-                  type="button"
-                  className="w-full rounded-xl bg-[#6A2B92] px-4 py-3.5 text-base font-semibold text-white transition-colors duration-200 hover:opacity-90"
-                >
-                  {isRtl ? "احصل على البرشور" : "Get the Brochure"}
-                </button>
-              </div>
-            </div>
-          </aside>
         </div>
       </section>
     </div>

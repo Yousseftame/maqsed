@@ -15,7 +15,7 @@ export default function Home() {
 
       <PropertiesSection />
       <AgentsSection />
-      <CTASection />
+      {/* <CTASection /> */}
     </div>
   );
 }

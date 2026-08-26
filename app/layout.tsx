@@ -38,8 +38,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       className={`${plusJakartaSans.variable} ${manrope.variable} ${ibmPlexSansArabic.variable} min-h-full antialiased`}
     >
       <head>
-        <script
+        <Script
           id="maqsed-locale-bootstrap"
+          strategy="beforeInteractive"
           dangerouslySetInnerHTML={{ __html: localeBootstrap }}
         />
       </head>

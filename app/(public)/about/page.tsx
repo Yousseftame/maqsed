@@ -17,7 +17,7 @@ export default function AboutPage() {
       <AboutHeader />
       <AboutSection />
       <VisionMissionSection />
-      <CTASection />
+      {/* <CTASection /> */}
 
       {/* <StatsSection /> */}
       <PartnersSection />

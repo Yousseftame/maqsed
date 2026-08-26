@@ -10,17 +10,21 @@ export function SearchSection() {
 
   return (
     <section className="relative z-30 flex w-full flex-col items-center overflow-hidden bg-white px-6 py-24">
-      {/* Background Watermark */}
+      {/* Background Graphic */}
       <div
-        className="pointer-events-none absolute bottom-0 left-0 right-0 z-0 flex justify-center select-none opacity-40"
+        className="pointer-events-none absolute inset-0 z-0 select-none opacity-[0.15]"
         aria-hidden
       >
-        <Image
-          src="/bg_hero.png"
-          alt=""
-          width={1200}
-          height={600}
-          className="h-[200px] md:h-[300px] w-auto object-contain object-bottom"
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: "url('/sadf-removebg-preview.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            maskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
+            WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)"
+          }}
         />
       </div>
 
@@ -32,7 +36,7 @@ export function SearchSection() {
         </span>
       </div>
 
-      <h2 className="mb-4 flex justify-center text-center text-[clamp(36px,6vw,72px)] leading-tight font-bold tracking-tight text-[#6A2B92]">
+      <h2 className="mb-4 flex justify-center text-center text-3xl sm:text-4xl lg:text-5xl leading-tight font-bold tracking-tight text-[#6A2B92]">
         <DiaTextReveal
           key={`search-title-${locale}`}
           text={t("search.title")}

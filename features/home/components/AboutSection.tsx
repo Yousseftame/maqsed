@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { Sparkles, ShieldCheck, Target, Users } from "lucide-react";
+import { Sparkles, ShieldCheck, Target, Users, Download } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { allProperties } from "@/features/properties/data/listings";
 
@@ -19,11 +19,11 @@ export function AboutSection() {
           
           {/* Text Content Side */}
           <div className="flex-1 flex flex-col justify-center p-10 lg:p-16 text-start">
-            <div className="mb-6 rounded-full bg-gray-50 px-5 py-2 text-sm font-bold text-gray-500 border border-gray-100 w-fit">
+            <div className="mb-6 rounded-full bg-[#17C3B3]/10 px-5 py-2 text-sm font-bold text-[#17C3B3] border border-[#17C3B3]/20 w-fit">
               {isRtl ? "من نحن" : "About Us"}
             </div>
             
-            <h2 className="mb-3 text-4xl font-extrabold text-[#5B3E31] sm:text-5xl">
+            <h2 className="mb-3 text-4xl font-extrabold text-[#6A2B92] sm:text-5xl">
               {isRtl ? "مقصد العقارية" : "MAQSED Real Estate"}
             </h2>
             
@@ -39,29 +39,40 @@ export function AboutSection() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="flex items-center gap-3 rounded-xl border border-gray-100 p-4 bg-white transition-colors hover:border-[#17C3B3] hover:shadow-sm">
-                <Sparkles className="h-5 w-5 text-gray-400" />
+                <Sparkles className="h-5 w-5 text-[#17C3B3]" />
                 <span className="text-sm font-bold text-gray-700">
                   {isRtl ? "خدمات عقارية احترافية" : "Professional Real Estate Services"}
                 </span>
               </div>
               <div className="flex items-center gap-3 rounded-xl border border-gray-100 p-4 bg-white transition-colors hover:border-[#17C3B3] hover:shadow-sm">
-                <ShieldCheck className="h-5 w-5 text-gray-400" />
+                <ShieldCheck className="h-5 w-5 text-[#17C3B3]" />
                 <span className="text-sm font-bold text-gray-700">
                   {isRtl ? "جودة التشييد والتنفيذ" : "Quality Construction & Execution"}
                 </span>
               </div>
               <div className="flex items-center gap-3 rounded-xl border border-gray-100 p-4 bg-white transition-colors hover:border-[#17C3B3] hover:shadow-sm">
-                <Target className="h-5 w-5 text-gray-400" />
+                <Target className="h-5 w-5 text-[#17C3B3]" />
                 <span className="text-sm font-bold text-gray-700">
                   {isRtl ? "مواكبة رؤية 2030" : "Aligned with Vision 2030"}
                 </span>
               </div>
               <div className="flex items-center gap-3 rounded-xl border border-gray-100 p-4 bg-white transition-colors hover:border-[#17C3B3] hover:shadow-sm">
-                <Users className="h-5 w-5 text-gray-400" />
+                <Users className="h-5 w-5 text-[#17C3B3]" />
                 <span className="text-sm font-bold text-gray-700">
                   {isRtl ? "تلبية متطلبات العصر" : "Meeting Modern Needs"}
                 </span>
               </div>
+            </div>
+
+            <div className="mt-10 flex">
+              <a
+                href="/بروفايل مقصد V2.pdf"
+                download
+                className="inline-flex items-center gap-2 rounded-xl bg-[#6A2B92] px-8 py-3.5 text-base font-bold text-white transition-all hover:bg-[#522070] hover:scale-105 shadow-md hover:shadow-lg"
+              >
+                <Download className="h-5 w-5" />
+                <span>{isRtl ? "تحميل بروفايل الشركة" : "Download Company Profile"}</span>
+              </a>
             </div>
           </div>
 
