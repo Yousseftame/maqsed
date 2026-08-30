@@ -75,7 +75,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-[#0a0f1d] px-6 py-12 lg:px-12 lg:py-16 text-gray-300">
+    <footer className="w-full bg-[#0a0f1d] px-6 pt-12 pb-6 lg:px-12 lg:pt-16 lg:pb-8 text-gray-300">
       <div className="mx-auto w-full max-w-[1400px]">
         <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
           
@@ -164,12 +164,25 @@ export function Footer() {
 
         </div>
 
-        <hr className="my-8 border-gray-800" />
+        <hr className="mt-8 mb-6 border-gray-800" />
         
-        <div className="text-center text-sm text-gray-500">
-          {t("footer.rightsPrefix")}{" "}
-          <span className="font-semibold text-white">{t("footer.brand")}</span>{" "}
-          {t("footer.rightsSuffix")}
+        <div className="text-center text-sm text-gray-500 flex flex-col gap-2">
+          <p>
+            {t("footer.rightsPrefix")}{" "}
+            <span className="font-semibold text-white">{t("footer.brand")}</span>{" "}
+            {t("footer.rightsSuffix")}
+          </p>
+          <p className="text-white">
+            برمجة وتشغيل وسم الإبداع{" "}
+            <a
+              href="https://www.cbrand.sa/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#17C3B3] transition-colors underline"
+            >
+              Cbrand.sa
+            </a>
+          </p>
         </div>
       </div>
     </footer>

@@ -561,14 +561,14 @@ export const en: Dictionary = {
   },
   notFound: {
     title: "Page Not Found",
-    subtitle: "We couldn't find the page you're looking for.",
-    description: "It might have been removed, had its name changed, or is temporarily unavailable.",
+    subtitle: "We couldn't find the page you're looking for",
+    description: "It might have been removed, had its name changed, or is temporarily unavailable",
     backHome: "Back to Home",
   },
   hero: {
     title: "Maqsed Platform: Your Ideal Choice for Real Estate Development",
-    subtitle1: "The relationship with the client is not just a service: it is a shared journey towards excellence, where the business relationship grows, presence flourishes, and efforts bear fruit.",
-    subtitle2: "The 'Maqsed' logo represents a towering tree, its roots deep in the ground, and its branches reaching towards the sky. This tree is not just a visual symbol, but an embodiment of the company's marketing philosophy: to be a destination everyone seeks for shade, benefit, and growth.",
+    subtitle1: "The relationship with the client is not just a service: it is a shared journey towards excellence, where the business relationship grows, presence flourishes, and efforts bear fruit",
+    subtitle2: "The 'Maqsed' logo represents a towering tree, its roots deep in the ground, and its branches reaching towards the sky. This tree is not just a visual symbol, but an embodiment of the company's marketing philosophy: to be a destination everyone seeks for shade, benefit, and growth",
     subtitle3: "With Maqsed.. we grow together",
     primaryButton: "Contact Us",
     secondaryButton: "About Us",
@@ -577,7 +577,7 @@ export const en: Dictionary = {
     pill: "Search Properties",
     title: "Find Your Dream Home",
     description:
-      "We offer modern properties with the best quality that meet all your needs.",
+      "We offer modern properties with the best quality that meet all your needs",
     lookingFor: "Property Type",
     locations: "Locations",
     bedrooms: "Floors",
@@ -607,29 +607,29 @@ export const en: Dictionary = {
     pill: "About MAQSED",
     clickMe: "Click on me",
     titleLine1: "Your Dream Home,",
-    titleLine2: "Our Expertise.",
+    titleLine2: "Our Expertise",
     description:
-      "At MAQSED, we are committed to helping individuals and families find their perfect homes and smart investment properties. Our approach blends personalized service, expert insights, and a dedication to excellence, ensuring your real estate journey is seamless, rewarding, and tailored to your unique needs.",
+      "At MAQSED, we are committed to helping individuals and families find their perfect homes and smart investment properties. Our approach blends personalized service, expert insights, and a dedication to excellence, ensuring your real estate journey is seamless, rewarding, and tailored to your unique needs",
     features: {
       pill: "Who we are",
-      title: "We created historic real estate ventures.",
+      title: "We created historic real estate ventures",
       description1:
-        "We bring decades of experience to real estate strategy, advisory, and development. As one of the world's largest privately held real estate groups, we deliver tailored solutions that align with your long-term vision.",
+        "We bring decades of experience to real estate strategy, advisory, and development. As one of the world's largest privately held real estate groups, we deliver tailored solutions that align with your long-term vision",
       description2:
-        "We bring decades of experience to real estate strategy, advisory, and development. As one of the world's largest privately held real estate groups, we deliver tailored solutions that align with your long-term vision.",
+        "We bring decades of experience to real estate strategy, advisory, and development. As one of the world's largest privately held real estate groups, we deliver tailored solutions that align with your long-term vision",
       callUs: "Call Us For Any Inquiry",
       phone: "+258 - 5485 - 4845",
       corporate: {
         title: "Corporate Responsibility",
-        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading.",
+        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading",
       },
       experts: {
         title: "Experts with Team Spirit",
-        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading.",
+        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading",
       },
       excellence: {
         title: "Commitment to Excellence",
-        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading.",
+        desc: "Our goal is zero incidents and our lost time frequency rate is industry leading",
       },
       learnMore: "Learn More",
     },
@@ -637,25 +637,25 @@ export const en: Dictionary = {
       villa: {
         title: "Luxury Villa",
         description:
-          "Experience unparalleled luxury in sprawling private estates with stunning architecture and world-class amenities.",
+          "Experience unparalleled luxury in sprawling private estates with stunning architecture and world-class amenities",
         count: "320+ Properties",
       },
       family: {
         title: "Modern Family Home",
         description:
-          "Thoughtfully designed spaces for families who value comfort, style, and community in premium neighborhoods.",
+          "Thoughtfully designed spaces for families who value comfort, style, and community in premium neighborhoods",
         count: "540+ Properties",
       },
       apartment: {
         title: "Luxury Apartment",
         description:
-          "Indulge in high-end city living with sophisticated interiors, premium facilities, and exclusive services tailored for ultimate convenience.",
+          "Indulge in high-end city living with sophisticated interiors, premium facilities, and exclusive services tailored for ultimate convenience",
         count: "850+ Properties",
       },
       office: {
         title: "Premium Office Space",
         description:
-          "Elevate your business with prestigious commercial spaces in prime locations across Saudi Arabia's key cities.",
+          "Elevate your business with prestigious commercial spaces in prime locations across Saudi Arabia's key cities",
         count: "140+ Properties",
       },
     },
@@ -690,21 +690,21 @@ export const en: Dictionary = {
       titleLine1: "Perfect Family Homes for",
       titleLine2: "Comfort and Togetherness",
       description:
-        "Discover spacious and welcoming family houses designed for a warm, secure, and joyful living experience.",
+        "Discover spacious and welcoming family houses designed for a warm, secure, and joyful living experience",
     },
   },
   agents: {
     pill: "Reserve a Unit",
     titleLine1: "Book Your Next",
-    titleLine2: "Dream Unit.",
+    titleLine2: "Dream Unit",
     description:
-      "Explore featured units ready for reservation — secure your preferred home early with a simple booking process guided by MAQSED.",
+      "Explore featured units ready for reservation — secure your preferred home early with a simple booking process guided by MAQSED",
     reserveUnit: "Reserve Unit",
     seeAll: "See All Units",
   },
   faq: {
     pill: "Frequently Asked Questions",
-    title: "Browse the most common questions.",
+    title: "Browse the most common questions",
     intro: "",
     items: [
       {
@@ -713,15 +713,15 @@ export const en: Dictionary = {
       },
       {
         q: "What services does MAQSED offer for first-time homebuyers?",
-        a: "We provide comprehensive guidance including mortgage pre-approval assistance, property tours, and step-by-step closing support.",
+        a: "We provide comprehensive guidance including mortgage pre-approval assistance, property tours, and step-by-step closing support",
       },
       {
         q: "Can MAQSED help me sell my property?",
-        a: "Yes! We offer a full suite of seller services including professional photography, market analysis, and targeted marketing campaigns.",
+        a: "Yes! We offer a full suite of seller services including professional photography, market analysis, and targeted marketing campaigns",
       },
       {
         q: "What types of properties does MAQSED specialize in?",
-        a: "We specialize in luxury residential properties, modern apartments, and premium commercial real estate.",
+        a: "We specialize in luxury residential properties, modern apartments, and premium commercial real estate",
       },
     ],
   },
@@ -737,11 +737,11 @@ export const en: Dictionary = {
   visionMission: {
     mission: {
       title: "Our Mission",
-      description: "To deliver projects in partnership with our clients: Safer, with zero loss time injuries. Better, with zero quality rejections. And faster, by always meeting deadlines."
+      description: "To deliver projects in partnership with our clients: Safer, with zero loss time injuries. Better, with zero quality rejections. And faster, by always meeting deadlines"
     },
     vision: {
       title: "Our Vision",
-      description: "To be the premier integrated project solutions provider across the energy, infrastructure, and buildings sectors, entrusted to transform ambitious visions into reality in Saudi Arabia and beyond."
+      description: "To be the premier integrated project solutions provider across the energy, infrastructure, and buildings sectors, entrusted to transform ambitious visions into reality in Saudi Arabia and beyond"
     }
   },
   cta: {
@@ -757,20 +757,20 @@ export const en: Dictionary = {
     pill: "Trusted by Industry Leaders",
     title: "Trusted Partners",
     description:
-      "Built on strong alliances with leading brands and institutions that share our standard for trust, quality, and long-term value.",
+      "Built on strong alliances with leading brands and institutions that share our standard for trust, quality, and long-term value",
   },
   sellPage: {
     hero: {
       title1: "Market your property",
-      title2: "with confidence.",
+      title2: "with confidence",
       description:
-        "Submit your unit details and let MAQSED handle professional marketing, qualified buyers, and a clear path to closing.",
+        "Submit your unit details and let MAQSED handle professional marketing, qualified buyers, and a clear path to closing",
     },
     form: {
       pill: "Request Form",
       title: "Property Marketing / Sale Request",
       description:
-        "Share a few details about your unit. Our team will review your request and follow up with the next steps.",
+        "Share a few details about your unit. Our team will review your request and follow up with the next steps",
       role: 'Your Role',
       unitLocation: 'Unit Location',
       city: 'City',
@@ -785,14 +785,14 @@ export const en: Dictionary = {
       mobileNumber: 'Mobile Number',
       roleOptions: ['Property Owner', 'Agent'],
       unitLocationOptions: ['Independent (Villa/Building...)', 'Within a building'],
-      cityPlaceholder: 'Choose city...',
-      neighborhoodPlaceholder: 'Choose neighborhood...',
-      googleMapsPlaceholder: 'https://maps.google.com/...',
+      cityPlaceholder: 'Choose city..',
+      neighborhoodPlaceholder: 'Choose neighborhood..',
+      googleMapsPlaceholder: 'https://maps.google.com/..',
       propertyAgePlaceholder: 'Example: 0 (if new)',
-      additionalFeaturesPlaceholder: 'Pool, elevator, roof...',
+      additionalFeaturesPlaceholder: 'Pool, elevator, roof..',
       mobileNumberPlaceholder: '05XXXXXXXX',
       agreement:
-        "By submitting, you agree to be contacted by MAQSED about your sale request.",
+        "By submitting, you agree to be contacted by MAQSED about your sale request",
       submit: "Submit Request",
       success: "Request received",
     },
@@ -809,9 +809,9 @@ export const en: Dictionary = {
   contactPage: {
     hero: {
       title1: "Let's start a",
-      title2: "conversation.",
+      title2: "conversation",
       description:
-        "Questions, opportunities, or next steps — send us a message and the MAQSED team will get back to you promptly.",
+        "Questions, opportunities, or next steps — send us a message and the MAQSED team will get back to you promptly",
     },
     contactDetails: {
       email: "Email",
@@ -822,17 +822,17 @@ export const en: Dictionary = {
       pill: "Contact Form",
       title: "Send us a message",
       description:
-        "Choose a topic, leave your details, and tell us how we can help.",
+        "Choose a topic, leave your details, and tell us how we can help",
       subject: "Subject",
       fullName: "Full Name",
       fullNamePlaceholder: "Your full name",
       email: "Email",
       emailPlaceholder: "you@email.com",
       phone: "Phone",
-      phonePlaceholder: "+966 ...",
+      phonePlaceholder: "+966 ..",
       message: "Message",
       messagePlaceholder: "How can we help you?",
-      agreement: "We typically respond within one business day.",
+      agreement: "We typically respond within one business day",
       submit: "Send Message",
       success: "Message sent",
     },
@@ -847,7 +847,7 @@ export const en: Dictionary = {
   auth: {
     welcomeBack: "Welcome back",
     signInTitle1: "Sign In to",
-    signInTitle2: "your account.",
+    signInTitle2: "your account",
     email: "Email address",
     password: "Password",
     forgotPassword: "Forgot password?",
@@ -858,7 +858,7 @@ export const en: Dictionary = {
     forgotTitle1: "Forgot your",
     forgotTitle2: "password?",
     forgotDescription:
-      "Enter your email address below and we'll send you a link to reset it.",
+      "Enter your email address below and we'll send you a link to reset it",
     backToSignIn: "Back to sign in",
     backToWebsite: "Back to website",
     sendReset: "Send reset link",
@@ -870,37 +870,37 @@ export const en: Dictionary = {
     copyright: "© 2026 Maqsed. All Rights Reserved",
     panelBadge: "Premium Real Estate",
     panelTitle1: "Redefining",
-    panelTitle2: "luxury living.",
+    panelTitle2: "luxury living",
     panelQuote:
-      "Our vision has always been to elevate the standard of living. Maqsed is built on trust, innovation, and an unwavering commitment to excellence.",
+      "Our vision has always been to elevate the standard of living. Maqsed is built on trust, innovation, and an unwavering commitment to excellence",
     panelRole: "Chairman",
     panelCompany: "Maqsed Group",
-    restoreFailed: "Could not restore your session. Please sign in again.",
-    signInFailed: "Could not sign in.",
+    restoreFailed: "Could not restore your session. Please sign in again",
+    signInFailed: "Could not sign in",
     imageAlt: "Luxury property",
     errors: {
-      invalidEmail: "Enter a valid email address.",
-      disabled: "This account has been disabled.",
-      notFound: "No account found with this email.",
-      invalidCredential: "Incorrect email or password.",
-      tooMany: "Too many attempts. Try again in a few minutes.",
-      notAllowed: "Email sign-in is not enabled in Firebase Authentication yet.",
-      missingPassword: "Enter your password.",
-      missingEmail: "Enter your email address.",
-      generic: "Something went wrong. Please try again.",
-      resetFailed: "Could not send the reset link.",
+      invalidEmail: "Enter a valid email address",
+      disabled: "This account has been disabled",
+      notFound: "No account found with this email",
+      invalidCredential: "Incorrect email or password",
+      tooMany: "Too many attempts. Try again in a few minutes",
+      notAllowed: "Email sign-in is not enabled in Firebase Authentication yet",
+      missingPassword: "Enter your password",
+      missingEmail: "Enter your email address",
+      generic: "Something went wrong. Please try again",
+      resetFailed: "Could not send the reset link",
     },
   },
   admin: {
     website: "Website",
-    search: "Search anything...",
+    search: "Search anything..",
     collapse: "Collapse",
     expand: "Expand",
     signOut: "Sign out",
     signOutTitle: "Sign out?",
-    signOutDescription: "You'll need to sign in again to access the dashboard.",
+    signOutDescription: "You'll need to sign in again to access the dashboard",
     stay: "Stay",
-    comingSoon: "Coming soon.",
+    comingSoon: "Coming soon",
     overview: "Overview",
     openMenu: "Open sidebar",
     cancel: "Cancel",
@@ -927,8 +927,8 @@ export const en: Dictionary = {
       edit: "Edit",
       delete: "Delete",
       view: "View",
-      search: "Search...",
-      empty: "No results found.",
+      search: "Search..",
+      empty: "No results found",
       actions: "Actions",
       save: "Save changes",
       saved: "Changes saved",
@@ -937,7 +937,7 @@ export const en: Dictionary = {
     },
     projects: {
       add: "Add project",
-      search: "Search projects...",
+      search: "Search projects..",
       total: "Total projects",
       active: "Active projects",
       units: "Total units",
@@ -948,7 +948,7 @@ export const en: Dictionary = {
       status: "Status",
       updated: "Updated",
       deleteTitle: "Delete project?",
-      deleteDescription: "This will remove the project from the list.",
+      deleteDescription: "This will remove the project from the list",
       statuses: {
         active: "Active",
         draft: "Draft",
@@ -958,7 +958,7 @@ export const en: Dictionary = {
     },
     units: {
       add: "Add unit",
-      search: "Search units...",
+      search: "Search units..",
       total: "Total units",
       active: "Active units",
       views: "Total views",
@@ -969,7 +969,7 @@ export const en: Dictionary = {
       status: "Status",
       viewsCol: "Views",
       deleteTitle: "Delete unit?",
-      deleteDescription: "This will remove the unit from the list.",
+      deleteDescription: "This will remove the unit from the list",
       statuses: {
         active: "Active",
         soldOut: "Sold out",
@@ -986,13 +986,13 @@ export const en: Dictionary = {
       neighborhoodPlaceholder: "Neighborhood name (e.g. Al Malqa)",
       deleteCity: "Delete city",
       deleteTitle: "Delete this city?",
-      deleteDescription: "This will remove the city and all of its neighborhoods.",
-      emptyNeighborhoods: "No neighborhoods yet.",
-      emptyCities: "No cities yet.",
+      deleteDescription: "This will remove the city and all of its neighborhoods",
+      emptyNeighborhoods: "No neighborhoods yet",
+      emptyCities: "No cities yet",
       neighborhoods: "Neighborhoods",
     },
     customers: {
-      search: "Search customers...",
+      search: "Search customers..",
       total: "Total Requests",
       newRequests: "New Requests",
       purchase: "Purchase / Interest",
@@ -1004,7 +1004,7 @@ export const en: Dictionary = {
       action: "Action",
       date: "Date",
       deleteTitle: "Delete request?",
-      deleteDescription: "This will remove the request from the list.",
+      deleteDescription: "This will remove the request from the list",
       filterAll: "All",
       statuses: {
         new: "New",
@@ -1024,29 +1024,29 @@ export const en: Dictionary = {
       guarantees: "Guarantees Management",
       specialOffers: "Special Offers",
       nearbyLocations: "Nearby Locations",
-      addPlaceholder: "Add a new item...",
+      addPlaceholder: "Add a new item..",
       addButton: "Add to list",
       deleteTitle: "Delete Item?",
       deleteDescription: "Are you sure you want to delete this item?",
     },
     interface: {
       heroTitle: "Hero Title",
-      heroTitlePlaceholder: "Your optimal choice...",
+      heroTitlePlaceholder: "Your optimal choice..",
       heroSubtitle: "Hero Subtitle",
-      heroSubtitlePlaceholder: "Notice! The platform is under development...",
+      heroSubtitlePlaceholder: "Notice! The platform is under development..",
       bgImage: "Background Image",
       bgImageUpload: "Click to upload a professional background",
       bgImageHint: "Recommended size 1920x1080 (Horizontal) | Max: 700KB",
       partners: "Success Partners Logos",
-      partnersHint: "It is preferred to upload transparent logos in SVG or PNG format to look professional.",
+      partnersHint: "It is preferred to upload transparent logos in SVG or PNG format to look professional",
       addPartner: "Add a new partner",
     },
     additionalInfo: {
       legalTitle: "Legal Pages and Policies",
       privacyPolicy: "Terms of Use and Privacy Policy",
-      privacyPolicyPlaceholder: "Enter privacy policy here...",
+      privacyPolicyPlaceholder: "Enter privacy policy here..",
       terms: "Terms and Conditions",
-      termsPlaceholder: "Enter terms and conditions here...",
+      termsPlaceholder: "Enter terms and conditions here..",
       socialTitle: "Social Media Platforms",
       instagram: "Instagram Link",
       twitter: "X (formerly Twitter) Link",
@@ -1056,15 +1056,15 @@ export const en: Dictionary = {
     },
     maintenance: {
       enableTitle: "Close site to visitors (Enable Maintenance)",
-      enableDesc: "When enabled, customers will not be able to browse projects and will only see the maintenance page.",
+      enableDesc: "When enabled, customers will not be able to browse projects and will only see the maintenance page",
       messageTitle: "Maintenance Message Title",
       messageTitlePlaceholder: "Site under development",
       messageText: "Explanatory Message Text for Visitors",
-      messageTextPlaceholder: "We are working on some technical updates to improve your experience.",
+      messageTextPlaceholder: "We are working on some technical updates to improve your experience",
     },
     developers: {
       title: "Developers Settings",
-      description: "Manage developers information and settings.",
+      description: "Manage developers information and settings",
     },
     company: {
       logo: "Company logo",
@@ -1125,7 +1125,7 @@ export const en: Dictionary = {
     },
   },
   footer: {
-    description: "An integrated digital platform for providing and managing corporate housing for workers and individuals, effectively connecting property owners, companies, and individuals.",
+    description: "An integrated digital platform for providing and managing corporate housing for workers and individuals, effectively connecting property owners, companies, and individuals",
     importantLinks: "Important Links",
     contactUs: "Contact Us",
     location: "Riyadh, Saudi Arabia",
