@@ -17,9 +17,12 @@ import {
   signOutCurrentUser,
 } from "@/lib/firebase/auth";
 import { clearSessionCookie, createSessionCookie } from "@/lib/auth/session";
+import { usersService } from "@/features/auth/users.service";
+import type { UserData } from "@/types/user";
 
 type AuthContextValue = {
   user: User | null;
+  userData: UserData | null;
   loading: boolean;
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
@@ -32,9 +35,24 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [userData, setUserData] = useState<UserData | null>(null);
+
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (nextUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
       setUser(nextUser);
+      if (nextUser) {
+        try {
+          const profile = await usersService.getUserProfile(nextUser.uid);
+          // If no profile found, we might treat them as a regular user or admin depending on logic.
+          // For now, if no profile, we can just leave userData as null or create a default.
+          setUserData(profile);
+        } catch (error) {
+          console.error("Failed to fetch user profile:", error);
+          setUserData(null);
+        }
+      } else {
+        setUserData(null);
+      }
       setLoading(false);
     });
 
@@ -57,8 +75,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo<AuthContextValue>(
-    () => ({ user, loading, signIn, signOut, resetPassword }),
-    [user, loading, signIn, signOut, resetPassword]
+    () => ({ user, userData, loading, signIn, signOut, resetPassword }),
+    [user, userData, loading, signIn, signOut, resetPassword]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe, LogOut, Menu, PanelLeft, Search } from "lucide-react";
 import { useAuth } from "@/features/auth/AuthProvider";
-import { getAdminPageTitleKey } from "@/features/admin/data/nav";
+import { getDeveloperPageTitleKey } from "@/features/developer/data/nav";
 import { useAdminSignOut } from "@/features/admin/hooks/useAdminSignOut";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
-export function AdminHeader({
+export function DeveloperHeader({
   collapsed,
   onMobileOpen,
   onToggle,
@@ -23,7 +23,7 @@ export function AdminHeader({
   const { t } = useLocale();
   const handleSignOut = useAdminSignOut();
   const initial = (user?.email?.[0] ?? "M").toUpperCase();
-  const current = t(getAdminPageTitleKey(pathname));
+  const current = t(getDeveloperPageTitleKey(pathname));
 
   return (
     <header className="flex items-center gap-3 px-4 py-5 md:gap-4 md:px-8">
@@ -48,8 +48,8 @@ export function AdminHeader({
         <h1 className="truncate text-lg font-bold tracking-tight text-[#0a0f1d]">
           {current}
         </h1>
-        <span className="inline-flex items-center rounded-full bg-[#3E1854]/10 px-2.5 py-0.5 text-xs font-bold text-[#3E1854]">
-          {t("admin.panelName")}
+        <span className="inline-flex items-center rounded-full bg-[#17C3B3]/10 px-2.5 py-0.5 text-xs font-bold text-[#17C3B3]">
+          {t("developer.panelName")}
         </span>
       </div>
 

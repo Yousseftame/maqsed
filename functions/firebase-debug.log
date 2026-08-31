@@ -1,0 +1,1226 @@
+[debug] [2026-08-31T12:59:36.387Z] ----------------------------------------------------------------------
+[debug] [2026-08-31T12:59:36.391Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Omar\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions
+[debug] [2026-08-31T12:59:36.391Z] CLI Version:   15.28.2
+[debug] [2026-08-31T12:59:36.392Z] Platform:      win32
+[debug] [2026-08-31T12:59:36.392Z] Node Version:  v24.13.0
+[debug] [2026-08-31T12:59:36.392Z] Detected Agent: antigravity
+[debug] [2026-08-31T12:59:36.392Z] Time:          Mon Aug 31 2026 15:59:36 GMT+0300 (Eastern European Summer Time)
+[debug] [2026-08-31T12:59:36.392Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-31T12:59:38.270Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-31T12:59:38.271Z] > authorizing via signed-in user (des@cbrand.sa)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[debug] [2026-08-31T12:59:38.293Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-08-31T12:59:38.293Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-08-31T12:59:38.299Z] Write emulator hub locator at C:\Users\Omar\AppData\Local\Temp\hub-activelink2026.json
+[debug] [2026-08-31T12:59:38.320Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-08-31T12:59:38.321Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-08-31T12:59:38.321Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-08-31T12:59:38.321Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, auth, firestore, database, hosting, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, auth, firestore, database, hosting, pubsub, storage, dataconnect\u001b[22m"}}
+[debug] [2026-08-31T12:59:38.366Z] defaultcredentials: writing to file C:\Users\Omar\AppData\Roaming\firebase\des_cbrand_sa_application_default_credentials.json
+[debug] [2026-08-31T12:59:38.369Z] Setting GAC to C:\Users\Omar\AppData\Roaming\firebase\des_cbrand_sa_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\Omar\\AppData\\Roaming\\firebase\\des_cbrand_sa_application_default_credentials.json"}}
+[debug] [2026-08-31T12:59:38.389Z] Checked if tokens are valid: true, expires at: 1788182158788
+[debug] [2026-08-31T12:59:38.389Z] Checked if tokens are valid: true, expires at: 1788182158788
+[debug] [2026-08-31T12:59:38.391Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/activelink2026/adminSdkConfig [none]
+[debug] [2026-08-31T12:59:39.290Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/activelink2026/adminSdkConfig 200
+[debug] [2026-08-31T12:59:39.290Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/activelink2026/adminSdkConfig {"projectId":"activelink2026","storageBucket":"activelink2026.firebasestorage.app"}
+[info] i  functions: Watching "C:\Users\Omar\THINK\Front\activenext\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\" for Cloud Functions..."}}
+[debug] [2026-08-31T12:59:39.376Z] Validating nodejs source
+[debug] [2026-08-31T12:59:42.292Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "24"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T12:59:42.292Z] Building nodejs source
+[debug] [2026-08-31T12:59:42.293Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T12:59:42.296Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T12:59:42.312Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8283
+
+[debug] [2026-08-31T12:59:43.360Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[info] i  functions[us-central1-onOfferCreated]: function ignored because the firestore emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the firestore emulator does not exist or is not running."}}
+[info] +  functions[us-central1-verifyOfferOtp]: http function initialized (http://127.0.0.1:5001/activelink2026/us-central1/verifyOfferOtp). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/activelink2026/us-central1/verifyOfferOtp)."}}
+[info] i  functions[us-central1-onOfferAccepted]: function ignored because the firestore emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the firestore emulator does not exist or is not running."}}
+[debug] [2026-08-31T12:59:46.513Z] Could not find VSCode notification endpoint: TypeError: fetch failed. If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Functions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 
+[debug] [2026-08-31T13:00:01.202Z] File C:\Users\Omar\THINK\Front\activenext\functions\package.json changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\package.json changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:02.210Z] Validating nodejs source
+[debug] [2026-08-31T13:00:05.080Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:00:05.080Z] Building nodejs source
+[debug] [2026-08-31T13:00:05.080Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:00:05.082Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:00:05.097Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8862
+
+[debug] [2026-08-31T13:00:05.860Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:00:33.679Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.684Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.692Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.693Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.706Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.706Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.709Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.714Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.716Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:33.722Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:00:34.731Z] Validating nodejs source
+[debug] [2026-08-31T13:00:37.837Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:00:37.838Z] Building nodejs source
+[debug] [2026-08-31T13:00:37.838Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:00:37.840Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:00:37.855Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8696
+
+[debug] [2026-08-31T13:00:38.971Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:01:14.781Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.787Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.797Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.798Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.811Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.811Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.815Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.821Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.823Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:14.831Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:01:15.839Z] Validating nodejs source
+[debug] [2026-08-31T13:01:18.607Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:01:18.607Z] Building nodejs source
+[debug] [2026-08-31T13:01:18.607Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:01:18.608Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:01:18.622Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8104
+
+[debug] [2026-08-31T13:01:19.663Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:03:30.122Z] File C:\Users\Omar\THINK\Front\activenext\functions\src\offers\onOfferCreated.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\src\\offers\\onOfferCreated.ts changed, reloading triggers"}}
+[debug] [2026-08-31T13:03:31.129Z] Validating nodejs source
+[debug] [2026-08-31T13:03:34.373Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:03:34.373Z] Building nodejs source
+[debug] [2026-08-31T13:03:34.373Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:03:34.374Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:03:34.388Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8414
+
+[debug] [2026-08-31T13:03:35.192Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:03:41.176Z] File C:\Users\Omar\THINK\Front\activenext\functions\src\offers\verifyOfferOtp.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\src\\offers\\verifyOfferOtp.ts changed, reloading triggers"}}
+[debug] [2026-08-31T13:03:42.180Z] Validating nodejs source
+[debug] [2026-08-31T13:03:45.562Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:03:45.562Z] Building nodejs source
+[debug] [2026-08-31T13:03:45.562Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:03:45.564Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:03:45.576Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8948
+
+[debug] [2026-08-31T13:03:46.340Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:03:53.322Z] File C:\Users\Omar\THINK\Front\activenext\functions\src\offers\onOfferAccepted.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\src\\offers\\onOfferAccepted.ts changed, reloading triggers"}}
+[debug] [2026-08-31T13:03:54.329Z] Validating nodejs source
+[debug] [2026-08-31T13:03:57.436Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:03:57.436Z] Building nodejs source
+[debug] [2026-08-31T13:03:57.436Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:03:57.438Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:03:57.451Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8977
+
+[debug] [2026-08-31T13:03:58.225Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:04:17.379Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.380Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.391Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.392Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.406Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.407Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.410Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.417Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.420Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:17.428Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:18.433Z] Validating nodejs source
+[debug] [2026-08-31T13:04:21.724Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:04:21.724Z] Building nodejs source
+[debug] [2026-08-31T13:04:21.724Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:04:21.725Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:04:21.740Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8479
+
+[error] TypeError: functions.firestore.document is not a function
+    at Object.<anonymous> (C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js:40:6)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js:40:24)
+
+[debug] [2026-08-31T13:04:23.898Z] Got response code 400; body Failed to generate manifest from function source: functions.firestore.document is not a function
+[error] !!  functions: Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error"}}
+[debug] [2026-08-31T13:04:45.584Z] File C:\Users\Omar\THINK\Front\activenext\functions\src\offers\onOfferCreated.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\src\\offers\\onOfferCreated.ts changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:46.588Z] Validating nodejs source
+[debug] [2026-08-31T13:04:50.363Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:04:50.364Z] Building nodejs source
+[debug] [2026-08-31T13:04:50.364Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:04:50.366Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:04:50.382Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8573
+
+[error] TypeError: functions.firestore.document is not a function
+    at Object.<anonymous> (C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js:40:6)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js:40:24)
+
+[debug] [2026-08-31T13:04:51.431Z] Got response code 400; body Failed to generate manifest from function source: functions.firestore.document is not a function
+[error] !!  functions: Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error"}}
+[debug] [2026-08-31T13:04:56.163Z] File C:\Users\Omar\THINK\Front\activenext\functions\src\offers\verifyOfferOtp.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\src\\offers\\verifyOfferOtp.ts changed, reloading triggers"}}
+[debug] [2026-08-31T13:04:57.168Z] Validating nodejs source
+[debug] [2026-08-31T13:05:00.154Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:05:00.154Z] Building nodejs source
+[debug] [2026-08-31T13:05:00.154Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:05:00.156Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:05:00.172Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8715
+
+[error] TypeError: functions.firestore.document is not a function
+    at Object.<anonymous> (C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js:40:6)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js:40:24)
+
+[debug] [2026-08-31T13:05:01.449Z] Got response code 400; body Failed to generate manifest from function source: functions.firestore.document is not a function
+[error] !!  functions: Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error"}}
+[debug] [2026-08-31T13:05:05.193Z] File C:\Users\Omar\THINK\Front\activenext\functions\src\offers\onOfferAccepted.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\src\\offers\\onOfferAccepted.ts changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:06.200Z] Validating nodejs source
+[debug] [2026-08-31T13:05:08.902Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:05:08.902Z] Building nodejs source
+[debug] [2026-08-31T13:05:08.902Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:05:08.904Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:05:08.924Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8293
+
+[error] TypeError: functions.firestore.document is not a function
+    at Object.<anonymous> (C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js:40:6)
+    at Module._compile (node:internal/modules/cjs/loader:1761:14)
+    at Object..js (node:internal/modules/cjs/loader:1893:10)
+    at Module.load (node:internal/modules/cjs/loader:1481:32)
+    at Module._load (node:internal/modules/cjs/loader:1300:12)
+    at TracingChannel.traceSync (node:diagnostics_channel:328:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:245:24)
+    at Module.require (node:internal/modules/cjs/loader:1504:12)
+    at require (node:internal/modules/helpers:152:16)
+    at Object.<anonymous> (C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js:40:24)
+
+[debug] [2026-08-31T13:05:10.230Z] Got response code 400; body Failed to generate manifest from function source: functions.firestore.document is not a function
+[error] !!  functions: Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error {"metadata":{"emulator":{"name":"functions"},"message":"Failed to load function definition from source: FirebaseError: Functions codebase could not be analyzed successfully. It may have a syntax or runtime error"}}
+[debug] [2026-08-31T13:05:37.511Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.517Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.532Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.532Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.540Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.547Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.551Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.556Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.559Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:37.567Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:38.578Z] Validating nodejs source
+[debug] [2026-08-31T13:05:41.486Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:05:41.486Z] Building nodejs source
+[debug] [2026-08-31T13:05:41.486Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:05:41.487Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:05:41.506Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8005
+
+[debug] [2026-08-31T13:05:43.643Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[debug] [2026-08-31T13:05:45.412Z] File C:\Users\Omar\THINK\Front\activenext\functions\src\offers\onOfferCreated.ts changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\src\\offers\\onOfferCreated.ts changed, reloading triggers"}}
+[debug] [2026-08-31T13:05:46.418Z] Validating nodejs source
+[debug] [2026-08-31T13:05:49.851Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:05:49.851Z] Building nodejs source
+[debug] [2026-08-31T13:05:49.851Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:05:49.853Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:05:49.867Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:05:49.877Z] Definition for trigger onOfferCreated changed from {"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"}} to {"eventType":"providers/cloud.firestore/eventTypes/document.create","resource":"projects/activelink2026/databases/(default)/documents/offers/{offerId}"} {"metadata":{"emulator":{"name":"functions"},"message":"Definition for trigger onOfferCreated changed from {\"eventType\":\"google.cloud.firestore.document.v1.created\",\"eventFilters\":{\"database\":\"(default)\",\"namespace\":\"(default)\"},\"eventFilterPathPatterns\":{\"document\":\"offers/{offerId}\"}} to {\"eventType\":\"providers/cloud.firestore/eventTypes/document.create\",\"resource\":\"projects/activelink2026/databases/(default)/documents/offers/{offerId}\"}"}}
+[debug] [2026-08-31T13:05:49.877Z] Definition for trigger onOfferAccepted changed from {"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"}} to {"eventType":"providers/cloud.firestore/eventTypes/document.update","resource":"projects/activelink2026/databases/(default)/documents/offers/{offerId}"} {"metadata":{"emulator":{"name":"functions"},"message":"Definition for trigger onOfferAccepted changed from {\"eventType\":\"google.cloud.firestore.document.v1.updated\",\"eventFilters\":{\"database\":\"(default)\",\"namespace\":\"(default)\"},\"eventFilterPathPatterns\":{\"document\":\"offers/{offerId}\"}} to {\"eventType\":\"providers/cloud.firestore/eventTypes/document.update\",\"resource\":\"projects/activelink2026/databases/(default)/documents/offers/{offerId}\"}"}}
+[info] i  functions[us-central1-onOfferCreated]: function ignored because the firestore emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the firestore emulator does not exist or is not running."}}
+[info] i  functions[us-central1-onOfferAccepted]: function ignored because the firestore emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the firestore emulator does not exist or is not running."}}
+[info] Serving at port 8403
+
+[debug] [2026-08-31T13:05:51.055Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:06:08.077Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.077Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.095Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.096Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.110Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.111Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.123Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.123Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.130Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:08.131Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:06:09.135Z] Validating nodejs source
+[debug] [2026-08-31T13:06:11.589Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:06:11.589Z] Building nodejs source
+[debug] [2026-08-31T13:06:11.589Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:06:11.590Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:06:11.604Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8812
+
+[debug] [2026-08-31T13:06:12.703Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:07:17.871Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.872Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.881Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.882Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.895Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.896Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.901Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.906Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.908Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:17.913Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:07:18.924Z] Validating nodejs source
+[debug] [2026-08-31T13:07:21.452Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:07:21.452Z] Building nodejs source
+[debug] [2026-08-31T13:07:21.452Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:07:21.453Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:07:21.468Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8336
+
+[debug] [2026-08-31T13:07:22.670Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:08:04.641Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.641Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.653Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.654Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.666Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.666Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.670Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.676Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.678Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:04.682Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:08:05.699Z] Validating nodejs source
+[debug] [2026-08-31T13:08:08.421Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:08:08.422Z] Building nodejs source
+[debug] [2026-08-31T13:08:08.422Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:08:08.423Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:08:08.437Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8938
+
+[debug] [2026-08-31T13:08:09.414Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:17:56.046Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.046Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.052Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.052Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.058Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.061Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.063Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.066Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.067Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:56.070Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:17:57.075Z] Validating nodejs source
+[debug] [2026-08-31T13:17:58.313Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:17:58.313Z] Building nodejs source
+[debug] [2026-08-31T13:17:58.313Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:17:58.314Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:17:58.323Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8942
+
+[debug] [2026-08-31T13:17:58.894Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:21:20.464Z] File C:\Users\Omar\THINK\Front\activenext\functions\package-lock.json changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\package-lock.json changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:21.468Z] Validating nodejs source
+[debug] [2026-08-31T13:21:22.705Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:21:22.705Z] Building nodejs source
+[debug] [2026-08-31T13:21:22.705Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:21:22.706Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:21:22.716Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8400
+
+[debug] [2026-08-31T13:21:23.251Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:21:45.462Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.463Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.467Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.470Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.475Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.478Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.481Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.484Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.486Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:45.489Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:21:46.494Z] Validating nodejs source
+[debug] [2026-08-31T13:21:47.676Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:21:47.677Z] Building nodejs source
+[debug] [2026-08-31T13:21:47.677Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:21:47.678Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:21:47.685Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8168
+
+[debug] [2026-08-31T13:21:48.265Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:23:54.660Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.663Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.669Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.672Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.680Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.680Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.685Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.685Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.688Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:54.690Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:23:55.694Z] Validating nodejs source
+[debug] [2026-08-31T13:23:56.980Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:23:56.980Z] Building nodejs source
+[debug] [2026-08-31T13:23:56.980Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:23:56.981Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:23:56.992Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8464
+
+[debug] [2026-08-31T13:23:57.604Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:26:25.599Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.602Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.606Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.608Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.614Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.618Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.620Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.622Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.624Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:25.626Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:26:26.634Z] Validating nodejs source
+[debug] [2026-08-31T13:26:27.820Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:26:27.820Z] Building nodejs source
+[debug] [2026-08-31T13:26:27.820Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:26:27.821Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:26:27.830Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8994
+
+[debug] [2026-08-31T13:26:28.387Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:27:08.928Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.929Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\utils\otp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\utils\\otp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.935Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.935Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferCreated.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferCreated.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.941Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.941Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\verifyOfferOtp.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\verifyOfferOtp.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.945Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.948Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\offers\onOfferAccepted.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\offers\\onOfferAccepted.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.949Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js.map changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js.map changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:08.952Z] File C:\Users\Omar\THINK\Front\activenext\functions\lib\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\\lib\\index.js changed, reloading triggers"}}
+[debug] [2026-08-31T13:27:09.958Z] Validating nodejs source
+[debug] [2026-08-31T13:27:11.065Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:27:11.065Z] Building nodejs source
+[debug] [2026-08-31T13:27:11.065Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[info] +  functions: Using node@24 from host. 
+[debug] [2026-08-31T13:27:11.065Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:27:11.072Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8329
+
+[debug] [2026-08-31T13:27:11.572Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.create","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"platform":"gcfv1","labels":{},"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"platform":"gcfv1","availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"serviceAccountEmail":null,"vpc":null,"eventTrigger":{"eventType":"providers/cloud.firestore/eventTypes/document.update","eventFilters":{"resource":"projects/{{ params.PROJECT_ID }}/databases/(default)/documents/offers/{offerId}"},"retry":false},"labels":{},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[debug] [2026-08-31T13:46:22.491Z] ----------------------------------------------------------------------
+[debug] [2026-08-31T13:46:22.493Z] Command:       C:\Program Files\nodejs\node.exe C:\Users\Omar\AppData\Roaming\npm\node_modules\firebase-tools\lib\bin\firebase.js emulators:start --only functions
+[debug] [2026-08-31T13:46:22.493Z] CLI Version:   15.28.2
+[debug] [2026-08-31T13:46:22.493Z] Platform:      win32
+[debug] [2026-08-31T13:46:22.493Z] Node Version:  v24.13.0
+[debug] [2026-08-31T13:46:22.494Z] Detected Agent: antigravity
+[debug] [2026-08-31T13:46:22.494Z] Time:          Mon Aug 31 2026 16:46:22 GMT+0300 (Eastern European Summer Time)
+[debug] [2026-08-31T13:46:22.494Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2026-08-31T13:46:23.499Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2026-08-31T13:46:23.500Z] > authorizing via signed-in user (des@cbrand.sa)
+[info] i  emulators: Starting emulators: functions {"metadata":{"emulator":{"name":"hub"},"message":"Starting emulators: functions"}}
+[debug] [2026-08-31T13:46:23.513Z] [logging] Logging Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-08-31T13:46:23.513Z] assigned listening specs for emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}]},"metadata":{"message":"assigned listening specs for emulators"}}
+[debug] [2026-08-31T13:46:23.517Z] Found emulator hub locator: {"version":"15.28.2","origins":["http://127.0.0.1:4400","http://[::1]:4400"],"pid":16392}
+[debug] [2026-08-31T13:46:23.518Z] Write emulator hub locator at C:\Users\Omar\AppData\Local\Temp\hub-activelink2026.json
+[debug] [2026-08-31T13:46:23.531Z] [functions] Functions Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-08-31T13:46:23.531Z] [eventarc] Eventarc Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-08-31T13:46:23.531Z] [tasks] Cloud Tasks Emulator only supports listening on one address (127.0.0.1). Not listening on ::1
+[debug] [2026-08-31T13:46:23.531Z] late-assigned ports for functions and eventarc emulators {"user":{"hub":[{"address":"127.0.0.1","family":"IPv4","port":4400},{"address":"::1","family":"IPv6","port":4400}],"ui":[{"address":"127.0.0.1","family":"IPv4","port":4000},{"address":"::1","family":"IPv6","port":4000}],"logging":[{"address":"127.0.0.1","family":"IPv4","port":4500}],"functions":[{"address":"127.0.0.1","family":"IPv4","port":5001}],"eventarc":[{"address":"127.0.0.1","family":"IPv4","port":9299}],"tasks":[{"address":"127.0.0.1","family":"IPv4","port":9499}]},"metadata":{"message":"late-assigned ports for functions and eventarc emulators"}}
+[warn] !  functions: The following emulators are not running, calls to these services from the Functions emulator will affect production: apphosting, auth, firestore, database, hosting, pubsub, storage, dataconnect {"metadata":{"emulator":{"name":"functions"},"message":"The following emulators are not running, calls to these services from the Functions emulator will affect production: \u001b[1mapphosting, auth, firestore, database, hosting, pubsub, storage, dataconnect\u001b[22m"}}
+[debug] [2026-08-31T13:46:23.549Z] defaultcredentials: writing to file C:\Users\Omar\AppData\Roaming\firebase\des_cbrand_sa_application_default_credentials.json
+[debug] [2026-08-31T13:46:23.550Z] Setting GAC to C:\Users\Omar\AppData\Roaming\firebase\des_cbrand_sa_application_default_credentials.json {"metadata":{"emulator":{"name":"functions"},"message":"Setting GAC to C:\\Users\\Omar\\AppData\\Roaming\\firebase\\des_cbrand_sa_application_default_credentials.json"}}
+[debug] [2026-08-31T13:46:23.561Z] Checked if tokens are valid: false, expires at: 1788184858509
+[debug] [2026-08-31T13:46:23.562Z] Checked if tokens are valid: false, expires at: 1788184858509
+[debug] [2026-08-31T13:46:23.562Z] > refreshing access token with scopes: []
+[debug] [2026-08-31T13:46:23.564Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2026-08-31T13:46:23.564Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-08-31T13:46:23.862Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2026-08-31T13:46:23.862Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2026-08-31T13:46:23.877Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/activelink2026/adminSdkConfig [none]
+[debug] [2026-08-31T13:46:24.520Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/activelink2026/adminSdkConfig 200
+[debug] [2026-08-31T13:46:24.520Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/activelink2026/adminSdkConfig {"projectId":"activelink2026","storageBucket":"activelink2026.firebasestorage.app"}
+[info] i  functions: Watching "C:\Users\Omar\THINK\Front\activenext\functions" for Cloud Functions... {"metadata":{"emulator":{"name":"functions"},"message":"Watching \"C:\\Users\\Omar\\THINK\\Front\\activenext\\functions\" for Cloud Functions..."}}
+[debug] [2026-08-31T13:46:24.544Z] Validating nodejs source
+[debug] [2026-08-31T13:46:25.635Z] > [functions] package.json contents: {
+  "name": "functions",
+  "scripts": {
+    "lint": "eslint .",
+    "build": "tsc",
+    "build:watch": "tsc --watch",
+    "serve": "npm run build && firebase emulators:start --only functions",
+    "shell": "npm run build && firebase functions:shell",
+    "start": "npm run shell",
+    "deploy": "firebase deploy --only functions",
+    "logs": "firebase functions:log"
+  },
+  "engines": {
+    "node": "20"
+  },
+  "main": "lib/index.js",
+  "dependencies": {
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^5.12.0",
+    "@typescript-eslint/parser": "^5.12.0",
+    "eslint": "^8.9.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-plugin-import": "^2.25.4",
+    "firebase-functions-test": "^3.4.1",
+    "typescript": "^6.0.0"
+  },
+  "private": true
+}
+[debug] [2026-08-31T13:46:25.635Z] Building nodejs source
+[debug] [2026-08-31T13:46:25.635Z] Failed to find version of module node: reached end of search path C:\Users\Omar\THINK\Front\activenext\functions\node_modules
+[warn] !  functions: Your requested "node" version "20" doesn't match your global version "24". Using node@24 from host. 
+[debug] [2026-08-31T13:46:25.637Z] Could not find functions.yaml. Must use http discovery
+[debug] [2026-08-31T13:46:25.645Z] Found firebase-functions binary at 'C:\Users\Omar\THINK\Front\activenext\functions\node_modules\.bin\firebase-functions'
+[info] Serving at port 8168
+
+[debug] [2026-08-31T13:46:26.127Z] Got response from /__/functions.yaml {"endpoints":{"onOfferCreated":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.created","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferCreated"},"verifyOfferOtp":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"callableTrigger":{},"entryPoint":"verifyOfferOtp"},"onOfferAccepted":{"availableMemoryMb":null,"timeoutSeconds":null,"minInstances":null,"maxInstances":null,"ingressSettings":null,"concurrency":null,"serviceAccountEmail":null,"vpc":null,"platform":"gcfv2","labels":{},"eventTrigger":{"eventType":"google.cloud.firestore.document.v1.updated","eventFilters":{"database":"(default)","namespace":"(default)"},"eventFilterPathPatterns":{"document":"offers/{offerId}"},"retry":false},"entryPoint":"onOfferAccepted"}},"specVersion":"v1alpha1","requiredAPIs":[],"extensions":{}}
+[info] +  functions: Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted. {"metadata":{"emulator":{"name":"functions"},"message":"Loaded functions definitions from source: onOfferCreated, verifyOfferOtp, onOfferAccepted."}}
+[info] i  functions[us-central1-onOfferCreated]: function ignored because the firestore emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the firestore emulator does not exist or is not running."}}
+[info] +  functions[us-central1-verifyOfferOtp]: http function initialized (http://127.0.0.1:5001/activelink2026/us-central1/verifyOfferOtp). {"metadata":{"emulator":{"name":"functions"},"message":"\u001b[1mhttp\u001b[22m function initialized (http://127.0.0.1:5001/activelink2026/us-central1/verifyOfferOtp)."}}
+[info] i  functions[us-central1-onOfferAccepted]: function ignored because the firestore emulator does not exist or is not running. {"metadata":{"emulator":{"name":"functions"},"message":"function ignored because the firestore emulator does not exist or is not running."}}
+[debug] [2026-08-31T13:46:29.169Z] Could not find VSCode notification endpoint: TypeError: fetch failed. If you are not running the Firebase SQL Connect VSCode extension, this is expected and not an issue.
+[info] 
+┌─────────────────────────────────────────────────────────────┐
+│ ✔  All emulators ready! It is now safe to connect your app. │
+│ i  View Emulator UI at http://127.0.0.1:4000/               │
+└─────────────────────────────────────────────────────────────┘
+
+┌───────────┬────────────────┬─────────────────────────────────┐
+│ Emulator  │ Host:Port      │ View in Emulator UI             │
+├───────────┼────────────────┼─────────────────────────────────┤
+│ Functions │ 127.0.0.1:5001 │ http://127.0.0.1:4000/functions │
+└───────────┴────────────────┴─────────────────────────────────┘
+  Emulator Hub host: 127.0.0.1 port: 4400
+  Other reserved ports: 4500
+
+Issues? Report them at https://github.com/firebase/firebase-tools/issues and attach the *-debug.log files.
+ 

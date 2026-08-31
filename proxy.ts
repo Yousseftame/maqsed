@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
-  AFTER_LOGIN_PATH,
+  getDefaultRedirectPath,
   SESSION_COOKIE,
   isAuthPath,
   isProtectedPath,
@@ -19,7 +19,7 @@ export function proxy(request: NextRequest) {
   }
 
   if (isAuthPath(pathname) && hasSession) {
-    return NextResponse.redirect(new URL(AFTER_LOGIN_PATH, request.url));
+    return NextResponse.redirect(new URL(getDefaultRedirectPath(), request.url));
   }
 
   return NextResponse.next();

@@ -4,14 +4,14 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { ChevronsLeft, LogOut } from "lucide-react";
-import { ADMIN_NAV, type AdminNavLink } from "@/features/admin/data/nav";
+import { DEVELOPER_NAV, type DeveloperNavLink } from "@/features/developer/data/nav";
 import { useAdminSignOut } from "@/features/admin/hooks/useAdminSignOut";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
 
-export function AdminSidebar({
+export function DeveloperSidebar({
   mobileOpen,
   collapsed,
   onMobileClose,
@@ -91,46 +91,20 @@ export function AdminSidebar({
         </div>
 
         <nav className="flex flex-1 flex-col gap-1">
-          {ADMIN_NAV.map((entry, index) => {
-            if (entry.type === "divider") {
+          {DEVELOPER_NAV.map((entry, index) => {
+            if (entry.type === "link") {
               return (
-                <div
-                  key={`divider-${index}`}
-                  className="mx-3 my-3 h-px bg-[#0a0f1d]/8"
+                <NavLink
+                  key={entry.href}
+                  item={entry}
+                  label={t(entry.labelKey)}
+                  collapsed={collapsed}
+                  active={isNavActive(pathname, entry.href)}
+                  onClick={onMobileClose}
                 />
               );
             }
-
-            if (entry.type === "heading") {
-              return (
-                <div
-                  key={entry.labelKey}
-                  className={cn("px-3 pb-1 pt-1", collapsed && "lg:hidden")}
-                >
-                  <span
-                    className={cn(
-                      "text-[11px] font-semibold text-[#8c8c8c]",
-                      locale === "ar"
-                        ? "tracking-normal"
-                        : "tracking-[0.14em] uppercase"
-                    )}
-                  >
-                    {t(entry.labelKey)}
-                  </span>
-                </div>
-              );
-            }
-
-            return (
-              <NavLink
-                key={entry.href}
-                item={entry}
-                label={t(entry.labelKey)}
-                collapsed={collapsed}
-                active={isNavActive(pathname, entry.href)}
-                onClick={onMobileClose}
-              />
-            );
+            return null;
           })}
         </nav>
 
@@ -177,7 +151,7 @@ function NavLink({
   active,
   onClick,
 }: {
-  item: AdminNavLink;
+  item: DeveloperNavLink;
   label: string;
   collapsed: boolean;
   active: boolean;

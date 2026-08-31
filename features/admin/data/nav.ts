@@ -12,6 +12,7 @@ import {
   TriangleAlert,
   Users,
   Terminal,
+  Info,
   type LucideIcon,
 } from "lucide-react";
 
@@ -40,6 +41,7 @@ export const ADMIN_NAV: AdminNavEntry[] = [
   { type: "link", labelKey: "admin.nav.cities", href: "/admin/cities", icon: Map },
   { type: "link", labelKey: "admin.nav.projects", href: "/admin/projects", icon: Folder },
   { type: "link", labelKey: "admin.nav.units", href: "/admin/units", icon: Building2 },
+  { type: "link", labelKey: "admin.nav.developers", href: "/admin/developers", icon: Terminal },
   { type: "divider" },
   {
     type: "link",
@@ -50,6 +52,7 @@ export const ADMIN_NAV: AdminNavEntry[] = [
   },
   { type: "divider" },
   { type: "heading", labelKey: "admin.nav.settingsHeading" },
+  { type: "link", labelKey: "admin.nav.about", href: "/admin/about", icon: Info },
   { type: "link", labelKey: "admin.nav.company", href: "/admin/company", icon: Briefcase },
   { type: "link", labelKey: "admin.nav.menu", href: "/admin/menu-settings", icon: Settings },
   { type: "link", labelKey: "admin.nav.interface", href: "/admin/interface", icon: AppWindow },
@@ -62,7 +65,6 @@ export const ADMIN_NAV: AdminNavEntry[] = [
     icon: TriangleAlert,
     tone: "danger",
   },
-  { type: "link", labelKey: "admin.nav.developers", href: "/admin/developers", icon: Terminal },
 ];
 
 export function getAdminNavLinks() {

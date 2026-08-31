@@ -9,6 +9,8 @@ import {
   serverTimestamp,
   orderBy,
   query,
+  where,
+  getCountFromServer,
 } from "firebase/firestore";
 
 export type RequestStatus = "new" | "contacted" | "completed" | "cancelled";
@@ -47,6 +49,19 @@ const CONTACT_COLLECTION = "contact_requests";
 const SELL_COLLECTION = "sell_requests";
 
 export const requestsService = {
+  // Aggregate count for sidebar (low cost)
+  async getNewRequestsCount(): Promise<number> {
+    const contactQ = query(collection(db, CONTACT_COLLECTION), where("status", "==", "new"));
+    const sellQ = query(collection(db, SELL_COLLECTION), where("status", "==", "new"));
+    
+    const [contactSnap, sellSnap] = await Promise.all([
+      getCountFromServer(contactQ),
+      getCountFromServer(sellQ)
+    ]);
+    
+    return contactSnap.data().count + sellSnap.data().count;
+  },
+
   // Contact Requests
   async getContactRequests(): Promise<ContactRequest[]> {
     const q = query(collection(db, CONTACT_COLLECTION), orderBy("createdAt", "desc"));

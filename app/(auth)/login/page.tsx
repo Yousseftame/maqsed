@@ -7,7 +7,7 @@ import { Eye, EyeOff, ArrowUpRight, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { AFTER_LOGIN_PATH, getSafeNextPath } from "@/lib/auth/constants";
+import { getSafeNextPath, getDefaultRedirectPath } from "@/lib/auth/constants";
 import { createSessionCookie } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 
@@ -33,9 +33,9 @@ function LoginPageFallback() {
 function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, loading: authLoading, signIn } = useAuth();
+  const { user, userData, loading: authLoading, signIn } = useAuth();
   const { locale, t } = useLocale();
-  const nextPath = getSafeNextPath(searchParams.get("next"));
+  const nextPath = getSafeNextPath(searchParams.get("next"), userData?.role);
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,11 +49,12 @@ function LoginForm() {
   const goToApp = () => {
     if (redirectingRef.current) return;
     redirectingRef.current = true;
-    router.replace(nextPath || AFTER_LOGIN_PATH);
+    router.replace(nextPath || getDefaultRedirectPath(userData?.role));
   };
 
   useEffect(() => {
-    if (authLoading || !user || redirectingRef.current || restoreFailed || submittingRef.current) {
+    // We wait until both user and userData are loaded to redirect correctly
+    if (authLoading || !user || !userData || redirectingRef.current || restoreFailed) {
       return;
     }
 
@@ -67,7 +68,7 @@ function LoginForm() {
         setError(t("auth.restoreFailed"));
       }
     })();
-  }, [authLoading, restoreFailed, t, user]);
+  }, [authLoading, restoreFailed, t, user, userData]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,8 +78,7 @@ function LoginForm() {
 
     try {
       await signIn(email, password);
-      toast.success(t("auth.welcomeBack"), { id: "login-success" });
-      goToApp();
+      // Success is handled by the useEffect once user and userData are loaded
     } catch (err) {
       submittingRef.current = false;
       redirectingRef.current = false;

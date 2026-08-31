@@ -14,15 +14,15 @@ export function Panel({
   return (
     <section className={cn("flex h-full flex-col rounded-[24px] bg-white p-5 sm:p-7", className)}>
       {title || action ? (
-        <div className="mb-5 flex items-center justify-between gap-3">
+        <div className="mb-5 flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
           {title ? (
             <h2 className="min-w-0 truncate text-xl font-bold tracking-tight text-[#0a0f1d] sm:text-2xl">
               {title}
             </h2>
           ) : (
-            <span />
+            <span className="hidden sm:inline" />
           )}
-          {action}
+          {action ? <div className="w-full sm:w-auto">{action}</div> : null}
         </div>
       ) : null}
       <div className="flex min-h-0 flex-1 flex-col">{children}</div>
