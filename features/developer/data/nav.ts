@@ -16,6 +16,7 @@ export type DeveloperNavLink = {
   href: string;
   icon: LucideIcon;
   badge?: number;
+  tone?: "danger";
 };
 
 export type DeveloperNavEntry = DeveloperNavLink;

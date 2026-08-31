@@ -287,6 +287,7 @@ export interface Dictionary {
     };
   };
   admin: {
+    panelName: string;
     website: string;
     search: string;
     collapse: string;
@@ -568,6 +569,19 @@ export interface Dictionary {
       linkedin: string;
       twitter: string;
       instagram: string;
+    };
+  };
+  developer: {
+    panelName: string;
+    nav: {
+      dashboard: string;
+      projects: string;
+      units: string;
+      offers: string;
+      tasks: string;
+      notifications: string;
+      files: string;
+      invoices: string;
     };
   };
 }
