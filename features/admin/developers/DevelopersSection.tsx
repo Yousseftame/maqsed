@@ -69,15 +69,7 @@ export function DevelopersSection() {
     },
   ];
 
-  const handleCreateOffer = (dev: UserData) => {
-    const params = new URLSearchParams();
-    if (dev.uid) params.set("devId", dev.uid);
-    if (dev.displayName) params.set("devName", dev.displayName);
-    if (dev.email) params.set("devEmail", dev.email);
-    if (dev.phoneNumber) params.set("devPhone", dev.phoneNumber);
-    
-    router.push(`/admin/offers/create?${params.toString()}`);
-  };
+
 
   return (
     <div className="flex flex-col gap-3">
@@ -104,23 +96,17 @@ export function DevelopersSection() {
                 className="h-12 w-full rounded-full bg-[#F4F4F4] pe-4 ps-11 text-sm font-medium text-[#0a0f1d] outline-none placeholder:text-[#8c8c8c]"
               />
             </label>
-            <button
-              type="button"
-              onClick={() => router.push("/admin/offers/create")}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#161c2d]"
-            >
-              <FileText className="h-4 w-4" strokeWidth={2.2} />
-              {t("admin.offers.create") || "Create Offer"}
-            </button>
-          </div>
+              <button
+                disabled
+                className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-semibold text-white shadow-sm transition-transform active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <Plus className="h-4 w-4" />
+                {t("admin.developers.create") || "Create Account"}
+              </button>
+            </div>
         }
         actions={(row) => (
-          <>
-            <TableAction 
-              label={t("admin.offers.createFor") || "Create Offer"} 
-              onClick={() => handleCreateOffer(row)} 
-            />
-          </>
+          <></>
         )}
       />
     </div>

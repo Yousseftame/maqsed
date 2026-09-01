@@ -1,10 +1,6 @@
-# Compiled JavaScript files
-lib/**/*.js
-lib/**/*.js.map
-
-# TypeScript v1 declaration files
-typings/
-
-# Node.js dependency directory
+# Compiled JavaScript files are deployed, but not committed to git (except lib/ for cloud build if needed)
+# Actually, since we want Cloud Build to see lib/, we should NOT ignore lib/ here.
 node_modules/
 *.local
+firebase-debug.log
+firebase-debug.*.log

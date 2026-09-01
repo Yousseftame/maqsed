@@ -12,6 +12,7 @@ import {
   TriangleAlert,
   Users,
   Terminal,
+  FileSignature,
   Info,
   type LucideIcon,
 } from "lucide-react";
@@ -42,13 +43,13 @@ export const ADMIN_NAV: AdminNavEntry[] = [
   { type: "link", labelKey: "admin.nav.projects", href: "/admin/projects", icon: Folder },
   { type: "link", labelKey: "admin.nav.units", href: "/admin/units", icon: Building2 },
   { type: "link", labelKey: "admin.nav.developers", href: "/admin/developers", icon: Terminal },
+  { type: "link", labelKey: "admin.nav.offers", href: "/admin/offers", icon: FileSignature },
   { type: "divider" },
   {
     type: "link",
     labelKey: "admin.nav.customers",
     href: "/admin/customers",
     icon: Users,
-    badge: 10,
   },
   { type: "divider" },
   { type: "heading", labelKey: "admin.nav.settingsHeading" },

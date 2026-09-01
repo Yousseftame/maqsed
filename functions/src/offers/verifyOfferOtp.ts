@@ -1,55 +1,63 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { getFirestore } from "firebase-admin/firestore";
-import { getAuth } from "firebase-admin/auth";
+import * as admin from "firebase-admin";
 
+// Initialize admin app if not already initialized
+if (admin.apps.length === 0) {
+  admin.initializeApp();
+}
+
+/**
+ * Callable function for developers to verify their OTP.
+ * If successful, returns the full offer details.
+ */
 export const verifyOfferOtp = onCall(async (request) => {
   const { offerId, otp } = request.data;
 
   if (!offerId || !otp) {
-    throw new HttpsError("invalid-argument", "Missing offerId or otp");
+    throw new HttpsError("invalid-argument", "offerId and otp are required.");
   }
 
-  const db = getFirestore();
-  const offerRef = db.collection("offers").doc(offerId);
-  const offerDoc = await offerRef.get();
-
-  if (!offerDoc.exists) {
-    throw new HttpsError("not-found", "Offer not found");
-  }
-
-  const offerData = offerDoc.data();
-
-  if (offerData?.secretCode !== otp) {
-    throw new HttpsError("permission-denied", "Invalid OTP");
-  }
-
-  // OTP matches! Provision user if necessary.
-  const email = offerData?.developerEmail;
-  if (!email) {
-    throw new HttpsError("internal", "Offer is missing developer email");
-  }
-
-  let userRecord;
   try {
-    userRecord = await getAuth().getUserByEmail(email);
-  } catch (error: any) {
-    if (error.code === 'auth/user-not-found') {
-      // Create user
-      userRecord = await getAuth().createUser({
-        email: email,
-        emailVerified: true,
-        displayName: offerData?.developerName || "Developer",
+    const offerRef = admin.firestore().collection("offers").doc(offerId);
+    const offerSnap = await offerRef.get();
+
+    if (!offerSnap.exists) {
+      throw new HttpsError("not-found", "Offer not found.");
+    }
+
+    const offerData = offerSnap.data();
+
+    if (offerData?.secretCode !== otp) {
+      throw new HttpsError("permission-denied", "Invalid OTP.");
+    }
+
+    // Optional: Mark the offer as 'viewed' if it was 'pending'
+    if (offerData?.status === "pending") {
+      await offerRef.update({
+        status: "viewed",
+        viewedAt: admin.firestore.FieldValue.serverTimestamp(),
       });
-    } else {
+    }
+
+    // Return the offer details securely to the frontend
+    return {
+      success: true,
+      offer: {
+        id: offerSnap.id,
+        title: offerData?.title,
+        projectName: offerData?.projectName,
+        technicalDetails: offerData?.technicalDetails,
+        financialAmount: offerData?.financialAmount,
+        developerName: offerData?.developerName,
+        status: offerData?.status === "pending" ? "viewed" : offerData?.status,
+        createdAt: offerData?.createdAt,
+      },
+    };
+  } catch (error) {
+    console.error("Error verifying OTP:", error);
+    if (error instanceof HttpsError) {
       throw error;
     }
+    throw new HttpsError("internal", "An error occurred while verifying the OTP.");
   }
-
-  // Securely link the user's UID to the offer so Firestore Rules can allow them to read/update it
-  await offerRef.update({ developerUid: userRecord.uid });
-  
-  // Create Custom Token for seamless login
-  const customToken = await getAuth().createCustomToken(userRecord.uid);
-
-  return { success: true, token: customToken };
 });

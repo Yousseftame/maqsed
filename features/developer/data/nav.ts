@@ -25,7 +25,7 @@ export const DEVELOPER_NAV: DeveloperNavEntry[] = [
   { type: "link", labelKey: "developer.nav.dashboard", href: "/developer/dashboard", icon: LayoutGrid },
   { type: "link", labelKey: "developer.nav.projects", href: "/developer/projects", icon: Folder },
   { type: "link", labelKey: "developer.nav.units", href: "/developer/units", icon: Building2 },
-  { type: "link", labelKey: "developer.nav.offers", href: "/developer/offers", icon: Tag },
+
   { type: "link", labelKey: "developer.nav.tasks", href: "/developer/tasks", icon: CheckSquare },
   { type: "link", labelKey: "developer.nav.notifications", href: "/developer/notifications", icon: Bell },
   { type: "link", labelKey: "developer.nav.files", href: "/developer/files", icon: FileText },

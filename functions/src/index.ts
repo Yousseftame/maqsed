@@ -1,10 +1,19 @@
-import { getApps, initializeApp } from "firebase-admin/app";
+/**
+ * Import function triggers from their respective submodules:
+ *
+ * import {onCall} from "firebase-functions/v2/https";
+ * import {onDocumentWritten} from "firebase-functions/v2/firestore";
+ *
+ * See a full list of supported triggers at https://firebase.google.com/docs/functions
+ */
 
-// Initialize Firebase Admin globally safely
-if (!getApps().length) {
-    initializeApp();
-}
+import { setGlobalOptions } from "firebase-functions/v2";
 
-export { onOfferCreatedTrigger } from "./offers/onOfferCreated";
-export { verifyOfferOtp } from "./offers/verifyOfferOtp";
-export { onOfferAcceptedTrigger } from "./offers/onOfferAccepted";
+// Set global options for all functions
+setGlobalOptions({ maxInstances: 10, region: "us-central1" });
+
+// Export the offer functions
+export * from "./offers/onOfferCreated";
+export * from "./offers/verifyOfferOtp";
+export * from "./offers/onOfferResponded";
+
