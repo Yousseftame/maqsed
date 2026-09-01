@@ -470,6 +470,7 @@ export interface Dictionary {
       phone: string;
       joined: string;
       search: string;
+      create: string;
     };
     offers: {
       search: string;
@@ -585,28 +586,28 @@ export interface Dictionary {
       tasks: string;
       notifications: string;
       files: string;
-      invoices: "Invoices",
+      invoices: string;
     };
   };
   offerPage: {
-    secureAccess: "Secure Offer Access",
-    enterCode: "Please enter the 6-digit secure code sent to you via Email or WhatsApp.",
-    verifyBtn: "Verify & View Offer",
-    verifying: "Verifying...",
-    invalidCodeLength: "Please enter a valid 6-digit code.",
-    offerNotFound: "Offer not found or no longer available.",
-    invalidCode: "Invalid secure code. Please try again.",
-    failedVerify: "Failed to verify the secure code.",
-    offerAccepted: "Offer Accepted!",
-    offerAcceptedDesc: "Thank you. We are preparing the official contract for this project.",
-    offerDeclined: "Offer Declined",
-    offerDeclinedDesc: "We have notified the administration. Thank you for your time.",
-    project: "Project",
-    financialAmount: "Financial Amount",
-    techScope: "Technical Scope & Requirements",
-    acceptOffer: "Accept Offer",
-    declineOffer: "Decline Offer",
-    failedSubmit: "Failed to submit your response. Please try again.",
+    secureAccess: string;
+    enterCode: string;
+    verifyBtn: string;
+    verifying: string;
+    invalidCodeLength: string;
+    offerNotFound: string;
+    invalidCode: string;
+    failedVerify: string;
+    offerAccepted: string;
+    offerAcceptedDesc: string;
+    offerDeclined: string;
+    offerDeclinedDesc: string;
+    project: string;
+    financialAmount: string;
+    techScope: string;
+    acceptOffer: string;
+    declineOffer: string;
+    failedSubmit: string;
   };
 }
 
