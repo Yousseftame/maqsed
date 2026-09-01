@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FileSignature, Search, Plus, FileText, CheckCircle, Clock, XCircle } from "lucide-react";
+import { FileSignature, Search, Plus, FileText, CheckCircle, Clock, XCircle, RefreshCw } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { DataTable, type Column } from "@/features/admin/ui/DataTable";
@@ -14,7 +14,7 @@ export function OffersSection() {
   const router = useRouter();
   const [queryStr, setQueryStr] = useState("");
 
-  const { data: offers = [], isLoading } = useQuery({
+  const { data: offers = [], isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["offers"],
     queryFn: () => offersService.getOffers(),
   });
@@ -171,13 +171,23 @@ export function OffersSection() {
                 className="h-12 w-full rounded-full bg-[#F4F4F4] pe-4 ps-11 text-sm font-medium text-[#0a0f1d] outline-none placeholder:text-[#8c8c8c]"
               />
             </label>
-            <button
-              onClick={() => router.push("/admin/offers/create")}
-              className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
-            >
-              <Plus className="h-4 w-4" />
-              {t("admin.offers.create") || "Create Offer"}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => refetch()}
+                disabled={isRefetching}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-[#0a0f1d] hover:bg-[#E5E5E5] transition-colors disabled:opacity-50"
+                title="Refresh"
+              >
+                <RefreshCw className={`h-5 w-5 ${isRefetching ? "animate-spin" : ""}`} />
+              </button>
+              <button
+                onClick={() => router.push("/admin/offers/create")}
+                className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
+              >
+                <Plus className="h-4 w-4" />
+                {t("admin.offers.create") || "Create Offer"}
+              </button>
+            </div>
           </div>
         }
         actions={(row) => (
