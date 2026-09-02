@@ -323,6 +323,12 @@ export interface Dictionary {
       users: string;
     };
     ui: {
+      user: string;
+      changePassword: string;
+      currentPassword: string;
+      newPassword: string;
+      confirmNewPassword: string;
+      incorrectCurrentPassword: string;
       add: string;
       edit: string;
       delete: string;
