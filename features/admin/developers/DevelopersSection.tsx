@@ -111,6 +111,10 @@ export function DevelopersSection() {
     );
   }, [developers, queryStr]);
 
+  const activeCount = useMemo(() => {
+    return developers.filter((dev) => dev.status !== "disabled").length;
+  }, [developers]);
+
   const columns: Column<UserData>[] = [
     {
       id: "developer",
@@ -165,7 +169,7 @@ export function DevelopersSection() {
       <div className="flex flex-col gap-3">
         <StatGrid className="xl:grid-cols-2">
         <StatCard icon={Terminal} label={t("admin.developers.total") || "Total Developers"} value={developers.length} />
-        <StatCard icon={Users} label={t("admin.developers.active") || "Active Accounts"} value={developers.length} />
+        <StatCard icon={Users} label={t("admin.developers.active") || "Active Accounts"} value={activeCount} />
       </StatGrid>
 
       <DataTable
