@@ -8,6 +8,7 @@ import { getDeveloperPageTitleKey } from "@/features/developer/data/nav";
 import { useAdminSignOut } from "@/features/admin/hooks/useAdminSignOut";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { UserAvatarDropdown } from "@/components/layout/UserAvatarDropdown";
 
 export function DeveloperHeader({
   collapsed,
@@ -89,12 +90,7 @@ export function DeveloperHeader({
           <LogOut className="h-4 w-4 rtl:-scale-x-100" strokeWidth={1.8} />
         </button>
 
-        <div
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-[#0a0f1d] text-sm font-bold text-white"
-          title={user?.email ?? undefined}
-        >
-          {initial}
-        </div>
+        <UserAvatarDropdown />
       </div>
     </header>
   );

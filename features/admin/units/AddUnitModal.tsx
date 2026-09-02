@@ -231,7 +231,7 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto px-6 py-6 no-scrollbar sm:px-8 bg-[#FAF9F6]">
+            <div className="flex-1 overflow-y-auto px-6 py-6 no-scrollbar sm:px-8">
               <form id="add-unit-form" onSubmit={handleSubmit(onSubmit)}>
                 
                 {/* 1. التبعية والموقع */}

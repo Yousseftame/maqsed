@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect } from "react";
-import { Building2, CircleCheck, Eye, Key, Plus, Search, ChevronDown } from "lucide-react";
+import { Building2, CircleCheck, Eye, Key, Plus, Search, ChevronDown, RefreshCw } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DataTable, TableAction, type Column } from "@/features/admin/ui/DataTable";
@@ -37,7 +37,7 @@ export function UnitsSection() {
   const [viewUnitId, setViewUnitId] = useState<string | null>(null);
   const [editUnitId, setEditUnitId] = useState<string | null>(null);
 
-  const { data: units = [] } = useQuery({
+  const { data: units = [], refetch, isRefetching } = useQuery({
     queryKey: ["units"],
     queryFn: () => unitsService.getUnits(),
   });
@@ -223,14 +223,24 @@ export function UnitsSection() {
                 className="h-12 w-full rounded-full bg-[#F4F4F4] pe-4 ps-11 text-sm font-medium text-[#0a0f1d] outline-none placeholder:text-[#8c8c8c]"
               />
             </label>
-            <button
-              type="button"
-              onClick={() => setIsAddModalOpen(true)}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#161c2d]"
-            >
-              <Plus className="h-4 w-4" strokeWidth={2.2} />
-              {t("admin.units.add") || "إضافة وحدة"}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => refetch()}
+                disabled={isRefetching}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-[#0a0f1d] hover:bg-[#E5E5E5] transition-colors disabled:opacity-50"
+                title="Refresh"
+              >
+                <RefreshCw className={`h-5 w-5 ${isRefetching ? "animate-spin" : ""}`} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsAddModalOpen(true)}
+                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-bold text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
+              >
+                <Plus className="h-4 w-4" strokeWidth={2.2} />
+                {t("admin.units.add") || "إضافة وحدة"}
+              </button>
+            </div>
           </div>
         }
         actions={(row) => (

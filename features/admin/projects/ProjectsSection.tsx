@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Building2, CircleCheck, Folder, Map, Plus, Search, ChevronDown } from "lucide-react";
+import { Building2, CircleCheck, Folder, Map, Plus, Search, ChevronDown, RefreshCw } from "lucide-react";
 import { DataTable, TableAction, type Column } from "@/features/admin/ui/DataTable";
 import { StatCard, StatGrid } from "@/features/admin/ui/StatCard";
 import { StatusBadge } from "@/features/admin/ui/StatusBadge";
@@ -32,7 +32,7 @@ export function ProjectsSection() {
   const [manageBuildingsPropertyId, setManageBuildingsPropertyId] = useState<string | null>(null);
   const [manageModelsPropertyId, setManageModelsPropertyId] = useState<string | null>(null);
 
-  const { data: properties = [] } = useQuery({
+  const { data: properties = [], refetch, isRefetching } = useQuery({
     queryKey: ["properties"],
     queryFn: () => propertiesService.getProperties(),
   });
@@ -234,14 +234,24 @@ export function ProjectsSection() {
                 className="h-12 w-full rounded-full bg-[#F4F4F4] pe-4 ps-11 text-sm font-medium text-[#0a0f1d] outline-none placeholder:text-[#8c8c8c]"
               />
             </label>
-            <button
-              type="button"
-              onClick={() => setIsAddModalOpen(true)}
-              className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#161c2d]"
-            >
-              <Plus className="h-4 w-4" strokeWidth={2.2} />
-              {t("admin.projects.add")}
-            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => refetch()}
+                disabled={isRefetching}
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-[#0a0f1d] hover:bg-[#E5E5E5] transition-colors disabled:opacity-50"
+                title="Refresh"
+              >
+                <RefreshCw className={`h-5 w-5 ${isRefetching ? "animate-spin" : ""}`} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsAddModalOpen(true)}
+                className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-bold text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
+              >
+                <Plus className="h-4 w-4" strokeWidth={2.2} />
+                {t("admin.projects.add")}
+              </button>
+            </div>
           </div>
         }
         actions={(row) => (

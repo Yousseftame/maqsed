@@ -18,6 +18,7 @@ export type ConfirmOptions = {
   confirmLabel?: string;
   cancelLabel?: string;
   tone?: "default" | "danger";
+  requireInput?: string;
 };
 
 type ConfirmContextValue = {
@@ -75,9 +76,13 @@ function ConfirmModal({
   const cancelRef = useRef<HTMLButtonElement>(null);
   const { t } = useLocale();
   const open = Boolean(options);
+  const [inputValue, setInputValue] = useState("");
 
   useEffect(() => {
-    if (!open) return;
+    if (!open) {
+      setInputValue("");
+      return;
+    }
 
     const previous = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -135,6 +140,22 @@ function ConfirmModal({
               </p>
             ) : null}
 
+            {options.requireInput ? (
+              <div className="mt-5">
+                <label className="mb-2 flex items-center gap-1 text-sm font-semibold text-[#8c8c8c]">
+                  {t("admin.typeToConfirm") || "يرجى كتابة"} <span className="font-bold text-[#0a0f1d] bg-[#0a0f1d]/5 px-2 py-0.5 rounded">{options.requireInput}</span> {t("admin.toConfirm") || "للتأكيد"}
+                </label>
+                <input
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                  className="h-12 w-full rounded-[16px] border border-[#0a0f1d]/10 bg-white px-4 text-base font-bold text-[#0a0f1d] outline-none transition-colors focus:border-[#0a0f1d]/30"
+                  placeholder={options.requireInput}
+                  dir="ltr" // Since they must type DELETE in English
+                />
+              </div>
+            ) : null}
+
             <div className="mt-8 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <button
                 ref={cancelRef}
@@ -147,7 +168,8 @@ function ConfirmModal({
               <button
                 type="button"
                 onClick={onConfirm}
-                className="inline-flex h-12 items-center justify-center rounded-full bg-[#0a0f1d] px-6 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#161c2d]"
+                disabled={Boolean(options.requireInput && inputValue !== options.requireInput)}
+                className="inline-flex h-12 items-center justify-center rounded-full bg-[#0a0f1d] px-6 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#161c2d] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {options.confirmLabel ?? t("admin.confirm")}
               </button>

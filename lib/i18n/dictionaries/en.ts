@@ -297,6 +297,8 @@ export interface Dictionary {
     signOutDescription: string;
     stay: string;
     comingSoon: string;
+    typeToConfirm: string;
+    toConfirm: string;
     overview: string;
     openMenu: string;
     cancel: string;
@@ -332,6 +334,7 @@ export interface Dictionary {
       saved: string;
       success: string;
       error: string;
+      deleting: string;
     };
     projects: {
       add: string;
@@ -471,6 +474,30 @@ export interface Dictionary {
       joined: string;
       search: string;
       create: string;
+      deleteTitle: string;
+      deleteDesc: string;
+      disable: string;
+      enable: string;
+      disableTitle: string;
+      disableDesc: string;
+      enableTitle: string;
+      enableDesc: string;
+      createForm: {
+        title: string;
+        description: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone: string;
+        company: string;
+        password: string;
+        confirmPassword: string;
+        submit: string;
+        success: string;
+        back: string;
+        personalInfo: string;
+        accountInfo: string;
+      };
     };
     offers: {
       search: string;
@@ -950,7 +977,7 @@ export const en: Dictionary = {
     imageAlt: "Luxury property",
     errors: {
       invalidEmail: "Enter a valid email address",
-      disabled: "This account has been disabled",
+      disabled: "Your account has been blocked. Please contact an admin to see.",
       notFound: "No account found with this email",
       invalidCredential: "Incorrect email or password",
       tooMany: "Too many attempts. Try again in a few minutes",
@@ -972,6 +999,8 @@ export const en: Dictionary = {
     signOutDescription: "You'll need to sign in again to access the dashboard",
     stay: "Stay",
     comingSoon: "Coming soon",
+    typeToConfirm: "Please type",
+    toConfirm: "to confirm",
     overview: "Overview",
     openMenu: "Open sidebar",
     cancel: "Cancel",
@@ -996,6 +1025,12 @@ export const en: Dictionary = {
       users: "Users",
     },
     ui: {
+      user: "User",
+      changePassword: "Change Password",
+      currentPassword: "Current Password",
+      newPassword: "New Password",
+      confirmNewPassword: "Confirm New Password",
+      incorrectCurrentPassword: "Current password is incorrect",
       add: "Add",
       edit: "Edit",
       delete: "Delete",
@@ -1007,6 +1042,7 @@ export const en: Dictionary = {
       saved: "Changes saved",
       success: "Operation successful",
       error: "An error occurred",
+      deleting: "Deleting...",
     },
     projects: {
       add: "Add project",
@@ -1146,6 +1182,30 @@ export const en: Dictionary = {
       joined: "Joined Date",
       search: "Search developers...",
       create: "Create Account",
+      deleteTitle: "Delete Account",
+      deleteDesc: "Are you sure you want to delete this developer? This will permanently remove them from the system and Authentication.",
+      disable: "Disable Account",
+      enable: "Enable Account",
+      disableTitle: "Disable Account",
+      disableDesc: "Are you sure you want to disable this account? They will no longer be able to log in to the system.",
+      enableTitle: "Enable Account",
+      enableDesc: "Are you sure you want to enable this account? They will regain access to log in to the system.",
+      createForm: {
+        title: "Create Developer Account",
+        description: "Add a new developer to the system. They will receive access to the developer portal.",
+        firstName: "First Name",
+        lastName: "Last Name",
+        email: "Email Address",
+        phone: "Phone Number",
+        company: "Company Name",
+        password: "Password",
+        confirmPassword: "Confirm Password",
+        submit: "Create Account",
+        success: "Developer account created successfully!",
+        back: "Back to Developers",
+        personalInfo: "Personal Information",
+        accountInfo: "Account & Security",
+      },
     },
     offers: {
       search: "Search offers...",
