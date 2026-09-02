@@ -17,3 +17,7 @@ export * from "./offers/onOfferCreated";
 export * from "./offers/verifyOfferOtp";
 export * from "./offers/onOfferResponded";
 
+// Export the users functions
+export { createDeveloperAccount } from "./users/createDeveloperAccount";
+export { deleteDeveloperAccount } from "./users/deleteDeveloperAccount";
+export { toggleDeveloperStatus } from "./users/toggleDeveloperStatus";

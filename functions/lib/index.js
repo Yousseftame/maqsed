@@ -22,6 +22,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.toggleDeveloperStatus = exports.deleteDeveloperAccount = exports.createDeveloperAccount = void 0;
 const v2_1 = require("firebase-functions/v2");
 // Set global options for all functions
 (0, v2_1.setGlobalOptions)({ maxInstances: 10, region: "us-central1" });
@@ -29,4 +30,11 @@ const v2_1 = require("firebase-functions/v2");
 __exportStar(require("./offers/onOfferCreated"), exports);
 __exportStar(require("./offers/verifyOfferOtp"), exports);
 __exportStar(require("./offers/onOfferResponded"), exports);
+// Export the users functions
+var createDeveloperAccount_1 = require("./users/createDeveloperAccount");
+Object.defineProperty(exports, "createDeveloperAccount", { enumerable: true, get: function () { return createDeveloperAccount_1.createDeveloperAccount; } });
+var deleteDeveloperAccount_1 = require("./users/deleteDeveloperAccount");
+Object.defineProperty(exports, "deleteDeveloperAccount", { enumerable: true, get: function () { return deleteDeveloperAccount_1.deleteDeveloperAccount; } });
+var toggleDeveloperStatus_1 = require("./users/toggleDeveloperStatus");
+Object.defineProperty(exports, "toggleDeveloperStatus", { enumerable: true, get: function () { return toggleDeveloperStatus_1.toggleDeveloperStatus; } });
 //# sourceMappingURL=index.js.map
