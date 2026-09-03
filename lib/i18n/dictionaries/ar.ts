@@ -478,7 +478,7 @@ export const ar: Dictionary = {
       salesComm: "تواصل المبيعات",
       search: "ابحث في العملاء..",
       total: "إجمالي الطلبات",
-      unit: "الوحدة المستهدفة",
+      targetUnit: "الوحدة المستهدفة",
       newRequests: "طلبات جديدة",
       purchase: "طلبات الشراء / الاهتمام",
       sell: "طلبات تسويق البيع",

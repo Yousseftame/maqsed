@@ -348,6 +348,7 @@ export interface Dictionary {
     accountSettings: {
       title: string;
       description: string;
+      profileDetails: string;
       firstName: string;
       lastName: string;
       phoneNumber: string;
@@ -411,6 +412,7 @@ export interface Dictionary {
       neighborhoods: string;
     };
     customers: {
+      salesComm: string;
       search: string;
       total: string;
       newRequests: string;
@@ -418,6 +420,7 @@ export interface Dictionary {
       sell: string;
       complaint: string;
       customer: string;
+      targetUnit: string;
       unit: string;
       status: string;
       action: string;
@@ -484,14 +487,20 @@ export interface Dictionary {
     developers: {
       title: string;
       description: string;
+      tabDeveloper: string;
+      tabAdmin: string;
       total: string;
+      totalAdmins: string;
       active: string;
       name: string;
+      adminName: string;
       company: string;
       phone: string;
       joined: string;
+      lastLogin: string;
       search: string;
       create: string;
+      edit: string;
       deleteTitle: string;
       deleteDesc: string;
       disable: string;
@@ -1144,7 +1153,7 @@ export const en: Dictionary = {
       salesComm: "Sales Communication",
       search: "Search customers..",
       total: "Total Requests",
-      unit: "Target Unit",
+      targetUnit: "Target Unit",
       newRequests: "New Requests",
       purchase: "Purchase / Interest",
       sell: "Sales Marketing",
