@@ -2,8 +2,10 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { X, Mail, Phone, Building2, Calendar, FolderClosed, Home } from "lucide-react";
+import { X, Mail, Phone, Building2, Calendar, FolderClosed, Home, Activity, LogIn, LogOut } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { usersService } from "@/features/auth/users.service";
 import type { UserData } from "@/types/user";
 
 type ViewDeveloperModalProps = {
@@ -25,6 +27,12 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
+
+  const { data: auditLogs = [], isLoading: isLoadingLogs } = useQuery({
+    queryKey: ["auditLogs", developer?.uid],
+    queryFn: () => usersService.getUserAuditLogs(developer!.uid),
+    enabled: isOpen && !!developer?.uid,
+  });
 
   if (!developer) return null;
 
@@ -161,6 +169,73 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
                       <span className="text-base font-semibold text-[#0a0f1d] text-start">{joinDate}</span>
                     </div>
                   </div>
+                  
+                  {/* Audit Logs Section */}
+                  <div className="mt-8 pt-8 border-t border-[#0a0f1d]/10">
+                    <h3 className="mb-4 sm:mb-6 text-xl font-bold tracking-tight text-[#0a0f1d] text-center sm:text-start flex items-center gap-2 justify-center sm:justify-start">
+                      <Activity className="h-5 w-5 text-[#8c8c8c]" />
+                      {t("admin.developers.auditLogs.title") || "Audit Logs History"}
+                    </h3>
+
+                    <div className="overflow-hidden rounded-[16px] border border-[#0a0f1d]/5 bg-white">
+                      {isLoadingLogs ? (
+                        <div className="flex h-32 items-center justify-center text-[#8c8c8c]">
+                          <span className="animate-pulse">{t("admin.ui.loading") || "Loading..."}</span>
+                        </div>
+                      ) : auditLogs.length === 0 ? (
+                        <div className="flex flex-col items-center justify-center p-8 text-center text-[#8c8c8c]">
+                          <Activity className="mb-2 h-8 w-8 opacity-20" />
+                          <p>{t("admin.developers.auditLogs.empty") || "No audit logs available for this user"}</p>
+                        </div>
+                      ) : (
+                        <div className="overflow-x-auto">
+                          <table className="w-full text-start text-sm">
+                            <thead className="bg-[#f8f9fa] text-[#8c8c8c]">
+                              <tr>
+                                <th className="px-6 py-4 font-bold">{t("admin.developers.auditLogs.action") || "Action"}</th>
+                                <th className="px-6 py-4 font-bold">{t("admin.developers.auditLogs.date") || "Date & Time"}</th>
+                                <th className="px-6 py-4 font-bold">{t("admin.developers.auditLogs.ip") || "IP Address"}</th>
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-[#0a0f1d]/5">
+                              {auditLogs.map((log) => {
+                                const logDate = new Intl.DateTimeFormat("en-US", {
+                                  month: "short", day: "2-digit", year: "numeric",
+                                  hour: "2-digit", minute: "2-digit"
+                                }).format(new Date(log.timestamp));
+                                
+                                return (
+                                  <tr key={log.id} className="transition-colors hover:bg-[#F4F4F4]/50">
+                                    <td className="px-6 py-4">
+                                      <div className="flex items-center gap-2">
+                                        {log.action === "login" ? (
+                                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500/10 text-emerald-600">
+                                            <LogIn className="h-4 w-4" />
+                                          </div>
+                                        ) : (
+                                          <div className="flex h-8 w-8 items-center justify-center rounded-full bg-rose-500/10 text-rose-600">
+                                            <LogOut className="h-4 w-4" />
+                                          </div>
+                                        )}
+                                        <span className="font-semibold text-[#0a0f1d] capitalize">
+                                          {t(`admin.developers.auditLogs.${log.action}`) || log.action}
+                                        </span>
+                                      </div>
+                                    </td>
+                                    <td className="px-6 py-4 font-medium text-[#6b7280]">{logDate}</td>
+                                    <td className="px-6 py-4 font-medium text-[#0a0f1d]" dir="ltr">
+                                      <div className="text-end sm:text-start">{log.ip === "::1" ? "127.0.0.1 (Localhost)" : log.ip}</div>
+                                    </td>
+                                  </tr>
+                                );
+                              })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
                 </div>
 
               </div>

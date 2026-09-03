@@ -14,6 +14,7 @@ import {
   Terminal,
   FileSignature,
   Info,
+  Headphones,
   type LucideIcon,
 } from "lucide-react";
 
@@ -39,17 +40,17 @@ export type AdminNavEntry = AdminNavLink | AdminNavDivider | AdminNavHeading;
 
 export const ADMIN_NAV: AdminNavEntry[] = [
   { type: "link", labelKey: "admin.nav.overview", href: "/admin/dashboard", icon: LayoutGrid },
+  { type: "link", labelKey: "admin.nav.users", href: "/admin/developers", icon: Users },
   { type: "link", labelKey: "admin.nav.cities", href: "/admin/cities", icon: Map },
   { type: "link", labelKey: "admin.nav.projects", href: "/admin/projects", icon: Folder },
   { type: "link", labelKey: "admin.nav.units", href: "/admin/units", icon: Building2 },
-  { type: "link", labelKey: "admin.nav.developers", href: "/admin/developers", icon: Terminal },
   { type: "link", labelKey: "admin.nav.offers", href: "/admin/offers", icon: FileSignature },
   { type: "divider" },
   {
     type: "link",
     labelKey: "admin.nav.customers",
     href: "/admin/customers",
-    icon: Users,
+    icon: Headphones,
   },
   { type: "divider" },
   { type: "heading", labelKey: "admin.nav.settingsHeading" },

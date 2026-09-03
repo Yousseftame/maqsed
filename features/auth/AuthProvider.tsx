@@ -27,6 +27,7 @@ type AuthContextValue = {
   signIn: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<void>;
+  refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -63,20 +64,35 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const credential = await signInWithEmail(email, password);
     const idToken = await credential.user.getIdToken();
     await createSessionCookie(idToken);
+    await usersService.logUserAction(credential.user.uid, "login").catch(console.error);
   }, []);
 
   const signOut = useCallback(async () => {
+    if (user) {
+      await usersService.logUserAction(user.uid, "logout").catch(console.error);
+    }
     await signOutCurrentUser();
     await clearSessionCookie();
-  }, []);
+  }, [user]);
 
   const resetPassword = useCallback(async (email: string) => {
     await sendResetEmail(email);
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    if (user) {
+      try {
+        const profile = await usersService.getUserProfile(user.uid);
+        setUserData(profile);
+      } catch (error) {
+        console.error("Failed to refresh user profile:", error);
+      }
+    }
+  }, [user]);
+
   const value = useMemo<AuthContextValue>(
-    () => ({ user, userData, loading, signIn, signOut, resetPassword }),
-    [user, userData, loading, signIn, signOut, resetPassword]
+    () => ({ user, userData, loading, signIn, signOut, resetPassword, refreshUser }),
+    [user, userData, loading, signIn, signOut, resetPassword, refreshUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

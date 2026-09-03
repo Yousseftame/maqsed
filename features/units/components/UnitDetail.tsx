@@ -2,13 +2,14 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bed, Bath, LayoutGrid, CheckCircle2, Home, Share2, Printer, Building2, Heart, Calendar, ArrowUpRight, ArrowUpLeft, ChevronLeft, ChevronRight, Car, Sofa, Coffee, Maximize, User } from "lucide-react";
+import { Bed, Bath, LayoutGrid, CheckCircle2, Home, Share2, Printer, Building2, Heart, Calendar, ArrowUpRight, ArrowUpLeft, ChevronLeft, ChevronRight, Car, Sofa, Coffee, Maximize, User, Headset } from "lucide-react";
 import type { UnitListing } from "@/features/units/data/units";
 import { getPropertyById } from "@/features/properties/data/listings";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useState } from "react";
 import { Lightbox } from "@/components/ui/Lightbox";
 import { cn } from "@/lib/utils";
+import { SalesContactModal } from "./SalesContactModal";
 
 type UnitDetailProps = {
   unit: UnitListing;
@@ -18,6 +19,7 @@ export function UnitDetail({ unit }: UnitDetailProps) {
   const { isRtl } = useLocale();
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
+  const [isSalesModalOpen, setIsSalesModalOpen] = useState(false);
   const property = unit.propertyId ? getPropertyById(unit.propertyId) : undefined;
 
   const nextImage = () => {
@@ -43,6 +45,13 @@ export function UnitDetail({ unit }: UnitDetailProps) {
           onClose={() => setLightboxIndex(null)} 
         />
       )}
+      
+      <SalesContactModal 
+        isOpen={isSalesModalOpen} 
+        onClose={() => setIsSalesModalOpen(false)} 
+        unitId={unit.id} 
+        projectName={property ? (isRtl ? property.titleAr : property.title) : undefined} 
+      />
 
       {/* Top Header Section */}
       <section className="w-full px-6 pt-12 pb-8 md:px-12 lg:px-20">
@@ -157,12 +166,14 @@ export function UnitDetail({ unit }: UnitDetailProps) {
               
               {/* Card 1: Register Interest */}
               <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <button className={cn(
+                <button 
+                  onClick={() => setIsSalesModalOpen(true)}
+                  className={cn(
                   "flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-bold transition-colors",
                   isSold ? "bg-[#f7f7f7] text-gray-400 cursor-not-allowed" : "bg-[#f7f7f7] text-gray-700 hover:bg-gray-100"
                 )} disabled={isSold}>
-                  <Heart className="h-5 w-5" />
-                  {isRtl ? "سجل اهتمامك في الوحدة" : "Register your interest"}
+                  <Headset className="h-5 w-5" />
+                  {isRtl ? "تواصل مع المبيعات" : "Contact Sales"}
                 </button>
                 <p className="mt-4 text-xs font-medium text-gray-400 text-center">
                   {isSold 

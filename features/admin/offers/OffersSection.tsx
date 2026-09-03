@@ -1,18 +1,23 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { FileSignature, Search, Plus, FileText, CheckCircle, Clock, XCircle, RefreshCw } from "lucide-react";
+import { FileSignature, Search, Plus, FileText, CheckCircle, Clock, XCircle, RefreshCw, Eye, Download, Pencil } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { DataTable, type Column } from "@/features/admin/ui/DataTable";
 import { StatCard, StatGrid } from "@/features/admin/ui/StatCard";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { offersService, type OfferData } from "./offers.service";
+import { OfferDetailModal } from "./OfferDetailModal";
+import { EditOfferModal } from "./EditOfferModal";
+import { downloadOfferPDF } from "./offer-pdf";
 
 export function OffersSection() {
-  const { t } = useLocale();
+  const { t, isRtl } = useLocale();
   const router = useRouter();
   const [queryStr, setQueryStr] = useState("");
+  const [selectedOffer, setSelectedOffer] = useState<OfferData | null>(null);
+  const [editingOffer, setEditingOffer] = useState<OfferData | null>(null);
 
   const { data: offers = [], isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["offers"],
@@ -26,7 +31,8 @@ export function OffersSection() {
       (row) =>
         (row.title || "").toLowerCase().includes(q) ||
         (row.projectName || "").toLowerCase().includes(q) ||
-        (row.developerName || "").toLowerCase().includes(q)
+        (row.developerName || "").toLowerCase().includes(q) ||
+        (row.offerNumber || "").toLowerCase().includes(q)
     );
   }, [offers, queryStr]);
 
@@ -41,13 +47,24 @@ export function OffersSection() {
 
   const columns: Column<OfferData>[] = [
     {
-      id: "title",
-      header: t("admin.offers.title") || "Title",
+      id: "offerNumber",
+      header: isRtl ? "رقم العرض" : "Offer Number",
       cell: (row) => (
-        <div className="flex flex-col">
-          <span className="font-semibold text-[#0a0f1d]">{row.title || "-"}</span>
-          <span className="text-xs text-[#6B7280]">{row.projectName || "-"}</span>
-        </div>
+        <span className="font-bold text-[#0a0f1d]">{row.offerNumber ? `#${row.offerNumber}` : "-"}</span>
+      ),
+    },
+    {
+      id: "title",
+      header: t("admin.offers.title") || "Offer Title",
+      cell: (row) => (
+        <span className="font-semibold text-[#0a0f1d]">{row.title || "-"}</span>
+      ),
+    },
+    {
+      id: "projectName",
+      header: isRtl ? "المشروع" : "Project",
+      cell: (row) => (
+        <span className="text-[#0a0f1d] font-medium">{row.projectName || "-"}</span>
       ),
     },
     {
@@ -62,10 +79,10 @@ export function OffersSection() {
     },
     {
       id: "amount",
-      header: t("admin.offers.amount") || "Amount",
+      header: t("admin.offers.amount") || "Amount (incl. VAT)",
       cell: (row) => (
         <span className="text-[#0a0f1d] font-semibold tabular-nums">
-          ${Number(row.financialAmount || 0).toLocaleString()}
+          SAR {Number(row.total || row.financialAmount || 0).toLocaleString()}
         </span>
       ),
     },
@@ -190,22 +207,54 @@ export function OffersSection() {
             </div>
           </div>
         }
-        actions={(row) => (
-          <div className="flex justify-end gap-2">
-            <button
-              onClick={() => {
-                // If it's pending, they can view the code again, but since it's just a table,
-                // viewing the offer in public link is fine.
-                window.open(`/offer/${row.id}`, "_blank");
-              }}
-              title={t("admin.offers.viewLink") || "View Public Link"}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d] transition-colors"
-            >
-              <FileText className="h-4 w-4" />
-            </button>
-          </div>
-        )}
+        actions={(row) => {
+          const canEdit = row.status !== "accepted" && row.status !== "rejected";
+          return (
+            <div className="flex justify-end gap-2">
+              {/* Edit */}
+              <button
+                onClick={() => canEdit && setEditingOffer(row)}
+                title={canEdit ? (isRtl ? "تعديل العرض" : "Edit Offer") : (isRtl ? "لا يمكن التعديل بعد القبول أو الرفض" : "Cannot edit after acceptance/rejection")}
+                disabled={!canEdit}
+                className={`flex h-8 w-8 items-center justify-center rounded-lg transition-colors ${
+                  canEdit
+                    ? "text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d]"
+                    : "text-[#cccccc] cursor-not-allowed"
+                }`}
+              >
+                <Pencil className="h-4 w-4" />
+              </button>
+              {/* Details */}
+              <button
+                onClick={() => setSelectedOffer(row)}
+                title={isRtl ? "عرض التفاصيل" : "View Details"}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d] transition-colors"
+              >
+                <Eye className="h-4 w-4" />
+              </button>
+              {/* PDF */}
+              <button
+                onClick={() => downloadOfferPDF(row)}
+                title={isRtl ? "تحميل PDF" : "Download PDF"}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d] transition-colors"
+              >
+                <Download className="h-4 w-4" />
+              </button>
+              {/* Public link */}
+              <button
+                onClick={() => window.open(`/offer/${row.id}`, "_blank")}
+                title={t("admin.offers.viewLink") || "View Public Link"}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d] transition-colors"
+              >
+                <FileText className="h-4 w-4" />
+              </button>
+            </div>
+          );
+        }}
       />
+
+      <OfferDetailModal offer={selectedOffer} onClose={() => setSelectedOffer(null)} />
+      <EditOfferModal offer={editingOffer} onClose={() => setEditingOffer(null)} />
     </div>
   );
 }

@@ -45,21 +45,36 @@ export interface SellRequest {
   updatedAt: any;
 }
 
+export interface SalesRequest {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  unitNumber: string;
+  projectName?: string;
+  status: RequestStatus;
+  createdAt: any;
+  updatedAt: any;
+}
+
 const CONTACT_COLLECTION = "contact_requests";
 const SELL_COLLECTION = "sell_requests";
+const SALES_COLLECTION = "sales_requests";
 
 export const requestsService = {
   // Aggregate count for sidebar (low cost)
   async getNewRequestsCount(): Promise<number> {
     const contactQ = query(collection(db, CONTACT_COLLECTION), where("status", "==", "new"));
     const sellQ = query(collection(db, SELL_COLLECTION), where("status", "==", "new"));
+    const salesQ = query(collection(db, SALES_COLLECTION), where("status", "==", "new"));
     
-    const [contactSnap, sellSnap] = await Promise.all([
+    const [contactSnap, sellSnap, salesSnap] = await Promise.all([
       getCountFromServer(contactQ),
-      getCountFromServer(sellQ)
+      getCountFromServer(sellQ),
+      getCountFromServer(salesQ)
     ]);
     
-    return contactSnap.data().count + sellSnap.data().count;
+    return contactSnap.data().count + sellSnap.data().count + salesSnap.data().count;
   },
 
   // Contact Requests
@@ -125,6 +140,39 @@ export const requestsService = {
 
   async deleteSellRequest(id: string): Promise<void> {
     const docRef = doc(db, SELL_COLLECTION, id);
+    await deleteDoc(docRef);
+  },
+
+  // Sales Requests (تواصل المبيعات)
+  async getSalesRequests(): Promise<SalesRequest[]> {
+    const q = query(collection(db, SALES_COLLECTION), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as SalesRequest));
+  },
+
+  async addSalesRequest(data: Omit<SalesRequest, "id" | "createdAt" | "updatedAt" | "status">): Promise<void> {
+    const docRef = doc(collection(db, SALES_COLLECTION));
+    const now = serverTimestamp();
+    const cleanData = Object.fromEntries(Object.entries(data).filter(([_, v]) => v !== undefined));
+
+    await setDoc(docRef, {
+      ...cleanData,
+      status: "new",
+      createdAt: now,
+      updatedAt: now,
+    });
+  },
+
+  async updateSalesRequestStatus(id: string, status: RequestStatus): Promise<void> {
+    const docRef = doc(db, SALES_COLLECTION, id);
+    await updateDoc(docRef, {
+      status,
+      updatedAt: serverTimestamp(),
+    });
+  },
+
+  async deleteSalesRequest(id: string): Promise<void> {
+    const docRef = doc(db, SALES_COLLECTION, id);
     await deleteDoc(docRef);
   },
 };

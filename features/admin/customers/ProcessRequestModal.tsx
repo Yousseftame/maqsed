@@ -14,7 +14,7 @@ export function ProcessRequestModal({
   onSuccess,
 }: {
   id: string | null;
-  type: "contact" | "sell" | null;
+  type: "contact" | "sell" | "sales" | null;
   currentStatus: RequestStatus | null;
   onClose: () => void;
   onSuccess: () => void;
@@ -54,8 +54,10 @@ export function ProcessRequestModal({
       setIsSubmitting(true);
       if (type === "contact") {
         await requestsService.updateContactRequestStatus(id, status);
-      } else {
+      } else if (type === "sell") {
         await requestsService.updateSellRequestStatus(id, status);
+      } else if (type === "sales") {
+        await requestsService.updateSalesRequestStatus(id, status);
       }
       toast.success(t("admin.ui.success") || "Updated successfully");
       onSuccess();

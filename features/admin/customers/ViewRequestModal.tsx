@@ -3,13 +3,13 @@
 import { useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import type { ContactRequest, SellRequest } from "./requests.service";
+import type { ContactRequest, SellRequest, SalesRequest } from "./requests.service";
 
 export function ViewRequestModal({
   request,
   onClose,
 }: {
-  request: ContactRequest | SellRequest | null;
+  request: ContactRequest | SellRequest | SalesRequest | null;
   onClose: () => void;
 }) {
   const { t, locale } = useLocale();
@@ -36,6 +36,7 @@ export function ViewRequestModal({
   if (!request) return null;
 
   const isContact = "message" in request;
+  const isSales = "unitNumber" in request;
 
   const Field = ({ label, value, dir }: { label: string; value: React.ReactNode; dir?: string }) => (
     <div className="flex flex-col gap-1 rounded-xl bg-[#F4F4F4] p-4">
@@ -82,6 +83,16 @@ export function ViewRequestModal({
                 <Field label={t("contactPage.form.subject") || "Subject"} value={t(`contactPage.subjects.${(request as ContactRequest).subject}`) || (request as ContactRequest).subject} />
                 <div className="sm:col-span-2">
                   <Field label={t("contactPage.form.message") || "Message"} value={(request as ContactRequest).message} />
+                </div>
+              </>
+            ) : isSales ? (
+              <>
+                <Field label={t("contactPage.form.fullName") || "Name"} value={(request as SalesRequest).fullName} />
+                <Field label={t("contactPage.form.phone") || "Phone"} value={(request as SalesRequest).phone} dir="ltr" />
+                <Field label={t("contactPage.form.email") || "Email"} value={(request as SalesRequest).email} dir="ltr" />
+                <Field label={t("admin.customers.unit") || "Unit"} value={(request as SalesRequest).unitNumber} />
+                <div className="sm:col-span-2">
+                  <Field label={t("admin.customers.project") || "Project"} value={(request as SalesRequest).projectName} />
                 </div>
               </>
             ) : (

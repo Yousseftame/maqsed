@@ -324,6 +324,9 @@ export interface Dictionary {
     };
     ui: {
       user: string;
+      admin: string;
+      developer: string;
+      settings: string;
       changePassword: string;
       currentPassword: string;
       newPassword: string;
@@ -341,6 +344,15 @@ export interface Dictionary {
       success: string;
       error: string;
       deleting: string;
+    };
+    accountSettings: {
+      title: string;
+      description: string;
+      firstName: string;
+      lastName: string;
+      phoneNumber: string;
+      companyName: string;
+      email: string;
     };
     projects: {
       add: string;
@@ -503,6 +515,15 @@ export interface Dictionary {
         back: string;
         personalInfo: string;
         accountInfo: string;
+      };
+      auditLogs: {
+        title: string;
+        action: string;
+        date: string;
+        ip: string;
+        login: string;
+        logout: string;
+        empty: string;
       };
     };
     offers: {
@@ -1032,6 +1053,9 @@ export const en: Dictionary = {
     },
     ui: {
       user: "User",
+      admin: "Admin",
+      developer: "Developer",
+      settings: "Settings",
       changePassword: "Change Password",
       currentPassword: "Current Password",
       newPassword: "New Password",
@@ -1049,6 +1073,16 @@ export const en: Dictionary = {
       success: "Operation successful",
       error: "An error occurred",
       deleting: "Deleting...",
+    },
+    accountSettings: {
+      title: "Account Settings",
+      description: "Manage your account details and personal information",
+      profileDetails: "Profile Details",
+      firstName: "First Name",
+      lastName: "Last Name",
+      phoneNumber: "Phone Number",
+      companyName: "Company Name",
+      email: "Email Address",
     },
     projects: {
       add: "Add project",
@@ -1107,8 +1141,10 @@ export const en: Dictionary = {
       neighborhoods: "Neighborhoods",
     },
     customers: {
+      salesComm: "Sales Communication",
       search: "Search customers..",
       total: "Total Requests",
+      unit: "Target Unit",
       newRequests: "New Requests",
       purchase: "Purchase / Interest",
       sell: "Sales Marketing",
@@ -1178,16 +1214,22 @@ export const en: Dictionary = {
       messageTextPlaceholder: "We are working on some technical updates to improve your experience",
     },
     developers: {
-      title: "Developers Settings",
-      description: "Manage developers information and settings",
+      title: "User Management",
+      description: "Manage users information and settings",
+      tabDeveloper: "Developers",
+      tabAdmin: "Admins",
       total: "Total Developers",
+      totalAdmins: "Total Admins",
       active: "Active Accounts",
       name: "Developer Name",
+      adminName: "Admin Name",
       company: "Company",
       phone: "Phone",
       joined: "Joined Date",
+      lastLogin: "Last Login",
       search: "Search developers...",
       create: "Create Account",
+      edit: "Edit Developer",
       deleteTitle: "Delete Account",
       deleteDesc: "Are you sure you want to delete this developer? This will permanently remove them from the system and Authentication.",
       disable: "Disable Account",
@@ -1211,6 +1253,15 @@ export const en: Dictionary = {
         back: "Back to Developers",
         personalInfo: "Personal Information",
         accountInfo: "Account & Security",
+      },
+      auditLogs: {
+        title: "Audit Logs History",
+        action: "Action",
+        date: "Date & Time",
+        ip: "IP Address",
+        login: "Login",
+        logout: "Logout",
+        empty: "No audit logs available for this user",
       },
     },
     offers: {

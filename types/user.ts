@@ -5,6 +5,13 @@ export interface DeveloperStats {
   unitsCount: number;
 }
 
+export interface UserAuditLog {
+  id?: string;
+  action: "login" | "logout";
+  timestamp: number;
+  ip: string;
+}
+
 export interface UserData {
   uid: string;
   email: string;
@@ -13,7 +20,10 @@ export interface UserData {
   displayName?: string; // First Name
   lastName?: string;
   phoneNumber?: string;
-  companyName?: string; 
+  companyName?: string;
+  photoURL?: string;
   status?: "active" | "disabled";
   developerStats?: DeveloperStats;
+  lastLoginAt?: number;
+  lastLoginIp?: string;
 }

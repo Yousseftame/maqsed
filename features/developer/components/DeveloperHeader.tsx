@@ -2,10 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Globe, LogOut, Menu, PanelLeft, Search } from "lucide-react";
+import { Globe, Menu, PanelLeft, Search } from "lucide-react";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { getDeveloperPageTitleKey } from "@/features/developer/data/nav";
-import { useAdminSignOut } from "@/features/admin/hooks/useAdminSignOut";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { UserAvatarDropdown } from "@/components/layout/UserAvatarDropdown";
@@ -22,7 +21,6 @@ export function DeveloperHeader({
   const pathname = usePathname();
   const { user } = useAuth();
   const { t } = useLocale();
-  const handleSignOut = useAdminSignOut();
   const initial = (user?.email?.[0] ?? "M").toUpperCase();
   const current = t(getDeveloperPageTitleKey(pathname));
 
@@ -79,16 +77,6 @@ export function DeveloperHeader({
         </Link>
 
         <LanguageToggle />
-
-        <button
-          type="button"
-          onClick={handleSignOut}
-          className="flex h-12 w-12 items-center justify-center rounded-full bg-white text-[#FF6A55] transition-colors duration-200 hover:bg-[#FFE8E4]"
-          aria-label={t("admin.signOut")}
-          title={t("admin.signOut")}
-        >
-          <LogOut className="h-4 w-4 rtl:-scale-x-100" strokeWidth={1.8} />
-        </button>
 
         <UserAvatarDropdown />
       </div>

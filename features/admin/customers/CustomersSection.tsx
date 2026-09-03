@@ -8,7 +8,7 @@ import { StatusBadge } from "@/features/admin/ui/StatusBadge";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { requestsService, type ContactRequest, type SellRequest, type RequestStatus } from "./requests.service";
+import { requestsService, type ContactRequest, type SellRequest, type SalesRequest, type RequestStatus } from "./requests.service";
 import { ViewRequestModal } from "./ViewRequestModal";
 import { ProcessRequestModal } from "./ProcessRequestModal";
 import toast from "react-hot-toast";
@@ -26,10 +26,10 @@ export function CustomersSection() {
   const queryClient = useQueryClient();
   
   const [query, setQuery] = useState("");
-  const [activeTab, setActiveTab] = useState<"contact" | "sell">("contact");
+  const [activeTab, setActiveTab] = useState<"contact" | "sell" | "sales">("contact");
   const [statusFilter, setStatusFilter] = useState<RequestStatus | "all">("all");
-  const [viewRequest, setViewRequest] = useState<ContactRequest | SellRequest | null>(null);
-  const [processState, setProcessState] = useState<{ id: string; type: "contact" | "sell"; status: RequestStatus } | null>(null);
+  const [viewRequest, setViewRequest] = useState<ContactRequest | SellRequest | SalesRequest | null>(null);
+  const [processState, setProcessState] = useState<{ id: string; type: "contact" | "sell" | "sales"; status: RequestStatus } | null>(null);
 
   const { data: contactRequests = [], isFetching: isFetchingContact } = useQuery({
     queryKey: ["contactRequests"],
@@ -43,12 +43,19 @@ export function CustomersSection() {
     refetchInterval: 30000,
   });
 
-  const isRefreshing = isFetchingContact || isFetchingSell;
+  const { data: salesRequests = [], isFetching: isFetchingSales } = useQuery({
+    queryKey: ["salesRequests"],
+    queryFn: () => requestsService.getSalesRequests(),
+    refetchInterval: 30000,
+  });
+
+  const isRefreshing = isFetchingContact || isFetchingSell || isFetchingSales;
 
   const handleRefresh = async () => {
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ["contactRequests"] }),
-      queryClient.invalidateQueries({ queryKey: ["sellRequests"] })
+      queryClient.invalidateQueries({ queryKey: ["sellRequests"] }),
+      queryClient.invalidateQueries({ queryKey: ["salesRequests"] })
     ]);
   };
 
@@ -80,8 +87,17 @@ export function CustomersSection() {
     });
   }, [sellRequests, query, statusFilter]);
 
-  const totalRequests = contactRequests.length + sellRequests.length;
-  const newRequestsCount = contactRequests.filter(r => r.status === "new").length + sellRequests.filter(r => r.status === "new").length;
+  const filteredSales = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return salesRequests.filter((row) => {
+      if (statusFilter !== "all" && row.status !== statusFilter) return false;
+      if (q && !row.fullName.toLowerCase().includes(q) && !row.phone.includes(q) && !row.unitNumber.toLowerCase().includes(q)) return false;
+      return true;
+    });
+  }, [salesRequests, query, statusFilter]);
+
+  const totalRequests = contactRequests.length + sellRequests.length + salesRequests.length;
+  const newRequestsCount = contactRequests.filter(r => r.status === "new").length + sellRequests.filter(r => r.status === "new").length + salesRequests.filter(r => r.status === "new").length;
 
   const deleteContactMutation = useMutation({
     mutationFn: (id: string) => requestsService.deleteContactRequest(id),
@@ -99,6 +115,14 @@ export function CustomersSection() {
     },
   });
 
+  const deleteSalesMutation = useMutation({
+    mutationFn: (id: string) => requestsService.deleteSalesRequest(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["salesRequests"] });
+      toast.success(t("admin.ui.success") || "Deleted successfully");
+    },
+  });
+
   async function handleDelete(id: string) {
     const ok = await confirm({
       title: t("admin.customers.deleteTitle") || "Delete Request",
@@ -111,8 +135,10 @@ export function CustomersSection() {
 
     if (activeTab === "contact") {
       deleteContactMutation.mutate(id);
-    } else {
+    } else if (activeTab === "sell") {
       deleteSellMutation.mutate(id);
+    } else {
+      deleteSalesMutation.mutate(id);
     }
   }
 
@@ -170,9 +196,13 @@ export function CustomersSection() {
       cell: (row) => (
         <div className="flex flex-col">
           <span className="font-bold text-[#0a0f1d]">{row.fullNameAlt}</span>
-          <span className="text-sm text-[#6B7280]" dir="ltr">{row.mobileNumber}</span>
         </div>
       ),
+    },
+    {
+      id: "phone",
+      header: t("contactPage.form.phone") || "Phone",
+      cell: (row) => <span className="font-semibold" dir="ltr">{row.mobileNumber}</span>,
     },
     {
       id: "location",
@@ -194,6 +224,49 @@ export function CustomersSection() {
         </div>
       ),
     },
+    {
+      id: "status",
+      header: t("admin.customers.status") || "Status",
+      cell: (row) => (
+        <StatusBadge tone={REQUEST_STATUS_TONE[row.status] || "default"}>
+          {t(`admin.customers.statuses.${row.status}`) || row.status}
+        </StatusBadge>
+      ),
+    },
+    {
+      id: "date",
+      header: t("admin.customers.date") || "Date",
+      cell: (row) => <span className="text-[#6B7280]">{formatDate(row.createdAt)}</span>,
+    },
+  ];
+
+  const salesColumns: Column<SalesRequest>[] = [
+    {
+      id: "customer",
+      header: t("admin.customers.customer") || "Customer",
+      cell: (row) => (
+        <div className="flex flex-col">
+          <span className="font-bold text-[#0a0f1d]">{row.fullName}</span>
+          {row.email && <span className="text-sm text-[#6B7280]">{row.email}</span>}
+        </div>
+      ),
+    },
+    {
+      id: "phone",
+      header: t("contactPage.form.phone") || "Phone",
+      cell: (row) => <span className="font-semibold" dir="ltr">{row.phone}</span>,
+    },
+    {
+      id: "unit",
+      header: t("admin.customers.unit") || "Unit",
+      cell: (row) => (
+        <div className="flex flex-col">
+          <span className="font-bold text-[#0a0f1d]">{row.unitNumber}</span>
+          {row.projectName && <span className="text-sm text-[#6B7280]">{row.projectName}</span>}
+        </div>
+      ),
+    },
+
     {
       id: "status",
       header: t("admin.customers.status") || "Status",
@@ -252,6 +325,13 @@ export function CustomersSection() {
             {t("sellPage.form.title") || "Sell Units"}
             <span className={`flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full text-[11px] font-black ${activeTab === "sell" ? "bg-white/20" : "bg-gray-100"}`}>{sellRequests.length}</span>
           </button>
+          <button 
+            onClick={() => setActiveTab("sales")}
+            className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-colors ${activeTab === "sales" ? "bg-[#0a0f1d] text-white" : "bg-white text-[#6B7280] hover:bg-gray-50"}`}
+          >
+            {t("admin.customers.salesComm") || "Sales Communication"}
+            <span className={`flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full text-[11px] font-black ${activeTab === "sales" ? "bg-white/20" : "bg-gray-100"}`}>{salesRequests.length}</span>
+          </button>
         </div>
 
         {/* Filter and Search Bar */}
@@ -277,8 +357,8 @@ export function CustomersSection() {
         </div>
 
         <DataTable
-          columns={activeTab === "contact" ? contactColumns as any : sellColumns as any}
-          rows={(activeTab === "contact" ? filteredContact : filteredSell) as any}
+          columns={activeTab === "contact" ? contactColumns as any : activeTab === "sell" ? sellColumns as any : salesColumns as any}
+          rows={(activeTab === "contact" ? filteredContact : activeTab === "sell" ? filteredSell : filteredSales) as any}
           rowKey={(row: any) => row.id}
           empty={t("admin.ui.empty") || "No data"}
           actionsHeader={t("admin.ui.actions") || "Actions"}
@@ -342,8 +422,10 @@ export function CustomersSection() {
             setProcessState(null);
             if (processState.type === "contact") {
               queryClient.invalidateQueries({ queryKey: ["contactRequests"] });
-            } else {
+            } else if (processState.type === "sell") {
               queryClient.invalidateQueries({ queryKey: ["sellRequests"] });
+            } else if (processState.type === "sales") {
+              queryClient.invalidateQueries({ queryKey: ["salesRequests"] });
             }
           }}
         />
