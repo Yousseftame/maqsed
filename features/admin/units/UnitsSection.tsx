@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState, useRef, useEffect } from "react";
-import { Building2, CircleCheck, Eye, Key, Plus, Search, ChevronDown, RefreshCw } from "lucide-react";
+import { Building2, CircleCheck, Eye, Key, Plus, Search, ChevronDown, RefreshCw, Copy } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { DataTable, TableAction, type Column } from "@/features/admin/ui/DataTable";
@@ -34,8 +34,14 @@ export function UnitsSection() {
   const [queryStr, setQueryStr] = useState("");
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [copyUnitData, setCopyUnitData] = useState<any | null>(null);
   const [viewUnitId, setViewUnitId] = useState<string | null>(null);
   const [editUnitId, setEditUnitId] = useState<string | null>(null);
+
+  const handleCopyUnit = (row: any) => {
+    setCopyUnitData(row);
+    setIsAddModalOpen(true);
+  };
 
   const { data: units = [], refetch, isRefetching } = useQuery({
     queryKey: ["units"],
@@ -56,6 +62,7 @@ export function UnitsSection() {
     return units.map((unit) => {
       let projectLabel = "وحدة مستقلة";
       let locationLabel = "-";
+      let displayUnitNumber = unit.unitNumber || "بدون رقم";
 
       if (unit.projectId === "independent") {
         const city = cities.find(c => c.id === unit.cityId);
@@ -70,7 +77,22 @@ export function UnitsSection() {
           const building = project.buildings?.find(b => b.id === unit.buildingId);
           if (building) {
             locationLabel = `مبنى ${building.code}`;
+            if (unit.unitNumber) {
+              displayUnitNumber = `${building.code}${unit.unitNumber}`;
+            }
           }
+        }
+      }
+
+      let modelInternalArea: number | null = null;
+      let modelExternalArea: number | null = null;
+
+      if (unit.projectId !== "independent" && unit.modelId) {
+        const project = properties.find(p => p.id === unit.projectId);
+        const model = project?.models?.find((m: any) => m.id === unit.modelId);
+        if (model) {
+          if (model.internalArea) modelInternalArea = model.internalArea;
+          if (model.externalArea) modelExternalArea = model.externalArea;
         }
       }
 
@@ -79,6 +101,9 @@ export function UnitsSection() {
         typeLabel: unit.unitType,
         projectLabel,
         locationLabel,
+        displayUnitNumber,
+        modelInternalArea,
+        modelExternalArea,
       };
     });
   }, [units, properties, cities, locale]);
@@ -88,6 +113,7 @@ export function UnitsSection() {
     if (!q) return localized;
     return localized.filter(
       (row) =>
+        (row.displayUnitNumber || "").toLowerCase().includes(q) ||
         (row.unitNumber || "").toLowerCase().includes(q) ||
         (row.typeLabel || "").toLowerCase().includes(q) ||
         (row.projectLabel || "").toLowerCase().includes(q) ||
@@ -145,7 +171,7 @@ export function UnitsSection() {
             )}
           </span>
           <div className="flex flex-col">
-            <span className="font-semibold">{row.unitNumber || "بدون رقم"}</span>
+            <span className="font-semibold">{row.displayUnitNumber}</span>
             <span className="text-xs text-[#6B7280]">{row.typeLabel}</span>
           </div>
         </div>
@@ -247,6 +273,7 @@ export function UnitsSection() {
           <>
             <TableAction label={t("admin.ui.view")} onClick={() => setViewUnitId(row.id)} />
             <TableAction label={t("admin.ui.edit")} onClick={() => setEditUnitId(row.id)} />
+            <TableAction label="نسخ" onClick={() => handleCopyUnit(row)} />
             <TableAction
               label={t("admin.ui.delete")}
               tone="danger"
@@ -256,7 +283,14 @@ export function UnitsSection() {
         )}
       />
 
-      <AddUnitModal isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} />
+      <AddUnitModal
+        isOpen={isAddModalOpen}
+        onClose={() => {
+          setIsAddModalOpen(false);
+          setCopyUnitData(null);
+        }}
+        copyUnit={copyUnitData}
+      />
       <EditUnitModal isOpen={!!editUnitId} onClose={() => setEditUnitId(null)} unit={editUnit} />
       <ViewUnitModal isOpen={!!viewUnitId} onClose={() => setViewUnitId(null)} unit={viewUnit} />
     </div>

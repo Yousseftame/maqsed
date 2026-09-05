@@ -23,8 +23,8 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
       cityId: "",
       neighborhoodId: "",
       mapsLink: "",
+      brochureLink: "",
       projectType: "",
-      commissionOption: "",
       category: "متوسطة",
       buildingsCount: 1,
       modelsCount: 1,
@@ -58,8 +58,8 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
         cityId: property.cityId,
         neighborhoodId: property.neighborhoodId,
         mapsLink: property.mapsLink || "",
+        brochureLink: property.brochureLink || "",
         projectType: property.projectType || "",
-        commissionOption: property.commissionOption || "",
         category: property.category || "متوسطة",
         buildingsCount: property.buildingsCount || 1,
         modelsCount: property.modelsCount || 1,
@@ -132,8 +132,8 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
         cityId: data.cityId,
         neighborhoodId: data.neighborhoodId,
         mapsLink: data.mapsLink,
+        brochureLink: data.brochureLink,
         projectType: data.projectType,
-        commissionOption: data.commissionOption,
         category: data.category,
         buildingsCount: parseInt(data.buildingsCount, 10),
         modelsCount: parseInt(data.modelsCount, 10),
@@ -249,14 +249,25 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
                     </div>
                   </div>
 
-                  <div className="mb-6 grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelClass}>نوع المشروع</label>
-                      <input {...register("projectType")} placeholder="شقق سكنية" className={inputClass} />
+                  <div className="mb-5 grid gap-5 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>رابط البروشور (Brochure Link)</label>
+                      <input {...register("brochureLink")} placeholder="https://..." className={inputClass} dir="ltr" />
                     </div>
-                    <div>
-                      <label className={labelClass}>خيار السعي</label>
-                      <input {...register("commissionOption")} placeholder="بدون سعي" className={inputClass} />
+                  </div>
+
+                  <div className="mb-6 grid gap-5 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>نوع المشروع</label>
+                      <div className="relative">
+                        <select {...register("projectType")} className={`${inputClass} appearance-none pr-4 pl-10`}>
+                          <option value="">اختر نوع المشروع...</option>
+                          <option value="شقق سكنية">شقق سكنية</option>
+                          <option value="فلل">فلل</option>
+                          <option value="عمائر">عمائر</option>
+                        </select>
+                        <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
+                      </div>
                     </div>
                   </div>
 

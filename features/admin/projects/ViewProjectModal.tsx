@@ -12,9 +12,10 @@ type ViewProjectModalProps = {
   onClose: () => void;
   property: Property | null;
   cities: City[];
+  unitsCount?: number;
 };
 
-export function ViewProjectModal({ isOpen, onClose, property, cities }: ViewProjectModalProps) {
+export function ViewProjectModal({ isOpen, onClose, property, cities, unitsCount }: ViewProjectModalProps) {
   const { locale } = useLocale();
 
   useEffect(() => {
@@ -87,7 +88,6 @@ export function ViewProjectModal({ isOpen, onClose, property, cities }: ViewProj
                   <DetailRow label="المدينة" value={cityName} />
                   <DetailRow label="الحي" value={neighborhoodName} />
                   <DetailRow label="نوع المشروع" value={property.projectType} />
-                  <DetailRow label="خيار السعي" value={property.commissionOption} />
                   <DetailRow label="فئة المشروع" value={property.category} />
                 </div>
                 {property.mapsLink && (
@@ -102,6 +102,18 @@ export function ViewProjectModal({ isOpen, onClose, property, cities }: ViewProj
                     />
                   </div>
                 )}
+                {property.brochureLink && (
+                  <div className="mt-4">
+                    <DetailRow
+                      label="رابط البروشور (Brochure)"
+                      value={
+                        <a href={property.brochureLink} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
+                          {property.brochureLink}
+                        </a>
+                      }
+                    />
+                  </div>
+                )}
               </div>
 
               <hr className="my-8 border-[#0a0f1d]/10" />
@@ -109,11 +121,10 @@ export function ViewProjectModal({ isOpen, onClose, property, cities }: ViewProj
               {/* الأرقام والتوليد */}
               <div className="mb-8">
                 <h3 className="mb-5 text-lg font-bold tracking-tight text-[#0a0f1d]">بيانات التوليد والأرقام المسموحة</h3>
-                <div className="grid gap-4 sm:grid-cols-4">
+                <div className="grid gap-4 sm:grid-cols-3">
                   <DetailRow label="الحد الأقصى للمباني" value={property.buildingsCount} />
                   <DetailRow label="الحد الأقصى للنماذج" value={property.modelsCount} />
-                  <DetailRow label="إجمالي الوحدات" value={property.totalUnitsCount || "غير محدد"} />
-                  <DetailRow label="عدد الأدوار" value={property.floorsCount || "غير محدد"} />
+                  <DetailRow label="إجمالي الوحدات المضافة" value={unitsCount !== undefined ? unitsCount : "0"} />
                 </div>
               </div>
 
@@ -155,10 +166,51 @@ export function ViewProjectModal({ isOpen, onClose, property, cities }: ViewProj
                           <div className="p-4">
                             <h4 className="mb-1 text-base font-bold text-[#0a0f1d]">{m.name}</h4>
                             <p className="mb-3 text-xs font-bold text-[#8c8c8c]">{m.propertyType}</p>
-                            <div className="flex justify-between text-sm font-bold text-[#0a0f1d]">
+                            <div className="flex justify-between text-sm font-bold text-[#0a0f1d] mb-1">
                               <span>{m.roomsCount} غرف • {m.bathroomsCount} حمام</span>
                               <span>{m.defaultPrice ? `${m.defaultPrice.toLocaleString()} ر.س` : ""}</span>
                             </div>
+                            {(m.totalArea || 0) > 0 && (
+                              <div className="text-xs font-bold text-[#8c8c8c] mb-2">
+                                المساحة: {m.totalArea} م² 
+                                {m.internalArea || m.externalArea ? ` (داخلية: ${m.internalArea || 0} م² • خارجية: ${m.externalArea || 0} م²)` : ""}
+                              </div>
+                            )}
+                            
+                            {((m.features && m.features.length > 0) || (m.additionalComponents && m.additionalComponents.length > 0) || (m.facade && m.facade.length > 0)) && (
+                              <div className="mt-3 flex flex-col gap-2 border-t border-[#0a0f1d]/10 pt-3">
+                                {m.additionalComponents && m.additionalComponents.length > 0 && (
+                                  <div>
+                                    <span className="text-[10px] font-bold text-[#8c8c8c] block mb-1">المكونات الإضافية:</span>
+                                    <div className="flex flex-wrap gap-1">
+                                      {m.additionalComponents.map((f: string) => (
+                                        <span key={f} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#0a0f1d]/10">{f}</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {m.features && m.features.length > 0 && (
+                                  <div>
+                                    <span className="text-[10px] font-bold text-[#8c8c8c] block mb-1">المميزات:</span>
+                                    <div className="flex flex-wrap gap-1">
+                                      {m.features.map((f: string) => (
+                                        <span key={f} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#0a0f1d]/10">{f}</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                                {m.facade && m.facade.length > 0 && (
+                                  <div>
+                                    <span className="text-[10px] font-bold text-[#8c8c8c] block mb-1">الواجهة:</span>
+                                    <div className="flex flex-wrap gap-1">
+                                      {m.facade.map((f: string) => (
+                                        <span key={f} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#0a0f1d]/10">{f}</span>
+                                      ))}
+                                    </div>
+                                  </div>
+                                )}
+                              </div>
+                            )}
                           </div>
                         </div>
                       ))}

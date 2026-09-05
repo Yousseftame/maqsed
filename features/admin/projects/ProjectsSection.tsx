@@ -283,6 +283,7 @@ export function ProjectsSection() {
         onClose={() => setViewPropertyId(null)}
         property={viewProperty}
         cities={cities}
+        unitsCount={units.filter(u => u.projectId === viewPropertyId).length}
       />
       <ManageBuildingsModal
         isOpen={!!manageBuildingsPropertyId}

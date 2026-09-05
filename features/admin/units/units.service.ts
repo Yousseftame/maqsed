@@ -7,6 +7,9 @@ import {
   deleteDoc,
   query,
   updateDoc,
+  orderBy,
+  Timestamp,
+  serverTimestamp,
 } from "firebase/firestore";
 import { storage } from "@/lib/firebase/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
@@ -56,21 +59,31 @@ export type Unit = {
 
   // Section 7: Images
   images: string[];
+
+  createdAt?: Timestamp | any;
+  updatedAt?: Timestamp | any;
 };
 
 export const unitsService = {
   getUnits: async (): Promise<Unit[]> => {
-    const q = query(collection(db, "units"));
+    const q = query(collection(db, "units"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
     return snapshot.docs.map((doc) => doc.data() as Unit);
   },
 
   addUnit: async (unit: Unit) => {
-    await setDoc(doc(db, "units", unit.id), unit);
+    await setDoc(doc(db, "units", unit.id), {
+      ...unit,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
   },
 
   updateUnit: async (id: string, data: Partial<Unit>) => {
-    await updateDoc(doc(db, "units", id), data);
+    await updateDoc(doc(db, "units", id), {
+      ...data,
+      updatedAt: serverTimestamp(),
+    });
   },
 
   deleteUnit: async (id: string) => {

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { X, UploadCloud, Trash2, Loader2, Plus } from "lucide-react";
+import { X, UploadCloud, Trash2, Loader2, Plus, ChevronDown } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { propertiesService, type Property, type PropertyModel } from "@/features/admin/projects/properties.service";
@@ -16,13 +16,18 @@ type ManageModelsModalProps = {
 
 export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsModalProps) {
   const queryClient = useQueryClient();
-  const { register, handleSubmit, reset } = useForm({
+  const { register, handleSubmit, reset, watch } = useForm({
     defaultValues: {
       name: "",
       propertyType: "",
       defaultPrice: "",
+      internalArea: "",
+      externalArea: "",
       roomsCount: 1,
       bathroomsCount: 1,
+      additionalComponents: [],
+      features: [],
+      facade: [],
     },
   });
 
@@ -69,8 +74,14 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
         name: data.name,
         propertyType: data.propertyType,
         defaultPrice: Number(data.defaultPrice) || 0,
+        internalArea: Number(data.internalArea) || 0,
+        externalArea: Number(data.externalArea) || 0,
+        totalArea: (Number(data.internalArea) || 0) + (Number(data.externalArea) || 0),
         roomsCount: Number(data.roomsCount),
         bathroomsCount: Number(data.bathroomsCount),
+        additionalComponents: data.additionalComponents || [],
+        features: data.features || [],
+        facade: data.facade || [],
         blueprintImage,
       };
 
@@ -120,6 +131,10 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
   const currentCount = property.models?.length || 0;
   const maxCount = property.modelsCount || 1;
   const isMaxReached = currentCount >= maxCount;
+
+  const internalAreaVal = watch("internalArea");
+  const externalAreaVal = watch("externalArea");
+  const computedTotalArea = (Number(internalAreaVal) || 0) + (Number(externalAreaVal) || 0);
 
   const inputClass = "h-12 w-full rounded-[12px] bg-white px-4 text-sm font-medium text-[#0a0f1d] outline-none border border-[#0a0f1d]/10 focus:border-[#0a0f1d]/30 transition-colors disabled:opacity-50 disabled:bg-gray-100";
   const labelClass = "mb-2 block text-sm font-bold text-[#0a0f1d]";
@@ -176,7 +191,16 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
                   </div>
                   <div className="sm:col-span-1">
                     <label className={labelClass}>نوع العقار</label>
-                    <input {...register("propertyType")} placeholder="شقة سكنية" className={inputClass} disabled={isMaxReached} />
+                    <div className="relative">
+                      <select {...register("propertyType")} className={`${inputClass} appearance-none pr-4 pl-10`} disabled={isMaxReached}>
+                        <option value="">اختر نوع العقار...</option>
+                        <option value="شقة سكنية">شقة سكنية</option>
+                        <option value="فيلا">فيلا</option>
+                        <option value="شقة مزدوجة (دوبلكس)">شقة مزدوجة (دوبلكس)</option>
+                        <option value="دور">دور</option>
+                      </select>
+                      <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
+                    </div>
                   </div>
                   
                   <div>
@@ -186,6 +210,19 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
                   <div>
                     <label className={labelClass}>دورات المياه</label>
                     <input type="number" min="1" {...register("bathroomsCount")} className={inputClass} disabled={isMaxReached} />
+                  </div>
+
+                  <div className="sm:col-span-1">
+                    <label className={labelClass}>المساحة الداخلية (م²)</label>
+                    <input type="number" min="0" {...register("internalArea")} className={inputClass} disabled={isMaxReached} />
+                  </div>
+                  <div className="sm:col-span-1">
+                    <label className={labelClass}>المساحة الخارجية (م²)</label>
+                    <input type="number" min="0" {...register("externalArea")} className={inputClass} disabled={isMaxReached} />
+                  </div>
+                  <div className="sm:col-span-2">
+                    <label className={labelClass}>المساحة الكلية تلقائياً (م²)</label>
+                    <input type="text" value={computedTotalArea} className={inputClass} disabled />
                   </div>
 
                   <div className="sm:col-span-2">
@@ -219,6 +256,46 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
                         </button>
                       </div>
                     )}
+                  </div>
+                </div>
+
+                <div className="mt-8 border-t border-[#0a0f1d]/10 pt-6">
+                  <h4 className="mb-5 text-base font-bold text-[#0a0f1d]">التفاصيل الفنية (اختياري)</h4>
+                  
+                  <div className="mb-6">
+                    <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">المكونات الإضافية</h4>
+                    <div className="flex flex-wrap gap-4">
+                      {["مطبخ", "مجلس", "صالة واسعة", "مستودع", "غرفة غسيل", "غرفة سائق"].map((item) => (
+                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
+                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
+                          <input type="checkbox" value={item} {...register("additionalComponents")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" disabled={isMaxReached} />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="mb-6">
+                    <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">مميزات الوحدة والمواقف</h4>
+                    <div className="flex flex-wrap gap-4">
+                      {["بلكونة", "تكييف مركزي", "مكيف راكب", "دخول ذكي", "موقف خاص", "موقف داخلي", "موقف خارجي"].map((item) => (
+                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
+                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
+                          <input type="checkbox" value={item} {...register("features")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" disabled={isMaxReached} />
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">واجهة الوحدة</h4>
+                    <div className="flex flex-wrap gap-4">
+                      {["أمامية", "جانبية", "خلفية"].map((item) => (
+                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[120px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
+                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
+                          <input type="checkbox" value={item} {...register("facade")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" disabled={isMaxReached} />
+                        </label>
+                      ))}
+                    </div>
                   </div>
                 </div>
 
@@ -262,9 +339,16 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
                           </div>
                         </td>
                         <td className="px-6 py-4">
-                          <span className="text-[#8c8c8c] text-xs">
-                            {model.roomsCount} غرف • {model.bathroomsCount} حمام
-                          </span>
+                          <div className="flex flex-col gap-1">
+                            <span className="text-[#8c8c8c] text-xs">
+                              {model.roomsCount} غرف • {model.bathroomsCount} حمام
+                            </span>
+                            {(model.totalArea || 0) > 0 && (
+                              <span className="text-[#8c8c8c] text-xs">
+                                مساحة: {model.totalArea} م²
+                              </span>
+                            )}
+                          </div>
                         </td>
                         <td className="px-6 py-4">
                           {model.defaultPrice ? `${model.defaultPrice.toLocaleString()} ريال` : "غير محدد"}

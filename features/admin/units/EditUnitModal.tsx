@@ -46,7 +46,6 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
 
       condition: "جديدة",
       age: "",
-      commissionOption: "بدون سعي",
     },
   });
 
@@ -83,7 +82,6 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
 
         condition: unit.condition || "جديدة",
         age: unit.age?.toString() || "",
-        commissionOption: unit.commissionOption || "بدون سعي",
       });
       setImages((unit.images || []).map(url => ({ file: null, preview: url })));
     } else if (!isOpen) {
@@ -137,16 +135,22 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
   const projectBuildings = selectedProject?.buildings || [];
 
   const selectedModelId = watch("modelId");
+  const isModelSelected = !isIndependent && !!selectedModelId;
+  const selectedModel = isModelSelected ? selectedProject?.models.find((m: any) => m.id === selectedModelId) : null;
   
   useEffect(() => {
     // Auto-fill logic when a model is selected
-    if (selectedModelId && selectedProject) {
+    if (isModelSelected && selectedProject) {
       const model = selectedProject.models.find(m => m.id === selectedModelId);
       if (model) {
         setValue("roomsCount", model.roomsCount.toString());
         setValue("bathroomsCount", model.bathroomsCount.toString());
         setValue("price", model.defaultPrice.toString());
-        // Models don't have totalArea natively yet, but if they did we'd fill it
+        setValue("unitType", model.propertyType || "");
+        setValue("totalArea", (model.totalArea || 0).toString());
+        setValue("additionalComponents", model.additionalComponents || []);
+        setValue("features", model.features || []);
+        setValue("facade", model.facade || []);
       }
     }
   }, [selectedModelId, selectedProject, setValue]);
@@ -173,30 +177,24 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
 
       const allImages = [...existingUrls, ...uploadedUrls];
 
-      let finalUnitNumber = data.unitNumber;
-      if (isIndependent) {
-        finalUnitNumber = `IND-${data.unitNumber}`;
-      } else {
-        const projectPrefix = data.projectId.substring(0, 4).toUpperCase();
-        const building = selectedProject?.buildings.find((b: any) => b.id === data.buildingId);
-        const buildingCode = building ? building.code : "X";
-        finalUnitNumber = `${projectPrefix}-${buildingCode}-${data.unitNumber}`;
-      }
+      const finalUnitNumber = data.unitNumber;
+
+      const model = selectedModelId && selectedProject ? selectedProject.models.find((m: any) => m.id === selectedModelId) : null;
 
       const unitData: any = {
         projectId: data.projectId,
         status: data.status,
         unitNumber: finalUnitNumber,
         unitType: data.unitType,
-        operationType: data.operationType,
+        operationType: "للبيع",
         price: Number(data.price) || 0,
         roomsCount: Number(data.roomsCount) || 0,
         bathroomsCount: Number(data.bathroomsCount) || 0,
-        totalArea: Number(data.totalArea) || 0,
+        totalArea: model ? (Number(model.totalArea) || 0) : (Number(data.totalArea) || 0),
         discountActive: data.discountActive,
-        additionalComponents: data.additionalComponents,
-        features: data.features,
-        facade: data.facade,
+        additionalComponents: model ? (model.additionalComponents || []) : (data.additionalComponents || []),
+        features: model ? (model.features || []) : (data.features || []),
+        facade: model ? (model.facade || []) : (data.facade || []),
         views: unit.views || 0,
         images: allImages,
       };
@@ -206,7 +204,6 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
         if (data.neighborhoodId) unitData.neighborhoodId = data.neighborhoodId;
         if (data.condition) unitData.condition = data.condition;
         unitData.age = Number(data.age) || 0;
-        if (data.commissionOption) unitData.commissionOption = data.commissionOption;
         
         // Remove project-tied fields if switching
         unitData.modelId = null;
@@ -222,7 +219,6 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
         unitData.neighborhoodId = null;
         unitData.condition = null;
         unitData.age = null;
-        unitData.commissionOption = null;
       }
 
       if (data.discountActive) {
@@ -366,7 +362,17 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                       </div>
                       <div>
                         <label className={labelClass}>الدور</label>
-                        <input {...register("floor")} placeholder="مثال: الأول" className={inputClass} />
+                        <div className="relative">
+                          <select {...register("floor")} className={`${inputClass} appearance-none pr-4 pl-10`}>
+                            <option value="">اختر الدور...</option>
+                            {Array.from({ length: 51 }, (_, i) => i).map((num) => (
+                              <option key={num} value={num.toString()}>
+                                {num}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -402,22 +408,29 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                       <input {...register("unitNumber")} placeholder="مثال: 15" className={inputClass} />
                       {watch("unitNumber") && (
                         <p className="mt-1 text-xs text-[#8c8c8c] font-medium" dir="ltr" style={{ textAlign: "right" }}>
-                          المعرف: {isIndependent ? `IND-${watch("unitNumber")}` : `${selectedProjectId ? selectedProjectId.substring(0, 4).toUpperCase() : "PRJ"}-${projectBuildings.find(b => b.id === watch("buildingId"))?.code || "X"}-${watch("unitNumber")}`}
+                          ستظهر كالتالي: {isIndependent ? watch("unitNumber") : `${projectBuildings.find(b => b.id === watch("buildingId"))?.code || ""}${watch("unitNumber")}`}
                         </p>
                       )}
                     </div>
                     <div>
                       <label className={labelClass}>نوع الوحدة</label>
-                      <input {...register("unitType")} placeholder="شقة سكنية" className={inputClass} />
+                      <div className="relative">
+                        <select {...register("unitType")} className={`${inputClass} appearance-none pr-4 pl-10`}>
+                          <option value="">اختر نوع الوحدة...</option>
+                          <option value="شقة سكنية">شقة سكنية</option>
+                          <option value="فيلا">فيلا</option>
+                          <option value="عمارة">عمارة</option>
+                          <option value="دوبلكس">دوبلكس</option>
+                        </select>
+                        <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
+                      </div>
                     </div>
                     <div>
                       <label className={labelClass}>النوع (العملية)</label>
                       <div className="relative">
-                        <select {...register("operationType")} className={`${inputClass} appearance-none pr-4 pl-10`}>
+                        <select value="للبيع" disabled className={`${inputClass} appearance-none opacity-70`}>
                           <option value="للبيع">للبيع</option>
-                          <option value="للإيجار">للإيجار</option>
                         </select>
-                        <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
                       </div>
                     </div>
                     <div>
@@ -437,7 +450,14 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                     </div>
                     <div>
                       <label className={labelClass}>المساحة الإجمالية (م²)</label>
-                      <input type="number" {...register("totalArea")} className={inputClass} />
+                      <input type="number" {...register("totalArea")} disabled={isModelSelected} className={`${inputClass} ${isModelSelected ? 'cursor-not-allowed opacity-70' : ''}`} />
+                      {selectedModel && (selectedModel.internalArea || selectedModel.externalArea) && (
+                        <p className="mt-2 text-[11px] text-[#8c8c8c] font-medium leading-relaxed">
+                          تفاصيل مساحة النموذج:
+                          <br />
+                          الداخلية {selectedModel.internalArea || 0} م² | الخارجية {selectedModel.externalArea || 0} م²
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -473,36 +493,60 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                   <div className="mb-6">
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">المكونات الإضافية</h4>
                     <div className="flex flex-wrap gap-4">
-                      {["مطبخ", "مجلس", "صالة واسعة", "مستودع", "غرفة غسيل", "غرفة سائق"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("additionalComponents")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
+                      {["مطبخ", "مجلس", "صالة واسعة", "مستودع", "غرفة غسيل", "غرفة سائق"].map((item) => {
+                        const isSelected = (watch("additionalComponents") || []).includes(item);
+                        return (
+                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
+                          isSelected 
+                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
+                            : isModelSelected 
+                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
+                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                        }`}>
+                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
+                          <input type="checkbox" value={item} {...register("additionalComponents")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
                         </label>
-                      ))}
+                      )})}
                     </div>
                   </div>
 
                   <div className="mb-6">
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">مميزات الوحدة</h4>
                     <div className="flex flex-wrap gap-4">
-                      {["بلكونة", "تكييف مركزي", "مكيف راكب", "دخول ذكي", "موقف خاص"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("features")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
+                      {["بلكونة", "تكييف مركزي", "مكيف راكب", "دخول ذكي", "موقف خاص"].map((item) => {
+                        const isSelected = (watch("features") || []).includes(item);
+                        return (
+                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
+                          isSelected 
+                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
+                            : isModelSelected 
+                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
+                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                        }`}>
+                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
+                          <input type="checkbox" value={item} {...register("features")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
                         </label>
-                      ))}
+                      )})}
                     </div>
                   </div>
 
                   <div>
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">واجهة الوحدة</h4>
                     <div className="flex flex-wrap gap-4">
-                      {["أمامية", "جانبية", "خلفية"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[120px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("facade")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
+                      {["أمامية", "جانبية", "خلفية"].map((item) => {
+                        const isSelected = (watch("facade") || []).includes(item);
+                        return (
+                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[120px] rounded-[12px] border px-4 py-3 transition-colors ${
+                          isSelected 
+                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
+                            : isModelSelected 
+                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
+                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                        }`}>
+                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
+                          <input type="checkbox" value={item} {...register("facade")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
                         </label>
-                      ))}
+                      )})}
                     </div>
                   </div>
                 </div>
@@ -526,17 +570,6 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                       <div>
                         <label className={labelClass}>عمر الوحدة (بالسنوات)</label>
                         <input type="number" {...register("age")} placeholder="اكتب 0 إذا كانت جديدة تماماً" className={inputClass} />
-                      </div>
-                    </div>
-                    <div className="mt-5">
-                      <label className={labelClass}>خيار السعي</label>
-                      <div className="flex flex-wrap gap-4">
-                        {["بدون سعي", "سعي 2.5%"].map((item) => (
-                          <label key={item} className="flex cursor-pointer items-center gap-2 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                            <input type="radio" value={item} {...register("commissionOption")} className="h-4 w-4 accent-[#0a0f1d]" />
-                            <span className="text-sm font-bold text-[#0a0f1d]">{item}</span>
-                          </label>
-                        ))}
                       </div>
                     </div>
                   </div>

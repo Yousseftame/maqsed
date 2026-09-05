@@ -14,9 +14,10 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 interface AddUnitModalProps {
   isOpen: boolean;
   onClose: () => void;
+  copyUnit?: any | null;
 }
 
-export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
+export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
   const { register, handleSubmit, watch, reset, setValue } = useForm({
     defaultValues: {
       projectId: "independent",
@@ -45,7 +46,6 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
 
       condition: "جديدة",
       age: "",
-      commissionOption: "بدون سعي",
     },
   });
 
@@ -57,8 +57,35 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
     if (!isOpen) {
       reset();
       setImages([]);
+    } else if (copyUnit) {
+      // Pre-fill from copied unit (exclude unitNumber so user sets a new one)
+      reset({
+        projectId: copyUnit.projectId || "independent",
+        cityId: copyUnit.cityId || "",
+        neighborhoodId: copyUnit.neighborhoodId || "",
+        modelId: copyUnit.modelId || "",
+        buildingId: copyUnit.buildingId || "",
+        floor: copyUnit.floor?.toString() || "",
+        status: copyUnit.status || "available",
+        unitNumber: "", // intentionally blank - user must set a new number
+        unitType: copyUnit.unitType || "شقة سكنية",
+        operationType: "للبيع",
+        price: copyUnit.price?.toString() || "",
+        roomsCount: copyUnit.roomsCount?.toString() || "",
+        bathroomsCount: copyUnit.bathroomsCount?.toString() || "",
+        totalArea: copyUnit.totalArea?.toString() || "",
+        discountActive: false,
+        discountPercentage: "",
+        discountDays: "",
+        additionalComponents: copyUnit.additionalComponents || [],
+        features: copyUnit.features || [],
+        facade: copyUnit.facade || [],
+        condition: copyUnit.condition || "جديدة",
+        age: copyUnit.age?.toString() || "",
+      });
+      setImages([]);
     }
-  }, [isOpen, reset]);
+  }, [isOpen, copyUnit, reset]);
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
@@ -105,16 +132,22 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
   const projectBuildings = selectedProject?.buildings || [];
 
   const selectedModelId = watch("modelId");
+  const isModelSelected = !isIndependent && !!selectedModelId;
+  const selectedModel = isModelSelected ? selectedProject?.models.find((m: any) => m.id === selectedModelId) : null;
   
   useEffect(() => {
     // Auto-fill logic when a model is selected
-    if (selectedModelId && selectedProject) {
+    if (isModelSelected && selectedProject) {
       const model = selectedProject.models.find(m => m.id === selectedModelId);
       if (model) {
         setValue("roomsCount", model.roomsCount.toString());
         setValue("bathroomsCount", model.bathroomsCount.toString());
         setValue("price", model.defaultPrice.toString());
-        // Models don't have totalArea natively yet, but if they did we'd fill it
+        setValue("unitType", model.propertyType || "");
+        setValue("totalArea", (model.totalArea || 0).toString());
+        setValue("additionalComponents", model.additionalComponents || []);
+        setValue("features", model.features || []);
+        setValue("facade", model.facade || []);
       }
     }
   }, [selectedModelId, selectedProject, setValue]);
@@ -130,15 +163,9 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
         images.map((img) => unitsService.uploadImage(img.file, `units/${id}`))
       );
 
-      let finalUnitNumber = data.unitNumber;
-      if (isIndependent) {
-        finalUnitNumber = `IND-${data.unitNumber}`;
-      } else {
-        const projectPrefix = data.projectId.substring(0, 4).toUpperCase();
-        const building = selectedProject?.buildings.find((b: any) => b.id === data.buildingId);
-        const buildingCode = building ? building.code : "X";
-        finalUnitNumber = `${projectPrefix}-${buildingCode}-${data.unitNumber}`;
-      }
+      const finalUnitNumber = data.unitNumber;
+
+      const model = selectedModelId && selectedProject ? selectedProject.models.find((m: any) => m.id === selectedModelId) : null;
 
       const unitData: any = {
         id,
@@ -146,15 +173,15 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
         status: data.status,
         unitNumber: finalUnitNumber,
         unitType: data.unitType,
-        operationType: data.operationType,
+        operationType: "للبيع",
         price: Number(data.price) || 0,
         roomsCount: Number(data.roomsCount) || 0,
         bathroomsCount: Number(data.bathroomsCount) || 0,
-        totalArea: Number(data.totalArea) || 0,
+        totalArea: model ? (Number(model.totalArea) || 0) : (Number(data.totalArea) || 0),
         discountActive: data.discountActive,
-        additionalComponents: data.additionalComponents,
-        features: data.features,
-        facade: data.facade,
+        additionalComponents: model ? (model.additionalComponents || []) : (data.additionalComponents || []),
+        features: model ? (model.features || []) : (data.features || []),
+        facade: model ? (model.facade || []) : (data.facade || []),
         views: 0,
         images: uploadedUrls,
       };
@@ -164,7 +191,6 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
         if (data.neighborhoodId) unitData.neighborhoodId = data.neighborhoodId;
         if (data.condition) unitData.condition = data.condition;
         unitData.age = Number(data.age) || 0;
-        if (data.commissionOption) unitData.commissionOption = data.commissionOption;
       } else {
         if (data.modelId) unitData.modelId = data.modelId;
         if (data.buildingId) unitData.buildingId = data.buildingId;
@@ -219,9 +245,16 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
           >
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between border-b border-[#0a0f1d]/10 px-6 py-5 sm:px-8">
-              <h2 className="text-2xl font-bold tracking-tight text-[#0a0f1d]">
-                إضافة وحدة جديدة
-              </h2>
+              <div>
+                <h2 className="text-2xl font-bold tracking-tight text-[#0a0f1d]">
+                  {copyUnit ? "نسخ وحدة" : "إضافة وحدة جديدة"}
+                </h2>
+                {copyUnit && (
+                  <p className="mt-1 text-xs text-[#8c8c8c] font-medium">
+                    تم نسخ بيانات الوحدة — أدخل رقم وحدة جديد قبل الحفظ
+                  </p>
+                )}
+              </div>
               <button
                 onClick={onClose}
                 className="rounded-full p-2 text-[#8c8c8c] transition-colors hover:bg-[#F4F4F4] hover:text-[#0a0f1d]"
@@ -311,7 +344,17 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
                       </div>
                       <div>
                         <label className={labelClass}>الدور</label>
-                        <input {...register("floor")} placeholder="مثال: الأول" className={inputClass} />
+                        <div className="relative">
+                          <select {...register("floor")} className={`${inputClass} appearance-none pr-4 pl-10`}>
+                            <option value="">اختر الدور...</option>
+                            {Array.from({ length: 51 }, (_, i) => i).map((num) => (
+                              <option key={num} value={num.toString()}>
+                                {num}
+                              </option>
+                            ))}
+                          </select>
+                          <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
+                        </div>
                       </div>
                     </div>
                   )}
@@ -347,22 +390,29 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
                       <input {...register("unitNumber")} placeholder="مثال: 15" className={inputClass} />
                       {watch("unitNumber") && (
                         <p className="mt-1 text-xs text-[#8c8c8c] font-medium" dir="ltr" style={{ textAlign: "right" }}>
-                          المعرف: {isIndependent ? `IND-${watch("unitNumber")}` : `${selectedProjectId ? selectedProjectId.substring(0, 4).toUpperCase() : "PRJ"}-${projectBuildings.find(b => b.id === watch("buildingId"))?.code || "X"}-${watch("unitNumber")}`}
+                          ستظهر كالتالي: {isIndependent ? watch("unitNumber") : `${projectBuildings.find(b => b.id === watch("buildingId"))?.code || ""}${watch("unitNumber")}`}
                         </p>
                       )}
                     </div>
                     <div>
                       <label className={labelClass}>نوع الوحدة</label>
-                      <input {...register("unitType")} placeholder="شقة سكنية" className={inputClass} />
+                      <div className="relative">
+                        <select {...register("unitType")} className={`${inputClass} appearance-none pr-4 pl-10`}>
+                          <option value="">اختر نوع الوحدة...</option>
+                          <option value="شقة سكنية">شقة سكنية</option>
+                          <option value="فيلا">فيلا</option>
+                          <option value="عمارة">عمارة</option>
+                          <option value="دوبلكس">دوبلكس</option>
+                        </select>
+                        <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
+                      </div>
                     </div>
                     <div>
                       <label className={labelClass}>النوع (العملية)</label>
                       <div className="relative">
-                        <select {...register("operationType")} className={`${inputClass} appearance-none pr-4 pl-10`}>
+                        <select value="للبيع" disabled className={`${inputClass} appearance-none opacity-70`}>
                           <option value="للبيع">للبيع</option>
-                          <option value="للإيجار">للإيجار</option>
                         </select>
-                        <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
                       </div>
                     </div>
                     <div>
@@ -382,7 +432,14 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
                     </div>
                     <div>
                       <label className={labelClass}>المساحة الإجمالية (م²)</label>
-                      <input type="number" {...register("totalArea")} className={inputClass} />
+                      <input type="number" {...register("totalArea")} disabled={isModelSelected} className={`${inputClass} ${isModelSelected ? 'cursor-not-allowed opacity-70' : ''}`} />
+                      {selectedModel && (selectedModel.internalArea || selectedModel.externalArea) && (
+                        <p className="mt-2 text-[11px] text-[#8c8c8c] font-medium leading-relaxed">
+                          تفاصيل مساحة النموذج:
+                          <br />
+                          الداخلية {selectedModel.internalArea || 0} م² | الخارجية {selectedModel.externalArea || 0} م²
+                        </p>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -418,36 +475,60 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
                   <div className="mb-6">
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">المكونات الإضافية</h4>
                     <div className="flex flex-wrap gap-4">
-                      {["مطبخ", "مجلس", "صالة واسعة", "مستودع", "غرفة غسيل", "غرفة سائق"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("additionalComponents")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
+                      {["مطبخ", "مجلس", "صالة واسعة", "مستودع", "غرفة غسيل", "غرفة سائق"].map((item) => {
+                        const isSelected = (watch("additionalComponents") || []).includes(item);
+                        return (
+                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
+                          isSelected 
+                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
+                            : isModelSelected 
+                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
+                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                        }`}>
+                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
+                          <input type="checkbox" value={item} {...register("additionalComponents")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
                         </label>
-                      ))}
+                      )})}
                     </div>
                   </div>
 
                   <div className="mb-6">
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">مميزات الوحدة</h4>
                     <div className="flex flex-wrap gap-4">
-                      {["بلكونة", "تكييف مركزي", "مكيف راكب", "دخول ذكي", "موقف خاص"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("features")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
+                      {["بلكونة", "تكييف مركزي", "مكيف راكب", "دخول ذكي", "موقف خاص"].map((item) => {
+                        const isSelected = (watch("features") || []).includes(item);
+                        return (
+                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
+                          isSelected 
+                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
+                            : isModelSelected 
+                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
+                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                        }`}>
+                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
+                          <input type="checkbox" value={item} {...register("features")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
                         </label>
-                      ))}
+                      )})}
                     </div>
                   </div>
 
                   <div>
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">واجهة الوحدة</h4>
                     <div className="flex flex-wrap gap-4">
-                      {["أمامية", "جانبية", "خلفية"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[120px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("facade")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
+                      {["أمامية", "جانبية", "خلفية"].map((item) => {
+                        const isSelected = (watch("facade") || []).includes(item);
+                        return (
+                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[120px] rounded-[12px] border px-4 py-3 transition-colors ${
+                          isSelected 
+                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
+                            : isModelSelected 
+                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
+                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                        }`}>
+                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
+                          <input type="checkbox" value={item} {...register("facade")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
                         </label>
-                      ))}
+                      )})}
                     </div>
                   </div>
                 </div>
@@ -471,17 +552,6 @@ export function AddUnitModal({ isOpen, onClose }: AddUnitModalProps) {
                       <div>
                         <label className={labelClass}>عمر الوحدة (بالسنوات)</label>
                         <input type="number" {...register("age")} placeholder="اكتب 0 إذا كانت جديدة تماماً" className={inputClass} />
-                      </div>
-                    </div>
-                    <div className="mt-5">
-                      <label className={labelClass}>خيار السعي</label>
-                      <div className="flex flex-wrap gap-4">
-                        {["بدون سعي", "سعي 2.5%"].map((item) => (
-                          <label key={item} className="flex cursor-pointer items-center gap-2 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                            <input type="radio" value={item} {...register("commissionOption")} className="h-4 w-4 accent-[#0a0f1d]" />
-                            <span className="text-sm font-bold text-[#0a0f1d]">{item}</span>
-                          </label>
-                        ))}
                       </div>
                     </div>
                   </div>

@@ -84,6 +84,14 @@ export function ManageBuildingsModal({ isOpen, onClose, property }: ManageBuildi
       return toast.error(`عذراً، لقد وصلت للحد الأقصى (${maxCount}) للمباني المسموح بها لهذا المشروع.`);
     }
     if (!data.code) return toast.error("يرجى إدخال رمز المبنى");
+    
+    const isDuplicate = property.buildings?.some(
+      (b) => b.code.trim().toLowerCase() === data.code.trim().toLowerCase()
+    );
+    if (isDuplicate) {
+      return toast.error("يوجد مبنى بهذا الرمز مسبقاً، يرجى اختيار رمز آخر");
+    }
+
     addMutation.mutate(data);
   };
 

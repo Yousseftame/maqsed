@@ -30,6 +30,12 @@ export type PropertyModel = {
   roomsCount: number;
   bathroomsCount: number;
   defaultPrice: number;
+  internalArea?: number;
+  externalArea?: number;
+  totalArea?: number;
+  additionalComponents?: string[];
+  features?: string[];
+  facade?: string[];
   blueprintImage: string;
 };
 
@@ -39,8 +45,9 @@ export type Property = {
   cityId: string;
   neighborhoodId: string;
   mapsLink: string;
+  brochureLink?: string;
   projectType: string;
-  commissionOption: string;
+  commissionOption?: string;
   category: "luxury" | "medium" | "economic" | string;
   status: "active" | "soon" | "draft" | "soldOut" | string;
   

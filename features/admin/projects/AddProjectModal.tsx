@@ -22,8 +22,8 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
       cityId: "",
       neighborhoodId: "",
       mapsLink: "",
+      brochureLink: "",
       projectType: "",
-      commissionOption: "",
       category: "luxury",
       buildingsCount: 1,
       totalUnits: 1,
@@ -98,8 +98,8 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         cityId: data.cityId,
         neighborhoodId: data.neighborhoodId,
         mapsLink: data.mapsLink,
+        brochureLink: data.brochureLink,
         projectType: data.projectType,
-        commissionOption: data.commissionOption,
         category: data.category,
         status: "active",
         buildingsCount: Number(data.buildingsCount) || 1,
@@ -219,14 +219,25 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                     </div>
                   </div>
 
-                  <div className="mb-6 grid gap-5 sm:grid-cols-2">
-                    <div>
-                      <label className={labelClass}>نوع المشروع</label>
-                      <input {...register("projectType")} placeholder="شقق سكنية" className={inputClass} />
+                  <div className="mb-5 grid gap-5 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>رابط البروشور (Brochure Link)</label>
+                      <input {...register("brochureLink")} placeholder="https://..." className={inputClass} dir="ltr" />
                     </div>
-                    <div>
-                      <label className={labelClass}>خيار السعي</label>
-                      <input {...register("commissionOption")} placeholder="بدون سعي" className={inputClass} />
+                  </div>
+
+                  <div className="mb-6 grid gap-5 sm:grid-cols-2">
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>نوع المشروع</label>
+                      <div className="relative">
+                        <select {...register("projectType")} className={`${inputClass} appearance-none pr-4 pl-10`}>
+                          <option value="">اختر نوع المشروع...</option>
+                          <option value="شقق سكنية">شقق سكنية</option>
+                          <option value="فلل">فلل</option>
+                          <option value="عمائر">عمائر</option>
+                        </select>
+                        <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
+                      </div>
                     </div>
                   </div>
 
@@ -247,22 +258,18 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
 
                 {/* الأرقام والتوليد */}
                 <div className={formSectionClass}>
-                  <div className="grid gap-5 sm:grid-cols-4">
+                  <div className="grid gap-5 sm:grid-cols-3">
                     <div>
                       <label className={labelClass}>عدد المباني (للتوليد)</label>
                       <input type="number" min="1" {...register("buildingsCount")} className={inputClass} />
                     </div>
                     <div>
-                      <label className={labelClass}>عدد الوحدات الإجمالي</label>
-                      <input type="text" value="غير محدد" className={inputClass} disabled title="مغلق مؤقتاً" />
-                    </div>
-                    <div>
-                      <label className={labelClass}>عدد الأدوار (للمبنى)</label>
-                      <input type="text" value="غير محدد" className={inputClass} disabled title="مغلق مؤقتاً" />
-                    </div>
-                    <div>
                       <label className={labelClass}>عدد النماذج (للتوليد)</label>
                       <input type="number" min="1" {...register("modelsCount")} className={inputClass} />
+                    </div>
+                    <div>
+                      <label className={labelClass}>عدد الوحدات الإجمالي</label>
+                      <input type="text" value="0" className={inputClass} disabled title="سيتم حسابه تلقائياً من الوحدات المضافة" />
                     </div>
                   </div>
                 </div>

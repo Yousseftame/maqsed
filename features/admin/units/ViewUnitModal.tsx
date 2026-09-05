@@ -36,7 +36,7 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
             <div className="flex shrink-0 items-center justify-between border-b border-[#0a0f1d]/10 px-6 py-5 sm:px-8">
               <div className="flex items-center gap-4">
                 <h2 className="text-2xl font-bold tracking-tight text-[#0a0f1d]">
-                  تفاصيل الوحدة: {unit.unitNumber}
+                  تفاصيل الوحدة: {unit.displayUnitNumber || unit.unitNumber}
                 </h2>
                 <StatusBadge tone={unit.status === "available" ? "success" : "default"}>
                   {unit.status === "available" ? "متاحة" : "مباعة/مؤجرة"}
@@ -68,6 +68,13 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                     <span className="text-sm font-medium">المساحة</span>
                   </div>
                   <div className="text-xl font-bold text-[#0a0f1d]">{unit.totalArea} م²</div>
+                  {(unit.modelInternalArea || unit.modelExternalArea) && (
+                    <div className="mt-1.5 text-[10px] text-[#8c8c8c] leading-relaxed">
+                      <span>داخلية {unit.modelInternalArea || 0} م²</span>
+                      <span className="mx-1">|</span>
+                      <span>خارجية {unit.modelExternalArea || 0} م²</span>
+                    </div>
+                  )}
                 </div>
                 <div className="rounded-[16px] bg-white p-4 shadow-sm border border-[#0a0f1d]/5">
                   <div className="flex items-center gap-2 text-[#8c8c8c] mb-2">
@@ -199,12 +206,6 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                       <div className="flex justify-between py-3 px-4 border-b border-[#0a0f1d]/5">
                         <span className="text-sm text-[#8c8c8c]">العمر الزمني</span>
                         <span className="text-sm font-semibold">{unit.age === 0 ? "جديدة تماماً" : `${unit.age} سنوات`}</span>
-                      </div>
-                    )}
-                    {unit.commissionOption && (
-                      <div className="flex justify-between py-3 px-4">
-                        <span className="text-sm text-[#8c8c8c]">خيار السعي</span>
-                        <span className="text-sm font-semibold">{unit.commissionOption}</span>
                       </div>
                     )}
                   </div>
