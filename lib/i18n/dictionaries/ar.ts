@@ -580,6 +580,7 @@ export const ar: Dictionary = {
         email: "البريد الإلكتروني",
         phone: "رقم الجوال",
         company: "اسم الشركة (اختياري)",
+        usersPerDeveloper: "عدد المستخدمين لكل مطور",
         password: "كلمة المرور",
         confirmPassword: "تأكيد كلمة المرور",
         submit: "إنشاء الحساب",

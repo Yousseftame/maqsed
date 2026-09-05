@@ -21,6 +21,7 @@ export interface UserData {
   lastName?: string;
   phoneNumber?: string;
   companyName?: string;
+  usersPerDeveloper?: number;
   photoURL?: string;
   status?: "active" | "disabled";
   developerStats?: DeveloperStats;

@@ -270,6 +270,11 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                     <div>
                       <label className={labelClass}>عدد الوحدات الإجمالي</label>
                       <input type="text" value="0" className={inputClass} disabled title="سيتم حسابه تلقائياً من الوحدات المضافة" />
+                      <p className="mt-2 text-[11px] font-medium leading-relaxed text-[#8c8c8c]">
+                        {locale === "en"
+                          ? "Calculated automatically once units are assigned to this project."
+                          : "يُحسب هذا الحقل تلقائياً عند ربط وحدات بالمشروع."}
+                      </p>
                     </div>
                   </div>
                 </div>

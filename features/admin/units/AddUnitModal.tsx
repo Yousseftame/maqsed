@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { UploadCloud, X, Loader2, Image as ImageIcon, Trash2, ChevronDown } from "lucide-react";
@@ -35,6 +35,8 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
       roomsCount: "",
       bathroomsCount: "",
       totalArea: "",
+      internalArea: "",
+      externalArea: "",
 
       discountActive: false,
       discountPercentage: "",
@@ -74,6 +76,16 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
         roomsCount: copyUnit.roomsCount?.toString() || "",
         bathroomsCount: copyUnit.bathroomsCount?.toString() || "",
         totalArea: copyUnit.totalArea?.toString() || "",
+        internalArea:
+          copyUnit.internalArea != null || copyUnit.externalArea != null
+            ? (copyUnit.internalArea ?? 0).toString()
+            : copyUnit.projectId === "independent" && copyUnit.totalArea
+              ? copyUnit.totalArea.toString()
+              : "",
+        externalArea:
+          copyUnit.internalArea != null || copyUnit.externalArea != null
+            ? (copyUnit.externalArea ?? 0).toString()
+            : "",
         discountActive: false,
         discountPercentage: "",
         discountDays: "",
@@ -122,6 +134,28 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
 
   const selectedProjectId = watch("projectId");
   const isIndependent = selectedProjectId === "independent";
+  const prevIndependent = useRef(isIndependent);
+
+  useEffect(() => {
+    if (!isOpen) {
+      prevIndependent.current = isIndependent;
+      return;
+    }
+    const wasIndependent = prevIndependent.current;
+    prevIndependent.current = isIndependent;
+    if (!wasIndependent && isIndependent) {
+      const internal = watch("internalArea");
+      const external = watch("externalArea");
+      const total = watch("totalArea");
+      if (!internal && !external && total) {
+        setValue("internalArea", total);
+      }
+    }
+  }, [isIndependent, isOpen, setValue, watch]);
+
+  const internalAreaVal = watch("internalArea");
+  const externalAreaVal = watch("externalArea");
+  const computedTotalArea = (Number(internalAreaVal) || 0) + (Number(externalAreaVal) || 0);
   
   const selectedCityId = watch("cityId");
   const selectedCity = cities.find((c) => c.id === selectedCityId);
@@ -177,7 +211,9 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
         price: Number(data.price) || 0,
         roomsCount: Number(data.roomsCount) || 0,
         bathroomsCount: Number(data.bathroomsCount) || 0,
-        totalArea: model ? (Number(model.totalArea) || 0) : (Number(data.totalArea) || 0),
+        totalArea: isIndependent
+          ? (Number(data.internalArea) || 0) + (Number(data.externalArea) || 0)
+          : model ? (Number(model.totalArea) || 0) : (Number(data.totalArea) || 0),
         discountActive: data.discountActive,
         additionalComponents: model ? (model.additionalComponents || []) : (data.additionalComponents || []),
         features: model ? (model.features || []) : (data.features || []),
@@ -191,6 +227,8 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
         if (data.neighborhoodId) unitData.neighborhoodId = data.neighborhoodId;
         if (data.condition) unitData.condition = data.condition;
         unitData.age = Number(data.age) || 0;
+        unitData.internalArea = Number(data.internalArea) || 0;
+        unitData.externalArea = Number(data.externalArea) || 0;
       } else {
         if (data.modelId) unitData.modelId = data.modelId;
         if (data.buildingId) unitData.buildingId = data.buildingId;
@@ -421,7 +459,7 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                     </div>
                   </div>
 
-                  <div className="grid gap-5 sm:grid-cols-3">
+                  <div className={`grid gap-5 ${isIndependent ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
                     <div>
                       <label className={labelClass}>الغرف</label>
                       <input type="number" {...register("roomsCount")} className={inputClass} />
@@ -430,6 +468,7 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                       <label className={labelClass}>دورات المياه</label>
                       <input type="number" {...register("bathroomsCount")} className={inputClass} />
                     </div>
+                    {!isIndependent && (
                     <div>
                       <label className={labelClass}>المساحة الإجمالية (م²)</label>
                       <input type="number" {...register("totalArea")} disabled={isModelSelected} className={`${inputClass} ${isModelSelected ? 'cursor-not-allowed opacity-70' : ''}`} />
@@ -441,7 +480,24 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                         </p>
                       )}
                     </div>
+                    )}
                   </div>
+                  {isIndependent && (
+                    <div className="grid gap-5 sm:grid-cols-2 mt-5">
+                      <div>
+                        <label className={labelClass}>المساحة الداخلية (م²)</label>
+                        <input type="number" min="0" {...register("internalArea")} className={inputClass} />
+                      </div>
+                      <div>
+                        <label className={labelClass}>المساحة الخارجية (م²)</label>
+                        <input type="number" min="0" {...register("externalArea")} className={inputClass} />
+                      </div>
+                      <div className="sm:col-span-2">
+                        <label className={labelClass}>المساحة الكلية تلقائياً (م²)</label>
+                        <input type="text" value={computedTotalArea} disabled className={`${inputClass} cursor-not-allowed opacity-70`} />
+                      </div>
+                    </div>
+                  )}
                 </div>
 
                 {/* 3. العروض والخصومات المؤقتة */}

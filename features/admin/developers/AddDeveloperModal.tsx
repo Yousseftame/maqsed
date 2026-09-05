@@ -11,6 +11,7 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getApp } from "firebase/app";
+import { usersService } from "@/features/auth/users.service";
 
 type AddDeveloperModalProps = {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export function AddDeveloperModal({ isOpen, onClose }: AddDeveloperModalProps) {
       message: "Phone number can only contain numbers",
     }).optional(),
     company: z.string().optional(),
+    usersPerDeveloper: z.string().optional(),
     password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z.string().min(6, "Confirm password is required"),
   }).refine((data) => data.password === data.confirmPassword, {
@@ -55,6 +57,7 @@ export function AddDeveloperModal({ isOpen, onClose }: AddDeveloperModalProps) {
       email: "",
       phone: "",
       company: "",
+      usersPerDeveloper: "",
       password: "",
       confirmPassword: "",
     },
@@ -80,10 +83,25 @@ export function AddDeveloperModal({ isOpen, onClose }: AddDeveloperModalProps) {
       const functions = getFunctions(getApp());
       const createDeveloperAccount = httpsCallable(functions, "createDeveloperAccount");
       
-      const result = await createDeveloperAccount(data);
+      const result = await createDeveloperAccount({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        phone: data.phone,
+        company: data.company,
+        password: data.password,
+        usersPerDeveloper: Number(data.usersPerDeveloper) || 0,
+      });
       
       if ((result.data as any).success) {
+        const uid = (result.data as any).uid;
+        if (uid) {
+          await usersService.updateUserData(uid, {
+            usersPerDeveloper: Number(data.usersPerDeveloper) || 0,
+          });
+        }
         queryClient.invalidateQueries({ queryKey: ["developers"] });
+        queryClient.invalidateQueries({ queryKey: ["users"] });
         toast.success(t("admin.developers.createForm.success") || "Developer account created successfully!");
         onClose();
       }
@@ -189,14 +207,27 @@ export function AddDeveloperModal({ isOpen, onClose }: AddDeveloperModalProps) {
                     </div>
                   </div>
 
-                  <div className="mb-5">
-                    <label className={labelClass}>
-                      {t("admin.developers.createForm.company") || "Company Name (Optional)"}
-                    </label>
-                    <input 
-                      {...register("company")} 
-                      className={inputClass} 
-                    />
+                  <div className="mb-5 grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className={labelClass}>
+                        {t("admin.developers.createForm.company") || "Company Name (Optional)"}
+                      </label>
+                      <input 
+                        {...register("company")} 
+                        className={inputClass} 
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>
+                        {t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}
+                      </label>
+                      <input 
+                        type="number"
+                        min="0"
+                        {...register("usersPerDeveloper")} 
+                        className={inputClass} 
+                      />
+                    </div>
                   </div>
                 </div>
 

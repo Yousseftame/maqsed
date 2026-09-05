@@ -517,6 +517,7 @@ export interface Dictionary {
         email: string;
         phone: string;
         company: string;
+        usersPerDeveloper: string;
         password: string;
         confirmPassword: string;
         submit: string;
@@ -1255,6 +1256,7 @@ export const en: Dictionary = {
         email: "Email Address",
         phone: "Phone Number",
         company: "Company Name",
+        usersPerDeveloper: "Users per developer",
         password: "Password",
         confirmPassword: "Confirm Password",
         submit: "Create Account",

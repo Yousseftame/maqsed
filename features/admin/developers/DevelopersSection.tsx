@@ -127,6 +127,7 @@ export function DevelopersSection() {
       
       if ((result.data as any).success) {
         queryClient.invalidateQueries({ queryKey: ["developers"] });
+        queryClient.invalidateQueries({ queryKey: ["users"] });
         toast.success(t("admin.ui.success") || "Account deleted successfully!", { id: toastId });
       }
     } catch (error: any) {
@@ -166,6 +167,7 @@ export function DevelopersSection() {
       
       if ((result.data as any).success) {
         queryClient.invalidateQueries({ queryKey: ["developers"] });
+        queryClient.invalidateQueries({ queryKey: ["users"] });
         toast.success(t("admin.ui.success") || "Account status updated!", { id: toastId });
       }
     } catch (error: any) {
@@ -180,9 +182,18 @@ export function DevelopersSection() {
   });
 
   const filtered = useMemo(() => {
+    const createdAtMs = (value: any) => {
+      if (!value) return 0;
+      if (typeof value === "number") return value;
+      if (typeof value?.toDate === "function") return value.toDate().getTime();
+      const parsed = new Date(value).getTime();
+      return Number.isNaN(parsed) ? 0 : parsed;
+    };
+
+    const sorted = [...usersData].sort((a, b) => createdAtMs(b.createdAt) - createdAtMs(a.createdAt));
     const q = queryStr.trim().toLowerCase();
-    if (!q) return usersData;
-    return usersData.filter(
+    if (!q) return sorted;
+    return sorted.filter(
       (row) =>
         (row.displayName || "").toLowerCase().includes(q) ||
         (row.email || "").toLowerCase().includes(q) ||

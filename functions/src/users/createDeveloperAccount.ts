@@ -19,7 +19,7 @@ export const createDeveloperAccount = onCall(async (request) => {
      throw new HttpsError("permission-denied", "Only administrators can create developer accounts.");
   }
 
-  const { firstName, lastName, email, password, phone, company } = request.data;
+  const { firstName, lastName, email, password, phone, company, usersPerDeveloper } = request.data;
 
   if (!email || !password || !firstName) {
     throw new HttpsError("invalid-argument", "Missing required fields (email, password, firstName).");
@@ -47,6 +47,7 @@ export const createDeveloperAccount = onCall(async (request) => {
       lastName: lastName || "",
       phoneNumber: phone || "",
       companyName: company || "",
+      usersPerDeveloper: Number(usersPerDeveloper) || 0,
       status: "active",
       developerStats: {
         projectsCount: 0,

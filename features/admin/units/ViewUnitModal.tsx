@@ -68,11 +68,11 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                     <span className="text-sm font-medium">المساحة</span>
                   </div>
                   <div className="text-xl font-bold text-[#0a0f1d]">{unit.totalArea} م²</div>
-                  {(unit.modelInternalArea || unit.modelExternalArea) && (
+                  {((unit.projectId === "independent" && (unit.internalArea || unit.externalArea)) || unit.modelInternalArea || unit.modelExternalArea) && (
                     <div className="mt-1.5 text-[10px] text-[#8c8c8c] leading-relaxed">
-                      <span>داخلية {unit.modelInternalArea || 0} م²</span>
+                      <span>داخلية {(unit.projectId === "independent" ? unit.internalArea : unit.modelInternalArea) || 0} م²</span>
                       <span className="mx-1">|</span>
-                      <span>خارجية {unit.modelExternalArea || 0} م²</span>
+                      <span>خارجية {(unit.projectId === "independent" ? unit.externalArea : unit.modelExternalArea) || 0} م²</span>
                     </div>
                   )}
                 </div>

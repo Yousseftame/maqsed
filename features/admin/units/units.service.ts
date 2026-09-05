@@ -38,6 +38,8 @@ export type Unit = {
   roomsCount: number;
   bathroomsCount: number;
   totalArea: number;
+  internalArea?: number;
+  externalArea?: number;
 
   // Section 3: Offers & Discounts (العروض والخصومات المؤقتة)
   discountActive: boolean;

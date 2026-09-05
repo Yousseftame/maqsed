@@ -30,6 +30,7 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
       message: "Phone number can only contain numbers",
     }).optional(),
     company: z.string().optional(),
+    usersPerDeveloper: z.string().optional(),
   });
 
   type EditDeveloperForm = z.infer<typeof editDeveloperSchema>;
@@ -46,6 +47,7 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
       lastName: "",
       phone: "",
       company: "",
+      usersPerDeveloper: "",
     },
   });
 
@@ -57,6 +59,7 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
         lastName: developer.lastName || "",
         phone: developer.phoneNumber || "",
         company: developer.companyName || "",
+        usersPerDeveloper: developer.usersPerDeveloper != null ? String(developer.usersPerDeveloper) : "",
       });
     } else {
       document.body.style.overflow = "unset";
@@ -78,9 +81,11 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
         lastName: data.lastName || "",
         phoneNumber: data.phone || "",
         companyName: data.company || "",
+        usersPerDeveloper: Number(data.usersPerDeveloper) || 0,
       });
       
       queryClient.invalidateQueries({ queryKey: ["developers"] });
+      queryClient.invalidateQueries({ queryKey: ["users"] });
       toast.success(t("admin.ui.success") || "Profile updated successfully!", { id: toastId });
       onClose();
     } catch (error: any) {
@@ -185,6 +190,18 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
                         type="text"
                         disabled={isSubmitting}
                         {...register("company")}
+                        className={inputClass}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>
+                        {t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}
+                      </label>
+                      <input
+                        type="number"
+                        min="0"
+                        disabled={isSubmitting}
+                        {...register("usersPerDeveloper")}
                         className={inputClass}
                       />
                     </div>
