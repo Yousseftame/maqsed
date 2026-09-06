@@ -622,6 +622,7 @@ export const ar: Dictionary = {
       statusNone: "لا شيء",
       statusPartial: "جزئي",
       statusFull: "كامل",
+      superAdminFullAccess: "يملك هذا المدير العام صلاحية كاملة على جميع الصفحات والإجراءات.",
     },
     offers: {
       search: "ابحث في العروض...",

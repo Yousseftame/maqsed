@@ -354,6 +354,7 @@ export function DevelopersSection() {
                 onClick={() => {
                   refetch();
                   queryClient.invalidateQueries({ queryKey: ["auditLogs"] });
+                  queryClient.invalidateQueries({ queryKey: ["userProfile"] });
                 }}
                 disabled={isRefetching}
                 className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-[#0a0f1d] hover:bg-[#E5E5E5] transition-colors disabled:opacity-50"

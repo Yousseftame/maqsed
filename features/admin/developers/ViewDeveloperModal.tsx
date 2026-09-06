@@ -7,6 +7,7 @@ import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { usersService } from "@/features/auth/users.service";
+import { AccountPermissionsSection } from "@/features/admin/permissions/ModulePermissionsView";
 import type { UserData } from "@/types/user";
 
 type ViewDeveloperModalProps = {
@@ -35,7 +36,16 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
     enabled: isOpen && !!developer?.uid,
   });
 
+  const { data: freshUser } = useQuery({
+    queryKey: ["userProfile", developer?.uid],
+    queryFn: () => usersService.getUserProfile(developer!.uid),
+    enabled: isOpen && !!developer?.uid && (developer.role === "admin" || developer.role === "superAdmin"),
+    refetchOnMount: "always",
+  });
+
   if (!developer) return null;
+
+  const account = freshUser || developer;
 
   let joinDate = "-";
   if (developer.createdAt) {
@@ -252,6 +262,10 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
                       )}
                     </div>
                   </div>
+
+                  {(account.role === "admin" || account.role === "superAdmin") && (
+                    <AccountPermissionsSection user={account} />
+                  )}
 
                 </div>
 

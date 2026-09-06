@@ -559,6 +559,7 @@ export interface Dictionary {
       statusNone: string;
       statusPartial: string;
       statusFull: string;
+      superAdminFullAccess: string;
     };
     offers: {
       search: string;
@@ -1322,6 +1323,7 @@ export const en: Dictionary = {
       statusNone: "None",
       statusPartial: "Partial",
       statusFull: "Full",
+      superAdminFullAccess: "This Super Admin has full authority over every page and action.",
     },
     offers: {
       search: "Search offers...",
