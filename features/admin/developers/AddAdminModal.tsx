@@ -11,7 +11,9 @@ import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getApp } from "firebase/app";
-import { usersService } from "@/features/auth/users.service";
+import { ModulePermissionsEditor } from "@/features/admin/permissions/ModulePermissionsEditor";
+import { emptyPermissions, sanitizePermissions } from "@/features/admin/permissions/utils";
+import type { AdminPermissions } from "@/types/user";
 
 type AddAdminModalProps = {
   isOpen: boolean;
@@ -24,6 +26,7 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [permissions, setPermissions] = useState<AdminPermissions>(emptyPermissions);
 
   // Dynamic schema for i18n messages
   const createAdminSchema = z.object({
@@ -67,6 +70,7 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
       reset();
       setShowPassword(false);
       setShowConfirmPassword(false);
+      setPermissions(emptyPermissions());
     }
     return () => {
       document.body.style.overflow = "unset";
@@ -85,6 +89,7 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
         email: data.email,
         phone: data.phone,
         password: data.password,
+        permissions: sanitizePermissions(permissions),
       });
       
       if ((result.data as any).success) {
@@ -250,6 +255,16 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
                       {errors.confirmPassword && <span className="text-xs text-red-500 mt-1 block">{errors.confirmPassword.message}</span>}
                     </div>
                   </div>
+                </div>
+
+                <hr className="my-8 border-[#0a0f1d]/10" />
+
+                <div className={formSectionClass}>
+                  <ModulePermissionsEditor
+                    value={permissions}
+                    onChange={setPermissions}
+                    disabled={isSubmitting}
+                  />
                 </div>
 
               </form>

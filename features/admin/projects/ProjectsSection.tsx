@@ -19,11 +19,16 @@ import { propertiesService, type Property } from "@/features/admin/projects/prop
 import { citiesService } from "@/features/admin/cities/cities.service";
 import { unitsService } from "@/features/admin/units/units.service";
 import toast from "react-hot-toast";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 export function ProjectsSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canCreate = can("projects", "create");
+  const canEdit = can("projects", "edit");
+  const canDelete = can("projects", "delete");
   
   const [query, setQuery] = useState("");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -243,6 +248,7 @@ export function ProjectsSection() {
               >
                 <RefreshCw className={`h-5 w-5 ${isRefetching ? "animate-spin" : ""}`} />
               </button>
+              {canCreate ? (
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(true)}
@@ -251,20 +257,29 @@ export function ProjectsSection() {
                 <Plus className="h-4 w-4" strokeWidth={2.2} />
                 {t("admin.projects.add")}
               </button>
+              ) : null}
             </div>
           </div>
         }
         actions={(row) => (
           <>
-            <TableAction label="المباني" onClick={() => setManageBuildingsPropertyId(row.id)} />
-            <TableAction label="النماذج" onClick={() => setManageModelsPropertyId(row.id)} />
+            {canEdit ? (
+              <>
+                <TableAction label="المباني" onClick={() => setManageBuildingsPropertyId(row.id)} />
+                <TableAction label="النماذج" onClick={() => setManageModelsPropertyId(row.id)} />
+              </>
+            ) : null}
             <TableAction label={t("admin.ui.view")} onClick={() => setViewPropertyId(row.id)} />
-            <TableAction label={t("admin.ui.edit")} onClick={() => setEditPropertyId(row.id)} />
-            <TableAction
-              label={t("admin.ui.delete")}
-              tone="danger"
-              onClick={() => handleDelete(row)}
-            />
+            {canEdit ? (
+              <TableAction label={t("admin.ui.edit")} onClick={() => setEditPropertyId(row.id)} />
+            ) : null}
+            {canDelete ? (
+              <TableAction
+                label={t("admin.ui.delete")}
+                tone="danger"
+                onClick={() => handleDelete(row)}
+              />
+            ) : null}
           </>
         )}
       />

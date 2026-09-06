@@ -16,6 +16,7 @@ import { AddUnitModal } from "./AddUnitModal";
 import { EditUnitModal } from "./EditUnitModal";
 import { ViewUnitModal } from "./ViewUnitModal";
 import toast from "react-hot-toast";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 const UNIT_STATUS_LABELS: Record<string, string> = {
   available: "متاحة",
@@ -31,6 +32,10 @@ export function UnitsSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canCreate = can("units", "create");
+  const canEdit = can("units", "edit");
+  const canDelete = can("units", "delete");
   const [queryStr, setQueryStr] = useState("");
   
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -258,6 +263,7 @@ export function UnitsSection() {
               >
                 <RefreshCw className={`h-5 w-5 ${isRefetching ? "animate-spin" : ""}`} />
               </button>
+              {canCreate ? (
               <button
                 type="button"
                 onClick={() => setIsAddModalOpen(true)}
@@ -266,19 +272,26 @@ export function UnitsSection() {
                 <Plus className="h-4 w-4" strokeWidth={2.2} />
                 {t("admin.units.add") || "إضافة وحدة"}
               </button>
+              ) : null}
             </div>
           </div>
         }
         actions={(row) => (
           <>
             <TableAction label={t("admin.ui.view")} onClick={() => setViewUnitId(row.id)} />
-            <TableAction label={t("admin.ui.edit")} onClick={() => setEditUnitId(row.id)} />
-            <TableAction label="نسخ" onClick={() => handleCopyUnit(row)} />
-            <TableAction
-              label={t("admin.ui.delete")}
-              tone="danger"
-              onClick={() => handleDelete(row)}
-            />
+            {canEdit ? (
+              <TableAction label={t("admin.ui.edit")} onClick={() => setEditUnitId(row.id)} />
+            ) : null}
+            {canCreate ? (
+              <TableAction label="نسخ" onClick={() => handleCopyUnit(row)} />
+            ) : null}
+            {canDelete ? (
+              <TableAction
+                label={t("admin.ui.delete")}
+                tone="danger"
+                onClick={() => handleDelete(row)}
+              />
+            ) : null}
           </>
         )}
       />

@@ -1,5 +1,11 @@
 export type UserRole = "superAdmin" | "admin" | "developer" | "user";
 
+export type PermissionModule = "cities" | "projects" | "units" | "offers" | "customers";
+export type PermissionAction = "create" | "read" | "edit" | "delete";
+
+export type ModulePermission = Record<PermissionAction, boolean>;
+export type AdminPermissions = Record<PermissionModule, ModulePermission>;
+
 export interface DeveloperStats {
   projectsCount: number;
   unitsCount: number;
@@ -27,4 +33,5 @@ export interface UserData {
   developerStats?: DeveloperStats;
   lastLoginAt?: number;
   lastLoginIp?: string;
+  permissions?: AdminPermissions;
 }

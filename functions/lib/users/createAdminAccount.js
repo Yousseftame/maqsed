@@ -37,6 +37,7 @@ exports.createAdminAccount = void 0;
 const https_1 = require("firebase-functions/v2/https");
 const admin = __importStar(require("firebase-admin"));
 const logger = __importStar(require("firebase-functions/logger"));
+const permissions_1 = require("./permissions");
 if (admin.apps.length === 0) {
     admin.initializeApp();
 }
@@ -52,7 +53,7 @@ exports.createAdminAccount = (0, https_1.onCall)(async (request) => {
     if (!callerDoc.exists || callerRole !== "superAdmin") {
         throw new https_1.HttpsError("permission-denied", "Only super administrators can create admin accounts.");
     }
-    const { firstName, lastName, email, password, phone, company } = request.data;
+    const { firstName, lastName, email, password, phone, permissions } = request.data;
     if (!email || !password || !firstName) {
         throw new https_1.HttpsError("invalid-argument", "Missing required fields (email, password, firstName).");
     }
@@ -74,8 +75,8 @@ exports.createAdminAccount = (0, https_1.onCall)(async (request) => {
             displayName: firstName,
             lastName: lastName || "",
             phoneNumber: phone || "",
-            companyName: company || "",
             status: "active",
+            permissions: (0, permissions_1.sanitizePermissions)(permissions),
         });
         logger.info(`✅ Successfully created admin account: ${uid}`);
         return {

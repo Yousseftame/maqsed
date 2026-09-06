@@ -56,6 +56,16 @@ exports.deleteDeveloperAccount = (0, https_1.onCall)(async (request) => {
     if (!uid) {
         throw new https_1.HttpsError("invalid-argument", "Missing required field (uid).");
     }
+    if (uid === callerUid) {
+        throw new https_1.HttpsError("failed-precondition", "You cannot delete your own account.");
+    }
+    const targetDoc = await admin.firestore().collection("users").doc(uid).get();
+    const targetRole = targetDoc.data()?.role;
+    if (targetRole === "admin" || targetRole === "superAdmin") {
+        if (callerRole !== "superAdmin") {
+            throw new https_1.HttpsError("permission-denied", "Only super administrators can delete admin accounts.");
+        }
+    }
     try {
         logger.info(`Admin ${callerUid} deleting developer account: ${uid}`);
         // 1. Delete the Firestore document

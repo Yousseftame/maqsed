@@ -20,5 +20,6 @@ export * from "./offers/onOfferResponded";
 // Export the users functions
 export { createDeveloperAccount } from "./users/createDeveloperAccount";
 export { createAdminAccount } from "./users/createAdminAccount";
+export { updateAdminAccount } from "./users/updateAdminAccount";
 export { deleteDeveloperAccount } from "./users/deleteDeveloperAccount";
 export { toggleDeveloperStatus } from "./users/toggleDeveloperStatus";

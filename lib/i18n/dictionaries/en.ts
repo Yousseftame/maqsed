@@ -506,6 +506,7 @@ export interface Dictionary {
       create: string;
       createAdmin: string;
       edit: string;
+      editAdmin: string;
       deleteTitle: string;
       deleteDesc: string;
       disable: string;
@@ -541,6 +542,23 @@ export interface Dictionary {
         logout: string;
         empty: string;
       };
+    };
+    permissions: {
+      title: string;
+      description: string;
+      module: string;
+      create: string;
+      read: string;
+      edit: string;
+      delete: string;
+      all: string;
+      grantAll: string;
+      revokeAll: string;
+      grantRow: string;
+      revokeRow: string;
+      statusNone: string;
+      statusPartial: string;
+      statusFull: string;
     };
     offers: {
       search: string;
@@ -1251,6 +1269,7 @@ export const en: Dictionary = {
       create: "Create Account",
       createAdmin: "Create Admin",
       edit: "Edit Developer",
+      editAdmin: "Edit Admin",
       deleteTitle: "Delete Account",
       deleteDesc: "Are you sure you want to delete this developer? This will permanently remove them from the system and Authentication.",
       disable: "Disable Account",
@@ -1286,6 +1305,23 @@ export const en: Dictionary = {
         logout: "Logout",
         empty: "No audit logs available for this user",
       },
+    },
+    permissions: {
+      title: "Module Permissions",
+      description: "Choose what this admin can see and do on each page: create, view, edit, and delete.",
+      module: "Module",
+      create: "Create",
+      read: "Read",
+      edit: "Edit",
+      delete: "Delete",
+      all: "All",
+      grantAll: "Grant All",
+      revokeAll: "Revoke All",
+      grantRow: "All",
+      revokeRow: "Revoke",
+      statusNone: "None",
+      statusPartial: "Partial",
+      statusFull: "Full",
     },
     offers: {
       search: "Search offers...",

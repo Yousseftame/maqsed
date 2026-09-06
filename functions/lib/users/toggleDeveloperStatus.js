@@ -59,6 +59,16 @@ exports.toggleDeveloperStatus = (0, https_1.onCall)(async (request) => {
     if (status !== "active" && status !== "disabled") {
         throw new https_1.HttpsError("invalid-argument", "Status must be 'active' or 'disabled'.");
     }
+    if (targetUid === callerUid) {
+        throw new https_1.HttpsError("failed-precondition", "You cannot change your own account status.");
+    }
+    const targetDoc = await admin.firestore().collection("users").doc(targetUid).get();
+    const targetRole = targetDoc.data()?.role;
+    if (targetRole === "admin" || targetRole === "superAdmin") {
+        if (callerRole !== "superAdmin") {
+            throw new https_1.HttpsError("permission-denied", "Only super administrators can change admin account status.");
+        }
+    }
     try {
         logger.info(`Toggling developer status for ${targetUid} to ${status}`);
         // 1. Update Firebase Auth user

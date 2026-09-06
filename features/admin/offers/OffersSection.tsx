@@ -11,10 +11,14 @@ import { offersService, type OfferData } from "./offers.service";
 import { OfferDetailModal } from "./OfferDetailModal";
 import { EditOfferModal } from "./EditOfferModal";
 import { downloadOfferPDF } from "./offer-pdf";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 export function OffersSection() {
   const { t, isRtl } = useLocale();
   const router = useRouter();
+  const { can } = usePermissions();
+  const canCreate = can("offers", "create");
+  const canEditOffer = can("offers", "edit");
   const [queryStr, setQueryStr] = useState("");
   const [selectedOffer, setSelectedOffer] = useState<OfferData | null>(null);
   const [editingOffer, setEditingOffer] = useState<OfferData | null>(null);
@@ -197,6 +201,7 @@ export function OffersSection() {
               >
                 <RefreshCw className={`h-5 w-5 ${isRefetching ? "animate-spin" : ""}`} />
               </button>
+              {canCreate ? (
               <button
                 onClick={() => router.push("/admin/offers/create")}
                 className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
@@ -204,14 +209,15 @@ export function OffersSection() {
                 <Plus className="h-4 w-4" />
                 {t("admin.offers.create") || "Create Offer"}
               </button>
+              ) : null}
             </div>
           </div>
         }
         actions={(row) => {
-          const canEdit = row.status !== "accepted" && row.status !== "rejected";
+          const canEdit = canEditOffer && row.status !== "accepted" && row.status !== "rejected";
           return (
             <div className="flex justify-end gap-2">
-              {/* Edit */}
+              {canEditOffer ? (
               <button
                 onClick={() => canEdit && setEditingOffer(row)}
                 title={canEdit ? (isRtl ? "تعديل العرض" : "Edit Offer") : (isRtl ? "لا يمكن التعديل بعد القبول أو الرفض" : "Cannot edit after acceptance/rejection")}
@@ -224,6 +230,7 @@ export function OffersSection() {
               >
                 <Pencil className="h-4 w-4" />
               </button>
+              ) : null}
               {/* Details */}
               <button
                 onClick={() => setSelectedOffer(row)}

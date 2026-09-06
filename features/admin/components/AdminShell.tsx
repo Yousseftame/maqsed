@@ -1,15 +1,21 @@
 "use client";
 
 import { useEffect, useState, type ReactNode } from "react";
+import { usePathname, useRouter } from "next/navigation";
 import { AdminHeader } from "@/features/admin/components/AdminHeader";
 import { AdminSidebar } from "@/features/admin/components/AdminSidebar";
 import { ConfirmProvider } from "@/features/admin/components/ConfirmModal";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 const SIDEBAR_KEY = "maqsed-admin-sidebar";
 
 export function AdminShell({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+  const pathname = usePathname();
+  const router = useRouter();
+  const { canAccessPath } = usePermissions();
+  const allowed = canAccessPath(pathname);
 
   useEffect(() => {
     const stored = window.localStorage.getItem(SIDEBAR_KEY);
@@ -20,6 +26,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
     document.body.classList.add("is-admin");
     return () => document.body.classList.remove("is-admin");
   }, []);
+
+  useEffect(() => {
+    if (!allowed) {
+      router.replace("/admin/dashboard");
+    }
+  }, [allowed, router]);
 
   function toggleCollapsed() {
     setCollapsed((current) => {
@@ -44,7 +56,13 @@ export function AdminShell({ children }: { children: ReactNode }) {
             onMobileOpen={() => setMobileOpen(true)}
             onToggle={toggleCollapsed}
           />
-          <main className="flex-1 px-4 pb-8 md:px-8">{children}</main>
+          <main className="flex-1 px-4 pb-8 md:px-8">
+            {allowed ? children : (
+              <div className="flex min-h-[40vh] items-center justify-center">
+                <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0a0f1d]/20 border-t-[#0a0f1d]" />
+              </div>
+            )}
+          </main>
         </div>
       </div>
     </ConfirmProvider>

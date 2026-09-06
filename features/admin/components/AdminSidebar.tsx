@@ -8,6 +8,8 @@ import { ADMIN_NAV, type AdminNavLink } from "@/features/admin/data/nav";
 import { useAdminSignOut } from "@/features/admin/hooks/useAdminSignOut";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
+import { filterAdminNav } from "@/features/admin/permissions/utils";
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
 
@@ -25,6 +27,8 @@ export function AdminSidebar({
   const pathname = usePathname();
   const handleSignOut = useAdminSignOut();
   const { locale, t } = useLocale();
+  const { isNavLinkVisible } = usePermissions();
+  const navEntries = filterAdminNav(ADMIN_NAV, isNavLinkVisible);
 
   return (
     <>
@@ -91,7 +95,7 @@ export function AdminSidebar({
         </div>
 
         <nav className="flex flex-1 flex-col gap-1">
-          {ADMIN_NAV.map((entry, index) => {
+          {navEntries.map((entry, index) => {
             if (entry.type === "divider") {
               return (
                 <div

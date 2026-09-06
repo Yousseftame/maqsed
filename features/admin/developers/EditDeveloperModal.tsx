@@ -9,8 +9,12 @@ import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { getFunctions, httpsCallable } from "firebase/functions";
+import { getApp } from "firebase/app";
 import { usersService } from "@/features/auth/users.service";
-import type { UserData } from "@/types/user";
+import { ModulePermissionsEditor } from "@/features/admin/permissions/ModulePermissionsEditor";
+import { emptyPermissions, getEditorPermissions, sanitizePermissions } from "@/features/admin/permissions/utils";
+import type { AdminPermissions, UserData } from "@/types/user";
 
 type EditDeveloperModalProps = {
   isOpen: boolean;
@@ -22,6 +26,9 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
   const { t } = useLocale();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoadingUser, setIsLoadingUser] = useState(true);
+  const [freshUser, setFreshUser] = useState<UserData | null>(null);
+  const [permissions, setPermissions] = useState<AdminPermissions>(emptyPermissions);
 
   const editDeveloperSchema = z.object({
     firstName: z.string().min(2, "First name is required"),
@@ -52,37 +59,83 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
   });
 
   useEffect(() => {
-    if (isOpen && developer) {
-      document.body.style.overflow = "hidden";
-      reset({
-        firstName: developer.displayName || "",
-        lastName: developer.lastName || "",
-        phone: developer.phoneNumber || "",
-        company: developer.companyName || "",
-        usersPerDeveloper: developer.usersPerDeveloper != null ? String(developer.usersPerDeveloper) : "",
-      });
-    } else {
+    if (!isOpen || !developer) {
       document.body.style.overflow = "unset";
       reset();
+      setFreshUser(null);
+      setPermissions(emptyPermissions());
+      setIsLoadingUser(false);
+      return () => {
+        document.body.style.overflow = "unset";
+      };
     }
+
+    document.body.style.overflow = "hidden";
+    let cancelled = false;
+    setIsLoadingUser(true);
+    setFreshUser(null);
+
+    const applyUser = (data: UserData) => {
+      setFreshUser(data);
+      reset({
+        firstName: data.displayName || "",
+        lastName: data.lastName || "",
+        phone: data.phoneNumber || "",
+        company: data.companyName || "",
+        usersPerDeveloper: data.usersPerDeveloper != null ? String(data.usersPerDeveloper) : "",
+      });
+      setPermissions(getEditorPermissions(data));
+    };
+
+    usersService
+      .getUserProfile(developer.uid)
+      .then((profile) => {
+        if (cancelled) return;
+        applyUser(profile ?? developer);
+      })
+      .catch((error) => {
+        console.error("Failed to fetch account details:", error);
+        if (!cancelled) applyUser(developer);
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingUser(false);
+      });
+
     return () => {
+      cancelled = true;
       document.body.style.overflow = "unset";
     };
   }, [isOpen, developer, reset]);
 
+  const currentUser = freshUser || developer;
+  const isAdminAccount = currentUser?.role === "admin";
+  const isPrivilegedAccount = currentUser?.role === "admin" || currentUser?.role === "superAdmin";
+
   const onSubmit = async (data: EditDeveloperForm) => {
-    if (!developer) return;
+    if (!developer || !currentUser) return;
     
     setIsSubmitting(true);
     const toastId = toast.loading(t("admin.ui.save") || "Saving...");
     try {
-      await usersService.updateUserData(developer.uid, {
-        displayName: data.firstName,
-        lastName: data.lastName || "",
-        phoneNumber: data.phone || "",
-        companyName: data.company || "",
-        usersPerDeveloper: Number(data.usersPerDeveloper) || 0,
-      });
+      if (isPrivilegedAccount) {
+        const functions = getFunctions(getApp());
+        const updateAdminAccount = httpsCallable(functions, "updateAdminAccount");
+        await updateAdminAccount({
+          uid: currentUser.uid,
+          firstName: data.firstName,
+          lastName: data.lastName || "",
+          phone: data.phone || "",
+          permissions: isAdminAccount ? sanitizePermissions(permissions) : undefined,
+        });
+      } else {
+        await usersService.updateUserData(developer.uid, {
+          displayName: data.firstName,
+          lastName: data.lastName || "",
+          phoneNumber: data.phone || "",
+          companyName: data.company || "",
+          usersPerDeveloper: Number(data.usersPerDeveloper) || 0,
+        });
+      }
       
       queryClient.invalidateQueries({ queryKey: ["developers"] });
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -120,12 +173,14 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.98 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-[24px] bg-white shadow-2xl"
+            className={`relative flex max-h-[90vh] w-full flex-col overflow-hidden rounded-[24px] bg-white shadow-2xl ${isAdminAccount ? "max-w-4xl" : "max-w-2xl"}`}
           >
             {/* Header */}
             <div className="flex shrink-0 items-center justify-between border-b border-[#0a0f1d]/10 px-6 py-5 sm:px-8">
               <h2 className="text-2xl font-bold tracking-tight text-[#0a0f1d]">
-                {t("admin.developers.edit") || "Edit Developer"}
+                {isPrivilegedAccount
+                  ? (t("admin.developers.editAdmin") || "Edit Admin")
+                  : (t("admin.developers.edit") || "Edit Developer")}
               </h2>
               <button
                 onClick={onClose}
@@ -137,6 +192,11 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
 
             {/* Body */}
             <div className="flex-1 overflow-y-auto px-6 py-6 no-scrollbar sm:px-8">
+              {isLoadingUser || !freshUser ? (
+                <div className="flex min-h-48 items-center justify-center">
+                  <Loader2 className="h-6 w-6 animate-spin text-[#8c8c8c]" />
+                </div>
+              ) : (
               <form id="edit-developer-form" onSubmit={handleSubmit(onSubmit)}>
                 
                 {/* Personal Information */}
@@ -182,7 +242,7 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
                         <p className="mt-2 text-xs font-semibold text-red-500">{errors.phone.message}</p>
                       )}
                     </div>
-                    {developer.role === "developer" && (
+                    {currentUser?.role === "developer" && (
                       <>
                         <div>
                           <label className={labelClass}>
@@ -211,7 +271,21 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
                     )}
                   </div>
                 </div>
+
+                {isAdminAccount ? (
+                  <>
+                    <hr className="my-8 border-[#0a0f1d]/10" />
+                    <div className={formSectionClass}>
+                      <ModulePermissionsEditor
+                        value={permissions}
+                        onChange={setPermissions}
+                        disabled={isSubmitting}
+                      />
+                    </div>
+                  </>
+                ) : null}
               </form>
+              )}
             </div>
 
             {/* Footer */}
@@ -227,7 +301,7 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
               <button
                 type="submit"
                 form="edit-developer-form"
-                disabled={isSubmitting}
+                disabled={isSubmitting || isLoadingUser || !freshUser}
                 className="flex h-12 min-w-[120px] items-center justify-center gap-2 rounded-[16px] bg-[#0a0f1d] px-8 text-sm font-semibold text-white transition-transform hover:scale-105 active:scale-95 disabled:pointer-events-none disabled:opacity-70"
               >
                 {isSubmitting ? (

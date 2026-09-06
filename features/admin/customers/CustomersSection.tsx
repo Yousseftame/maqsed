@@ -12,6 +12,7 @@ import { requestsService, type ContactRequest, type SellRequest, type SalesReque
 import { ViewRequestModal } from "./ViewRequestModal";
 import { ProcessRequestModal } from "./ProcessRequestModal";
 import toast from "react-hot-toast";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 const REQUEST_STATUS_TONE: Record<RequestStatus, "default" | "success" | "warning" | "danger" | "muted" | "navy"> = {
   new: "warning",
@@ -24,6 +25,9 @@ export function CustomersSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canEdit = can("customers", "edit");
+  const canDelete = can("customers", "delete");
   
   const [query, setQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"contact" | "sell" | "sales">("contact");
@@ -387,19 +391,23 @@ export function CustomersSection() {
           }
           actions={(row: any) => (
             <>
+              {canEdit ? (
               <TableAction 
                 label={t("admin.customers.actions.process") || "Process"} 
                 onClick={() => setProcessState({ id: row.id, type: activeTab, status: row.status })}
               />
+              ) : null}
               <TableAction 
                 label={t("admin.ui.view") || "View"} 
                 onClick={() => setViewRequest(row)}
               />
+              {canDelete ? (
               <TableAction
                 label={t("admin.ui.delete") || "Delete"}
                 tone="danger"
                 onClick={() => handleDelete(row.id)}
               />
+              ) : null}
             </>
           )}
         />

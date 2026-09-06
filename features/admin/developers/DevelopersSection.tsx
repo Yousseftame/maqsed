@@ -15,6 +15,7 @@ import { AddAdminModal } from "./AddAdminModal";
 import { ViewDeveloperModal } from "./ViewDeveloperModal";
 import { EditDeveloperModal } from "./EditDeveloperModal";
 import { useAuth } from "@/features/auth/AuthProvider";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getApp } from "firebase/app";
@@ -102,6 +103,7 @@ export function DevelopersSection() {
   const queryClient = useQueryClient();
   const confirm = useConfirm();
   const { userData } = useAuth();
+  const { canManageAccount } = usePermissions();
 
   const [queryStr, setQueryStr] = useState("");
   const [activeTab, setActiveTab] = useState<"developer" | "admin">("developer");
@@ -112,6 +114,7 @@ export function DevelopersSection() {
   const [selectedDeveloper, setSelectedDeveloper] = useState<UserData | null>(null);
 
   const handleDelete = async (developer: UserData) => {
+    if (!canManageAccount(developer)) return;
     const ok = await confirm({
       title: t("admin.developers.deleteTitle") || "Delete Account",
       description: t("admin.developers.deleteDesc") || `Are you sure you want to delete ${developer.displayName || developer.email}? This will permanently remove them from the system and Authentication.`,
@@ -142,6 +145,7 @@ export function DevelopersSection() {
   };
 
   const handleToggleStatus = async (developer: UserData) => {
+    if (!canManageAccount(developer)) return;
     const isCurrentlyDisabled = developer.status === "disabled";
     const newStatus = isCurrentlyDisabled ? "active" : "disabled";
 
@@ -381,6 +385,7 @@ export function DevelopersSection() {
         }
         actions={(row) => {
           const isCurrentlyDisabled = row.status === "disabled";
+          const canManage = canManageAccount(row);
           
           return (
             <>
@@ -391,23 +396,27 @@ export function DevelopersSection() {
                   setIsViewModalOpen(true);
                 }}
               />
-              <TableAction
-                label={t("admin.ui.edit") || "Edit"}
-                onClick={() => {
-                  setSelectedDeveloper(row);
-                  setIsEditModalOpen(true);
-                }}
-              />
-              <TableAction
-                label={t(isCurrentlyDisabled ? "admin.developers.enable" : "admin.developers.disable") || (isCurrentlyDisabled ? "Enable Account" : "Disable Account")}
-                onClick={() => handleToggleStatus(row)}
-                tone={isCurrentlyDisabled ? "default" : "danger"}
-              />
-              <TableAction
-                label={t("admin.ui.delete") || "Delete"}
-                onClick={() => handleDelete(row)}
-                tone="danger"
-              />
+              {canManage ? (
+                <>
+                  <TableAction
+                    label={t("admin.ui.edit") || "Edit"}
+                    onClick={() => {
+                      setSelectedDeveloper(row);
+                      setIsEditModalOpen(true);
+                    }}
+                  />
+                  <TableAction
+                    label={t(isCurrentlyDisabled ? "admin.developers.enable" : "admin.developers.disable") || (isCurrentlyDisabled ? "Enable Account" : "Disable Account")}
+                    onClick={() => handleToggleStatus(row)}
+                    tone={isCurrentlyDisabled ? "default" : "danger"}
+                  />
+                  <TableAction
+                    label={t("admin.ui.delete") || "Delete"}
+                    onClick={() => handleDelete(row)}
+                    tone="danger"
+                  />
+                </>
+              ) : null}
             </>
           );
         }}

@@ -30,6 +30,18 @@ export const toggleDeveloperStatus = onCall(async (request) => {
     throw new HttpsError("invalid-argument", "Status must be 'active' or 'disabled'.");
   }
 
+  if (targetUid === callerUid) {
+    throw new HttpsError("failed-precondition", "You cannot change your own account status.");
+  }
+
+  const targetDoc = await admin.firestore().collection("users").doc(targetUid).get();
+  const targetRole = targetDoc.data()?.role;
+  if (targetRole === "admin" || targetRole === "superAdmin") {
+    if (callerRole !== "superAdmin") {
+      throw new HttpsError("permission-denied", "Only super administrators can change admin account status.");
+    }
+  }
+
   try {
     logger.info(`Toggling developer status for ${targetUid} to ${status}`);
     

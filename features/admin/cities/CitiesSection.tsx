@@ -11,11 +11,15 @@ import { citiesService } from "@/features/admin/cities/cities.service";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 export function CitiesSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canCreate = can("cities", "create");
+  const canDelete = can("cities", "delete");
 
   const { data: cities = [], isLoading } = useQuery({
     queryKey: ["cities"],
@@ -160,6 +164,7 @@ export function CitiesSection() {
       <section className="min-w-0 overflow-hidden rounded-[24px] bg-white">
         <div className="grid lg:grid-cols-[minmax(240px,34%)_1fr]">
           <aside className="border-b border-[#0a0f1d]/8 p-4 lg:border-e lg:border-b-0 sm:p-6">
+            {canCreate ? (
             <form
               className="mb-4 flex gap-2"
               onSubmit={(event) => {
@@ -182,6 +187,7 @@ export function CitiesSection() {
                 <Plus className="h-5 w-5" strokeWidth={2.2} />
               </button>
             </form>
+            ) : null}
 
             {isLoading ? (
               <div className="flex justify-center py-8">
@@ -237,6 +243,7 @@ export function CitiesSection() {
                       {label(selectedCity.name)}
                     </h2>
                   </div>
+                  {canDelete ? (
                   <button
                     type="button"
                     onClick={() => deleteCity(selectedCity)}
@@ -244,8 +251,10 @@ export function CitiesSection() {
                   >
                     {t("admin.cities.deleteCity")}
                   </button>
+                  ) : null}
                 </div>
 
+                {canCreate ? (
                 <form
                   className="mb-5 flex gap-2 sm:mb-8"
                   onSubmit={(event) => {
@@ -271,6 +280,7 @@ export function CitiesSection() {
                     </span>
                   </button>
                 </form>
+                ) : null}
 
                 {selectedCity.neighborhoods.length === 0 ? (
                   <div className="flex min-h-32 flex-1 items-center justify-center rounded-[20px] bg-[#F4F4F4] px-4 text-center text-sm font-medium text-[#8c8c8c]">
@@ -286,11 +296,13 @@ export function CitiesSection() {
                         <span className="min-w-0 truncate pb-1 text-base font-semibold leading-normal text-[#0a0f1d] sm:text-lg">
                           {label(neighborhood.name)}
                         </span>
+                        {canDelete ? (
                         <TableAction
                           label={t("admin.ui.delete")}
                           tone="danger"
                           onClick={() => removeNeighborhood(neighborhood)}
                         />
+                        ) : null}
                       </li>
                     ))}
                   </ul>
