@@ -21,11 +21,21 @@ export function UserAvatarDropdown() {
   const initial = (userData?.displayName?.[0] ?? user?.displayName?.[0] ?? user?.email?.[0] ?? "U").toUpperCase();
   
   let defaultRoleName = t("admin.ui.user");
-  if (userData?.role === "admin") {
+  if (userData?.role === "superAdmin") {
+    defaultRoleName = t("admin.ui.superAdmin");
+  } else if (userData?.role === "admin") {
     defaultRoleName = t("admin.ui.admin");
   } else if (userData?.role === "developer") {
     defaultRoleName = t("admin.ui.developer");
   }
+
+  const getRoleColor = () => {
+    switch (userData?.role) {
+      case "superAdmin": return "text-[#FFB020] bg-[#FFB020]/10";
+      case "developer": return "text-[#3B82F6] bg-[#3B82F6]/10";
+      default: return "text-[#17C3B3] bg-[#17C3B3]/10";
+    }
+  };
   
   const fullName = userData?.displayName 
     ? `${userData.displayName} ${userData.lastName || ""}`.trim()
@@ -63,14 +73,19 @@ export function UserAvatarDropdown() {
 
       {isOpen && (
         <div className="absolute end-0 top-full mt-2 w-64 overflow-hidden rounded-[24px] border border-[#0a0f1d]/10 bg-white p-2 shadow-2xl z-50">
-          <div className="flex flex-col border-b border-[#0a0f1d]/5 px-4 py-3">
+          <div className="flex flex-col border-b border-[#0a0f1d]/5 px-4 py-3 gap-1">
             <span className="font-bold text-[#0a0f1d] truncate">{name}</span>
             <span className="text-xs text-[#8c8c8c] truncate">{email}</span>
+            <div className="mt-1 flex">
+              <span className={`inline-flex items-center justify-center rounded-full px-2.5 py-0.5 text-[11px] font-bold ${getRoleColor()}`}>
+                {defaultRoleName}
+              </span>
+            </div>
           </div>
           
           <div className="flex flex-col gap-1 p-2">
             <Link
-              href={userData?.role === "admin" ? "/admin/settings" : "/developer/settings"}
+              href={userData?.role === "developer" ? "/developer/settings" : "/admin/settings"}
               onClick={() => setIsOpen(false)}
               className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-semibold text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4]"
             >

@@ -4,14 +4,17 @@ import { useMemo, useState } from "react";
 import { Users, Search, Terminal, Plus, FileText, RefreshCw } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 import { DataTable, TableAction, type Column } from "@/features/admin/ui/DataTable";
 import { StatCard, StatGrid } from "@/features/admin/ui/StatCard";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { usersService } from "@/features/auth/users.service";
 import type { UserData } from "@/types/user";
 import { AddDeveloperModal } from "./AddDeveloperModal";
+import { AddAdminModal } from "./AddAdminModal";
 import { ViewDeveloperModal } from "./ViewDeveloperModal";
 import { EditDeveloperModal } from "./EditDeveloperModal";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getApp } from "firebase/app";
@@ -98,10 +101,12 @@ export function DevelopersSection() {
   const { locale, t } = useLocale();
   const queryClient = useQueryClient();
   const confirm = useConfirm();
+  const { userData } = useAuth();
 
   const [queryStr, setQueryStr] = useState("");
   const [activeTab, setActiveTab] = useState<"developer" | "admin">("developer");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isAddAdminModalOpen, setIsAddAdminModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [selectedDeveloper, setSelectedDeveloper] = useState<UserData | null>(null);
@@ -178,7 +183,9 @@ export function DevelopersSection() {
 
   const { data: usersData = [], isLoading, refetch, isRefetching } = useQuery({
     queryKey: ["users", activeTab],
-    queryFn: () => usersService.getUsersByRole(activeTab),
+    queryFn: () => activeTab === "admin"
+      ? usersService.getUsersByRoles(["admin", "superAdmin"])
+      : usersService.getUsersByRoles(["developer"]),
   });
 
   const filtered = useMemo(() => {
@@ -212,8 +219,12 @@ export function DevelopersSection() {
       header: activeTab === "developer" ? (t("admin.developers.name") || "Developer Name") : (t("admin.developers.adminName") || "Admin Name"),
       cell: (row) => (
         <div className="flex items-center gap-3">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#0a0f1d] text-sm font-bold text-white">
-            {row.displayName ? row.displayName.charAt(0).toUpperCase() : (row.email ? row.email.charAt(0).toUpperCase() : "-")}
+          <span className="relative flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-[#0a0f1d] text-sm font-bold text-white">
+            {row.photoURL ? (
+              <Image src={row.photoURL} alt={row.displayName || ""} fill className="object-cover" />
+            ) : (
+              row.displayName ? row.displayName.charAt(0).toUpperCase() : (row.email ? row.email.charAt(0).toUpperCase() : "-")
+            )}
           </span>
           <div className="flex flex-col">
             <span className="font-semibold text-[#0a0f1d]">{row.displayName || "No Name"}</span>
@@ -226,7 +237,25 @@ export function DevelopersSection() {
       id: "company",
       header: t("admin.developers.company") || "Company",
       cell: (row: UserData) => <span className="text-[#0a0f1d] font-medium">{row.companyName || "-"}</span>,
-    }] : []),
+    }] : [
+      {
+        id: "role",
+        header: t("admin.developers.role") || "Role",
+        cell: (row: UserData) => {
+          const roleDisplay = row.role === "superAdmin"
+            ? (t("admin.ui.superAdmin") || "Super Admin")
+            : (t("admin.ui.admin") || "Admin");
+          const colorClass = row.role === "superAdmin" 
+            ? "text-[#FFB020] bg-[#FFB020]/10" 
+            : "text-[#17C3B3] bg-[#17C3B3]/10";
+          return (
+            <div className={`inline-flex items-center justify-center rounded-full px-2.5 py-1 text-[11px] font-bold ${colorClass}`}>
+              {roleDisplay}
+            </div>
+          );
+        },
+      }
+    ]),
     {
       id: "phone",
       header: t("admin.developers.phone") || "Phone",
@@ -338,6 +367,15 @@ export function DevelopersSection() {
                   {t("admin.developers.create") || "Create Account"}
                 </button>
               )}
+              {activeTab === "admin" && userData?.role === "superAdmin" && (
+                <button
+                  onClick={() => setIsAddAdminModalOpen(true)}
+                  className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
+                >
+                  <Plus className="h-4 w-4" />
+                  {t("admin.developers.createAdmin") || "Create Admin"}
+                </button>
+              )}
             </div>
           </div>
         }
@@ -380,6 +418,11 @@ export function DevelopersSection() {
     <AddDeveloperModal 
       isOpen={isAddModalOpen} 
       onClose={() => setIsAddModalOpen(false)} 
+    />
+
+    <AddAdminModal 
+      isOpen={isAddAdminModalOpen} 
+      onClose={() => setIsAddAdminModalOpen(false)} 
     />
 
     <ViewDeveloperModal

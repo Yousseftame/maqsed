@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X, Mail, Phone, Building2, Calendar, FolderClosed, Home, Activity, LogIn, LogOut, Users } from "lucide-react";
+import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { usersService } from "@/features/auth/users.service";
@@ -93,8 +94,12 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
                 <div className="flex w-full flex-col items-center sm:w-[35%] sm:items-start">
                   {/* Avatar */}
                   <div className="relative -mt-16 mb-4 flex justify-center">
-                    <div className="flex h-32 w-32 items-center justify-center rounded-full border-4 border-white bg-[#F4F4F4] text-4xl font-bold text-[#0a0f1d] shadow-lg">
-                      {getInitials(developer.displayName, developer.lastName)}
+                    <div className="relative flex h-32 w-32 items-center justify-center overflow-hidden rounded-full border-4 border-white bg-[#F4F4F4] text-4xl font-bold text-[#0a0f1d] shadow-lg">
+                      {developer.photoURL ? (
+                        <Image src={developer.photoURL} alt={fullName} fill className="object-cover" />
+                      ) : (
+                        getInitials(developer.displayName, developer.lastName)
+                      )}
                     </div>
                   </div>
 
@@ -153,13 +158,15 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
                       <span className="text-base font-semibold text-[#0a0f1d] text-start">{developer.phoneNumber || "—"}</span>
                     </div>
 
-                    <div className="flex flex-col justify-center gap-1 rounded-[16px] border border-[#0a0f1d]/5 bg-white p-5 transition-colors hover:bg-[#F4F4F4]">
-                      <div className="mb-2 flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-[#8c8c8c]" />
-                        <span className="text-xs font-bold text-[#8c8c8c]">{t("admin.developers.company") || "Company Name"}</span>
+                    {developer.role === "developer" && (
+                      <div className="flex flex-col justify-center gap-1 rounded-[16px] border border-[#0a0f1d]/5 bg-white p-5 transition-colors hover:bg-[#F4F4F4]">
+                        <div className="mb-2 flex items-center gap-2">
+                          <Building2 className="h-4 w-4 text-[#8c8c8c]" />
+                          <span className="text-xs font-bold text-[#8c8c8c]">{t("admin.developers.company") || "Company Name"}</span>
+                        </div>
+                        <span className="text-base font-semibold text-[#0a0f1d] text-start">{developer.companyName || "—"}</span>
                       </div>
-                      <span className="text-base font-semibold text-[#0a0f1d] text-start">{developer.companyName || "—"}</span>
-                    </div>
+                    )}
 
                     <div className="flex flex-col justify-center gap-1 rounded-[16px] border border-[#0a0f1d]/5 bg-white p-5 transition-colors hover:bg-[#F4F4F4]">
                       <div className="mb-2 flex items-center gap-2">
@@ -169,13 +176,15 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
                       <span className="text-base font-semibold text-[#0a0f1d] text-start">{joinDate}</span>
                     </div>
 
-                    <div className="flex flex-col justify-center gap-1 rounded-[16px] border border-[#0a0f1d]/5 bg-white p-5 transition-colors hover:bg-[#F4F4F4]">
-                      <div className="mb-2 flex items-center gap-2">
-                        <Users className="h-4 w-4 text-[#8c8c8c]" />
-                        <span className="text-xs font-bold text-[#8c8c8c]">{t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}</span>
+                    {developer.role === "developer" && (
+                      <div className="flex flex-col justify-center gap-1 rounded-[16px] border border-[#0a0f1d]/5 bg-white p-5 transition-colors hover:bg-[#F4F4F4]">
+                        <div className="mb-2 flex items-center gap-2">
+                          <Users className="h-4 w-4 text-[#8c8c8c]" />
+                          <span className="text-xs font-bold text-[#8c8c8c]">{t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}</span>
+                        </div>
+                        <span className="text-base font-semibold text-[#0a0f1d] text-start">{developer.usersPerDeveloper ?? "—"}</span>
                       </div>
-                      <span className="text-base font-semibold text-[#0a0f1d] text-start">{developer.usersPerDeveloper ?? "—"}</span>
-                    </div>
+                    )}
                   </div>
                   
                   {/* Audit Logs Section */}

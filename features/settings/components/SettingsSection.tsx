@@ -89,11 +89,21 @@ export function SettingsSection() {
     }
   };
 
-  const roleDisplay = userData?.role === "admin" 
+  const roleDisplay = userData?.role === "superAdmin"
+    ? (t("admin.ui.superAdmin") || "Super Admin")
+    : userData?.role === "admin" 
     ? (t("admin.ui.admin") || "Admin") 
     : userData?.role === "developer" 
     ? (t("admin.ui.developer") || "Developer") 
     : (t("admin.ui.user") || "User");
+
+  const getRoleColor = () => {
+    switch (userData?.role) {
+      case "superAdmin": return "text-[#FFB020] bg-[#FFB020]/10";
+      case "developer": return "text-[#3B82F6] bg-[#3B82F6]/10";
+      default: return "text-[#17C3B3] bg-[#17C3B3]/10";
+    }
+  };
 
   const isAr = locale === "ar";
 
@@ -164,9 +174,9 @@ export function SettingsSection() {
                 ? `${userData.displayName} ${userData.lastName || ""}`
                 : (t("admin.ui.user") || "User")}
             </h2>
-            <div className="inline-flex items-center justify-center gap-1.5 rounded-full bg-[#17C3B3]/10 px-3 py-1">
-              <ShieldCheck className="h-4 w-4 text-[#17C3B3]" />
-              <span className="text-[13px] font-bold text-[#17C3B3]">{roleDisplay}</span>
+            <div className={cn("inline-flex items-center justify-center gap-1.5 rounded-full px-3 py-1", getRoleColor())}>
+              <ShieldCheck className="h-4 w-4" />
+              <span className="text-[13px] font-bold">{roleDisplay}</span>
             </div>
           </div>
         </div>
@@ -206,12 +216,25 @@ export function SettingsSection() {
                     {userData?.phoneNumber || "-"}
                   </div>
                 </div>
-                <div>
-                  <span className={labelClass}>{t("admin.accountSettings.companyName") || "Company Name"}</span>
-                  <div className={cn(valueBoxClass, isAr && "text-right")} dir={isAr ? "rtl" : "ltr"}>
-                    {userData?.companyName || "-"}
+                {userData?.role === "developer" && (
+                  <div>
+                    <span className={labelClass}>{t("admin.accountSettings.companyName") || "Company Name"}</span>
+                    <div className={cn(valueBoxClass, isAr && "text-right")} dir={isAr ? "rtl" : "ltr"}>
+                      {userData?.companyName || "-"}
+                    </div>
                   </div>
-                </div>
+                )}
+                {userData?.role === "developer" && (
+                  <div>
+                    <span className={labelClass}>{t("admin.developers.createForm.usersPerDeveloper") || "Users per developer"}</span>
+                    <div className={cn(valueBoxClass, isAr && "text-right")} dir="ltr">
+                      {userData?.usersPerDeveloper ?? "-"}
+                    </div>
+                    <p className="mt-1.5 text-[13px] font-semibold text-[#8c8c8c] leading-relaxed">
+                      {t("admin.accountSettings.usersPerDeveloperNote")}
+                    </p>
+                  </div>
+                )}
                 <div className="md:col-span-2">
                   <span className={labelClass}>{t("admin.accountSettings.email") || "Email Address"}</span>
                   <div className={cn(valueBoxClass, isAr && "text-right")} dir="ltr">
@@ -255,17 +278,34 @@ export function SettingsSection() {
                       dir={isAr ? "rtl" : "ltr"}
                     />
                   </div>
-                  <div>
-                    <label className={labelClass}>{t("admin.accountSettings.companyName") || "Company Name"}</label>
-                    <input
-                      type="text"
-                      name="companyName"
-                      value={formData.companyName}
-                      onChange={handleChange}
-                      className={cn(inputClass, isAr && "text-right")}
-                      dir={isAr ? "rtl" : "ltr"}
-                    />
-                  </div>
+                  {userData?.role === "developer" && (
+                    <>
+                      <div>
+                        <label className={labelClass}>{t("admin.accountSettings.companyName") || "Company Name"}</label>
+                        <input
+                          type="text"
+                          name="companyName"
+                          value={formData.companyName}
+                          onChange={handleChange}
+                          className={cn(inputClass, isAr && "text-right")}
+                          dir={isAr ? "rtl" : "ltr"}
+                        />
+                      </div>
+                      <div>
+                        <label className={labelClass}>{t("admin.developers.createForm.usersPerDeveloper") || "Users per developer"}</label>
+                        <input
+                          type="number"
+                          disabled
+                          value={userData?.usersPerDeveloper ?? ""}
+                          className={cn(inputClass, "opacity-50 bg-[#f9fafb] cursor-not-allowed", isAr && "text-right")}
+                          dir="ltr"
+                        />
+                        <p className="mt-1.5 text-[13px] font-semibold text-[#8c8c8c] leading-relaxed">
+                          {t("admin.accountSettings.usersPerDeveloperNote")}
+                        </p>
+                      </div>
+                    </>
+                  )}
                   <div className="md:col-span-2">
                     <label className={labelClass}>{t("admin.accountSettings.email") || "Email Address"}</label>
                     <input

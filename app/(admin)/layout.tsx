@@ -7,7 +7,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RequireAuth allowedRoles={["admin"]}>
+    <RequireAuth allowedRoles={["admin", "superAdmin"]}>
       <AdminShell>{children}</AdminShell>
     </RequireAuth>
   );

@@ -1,4 +1,4 @@
-export type UserRole = "admin" | "developer" | "user";
+export type UserRole = "superAdmin" | "admin" | "developer" | "user";
 
 export interface DeveloperStats {
   projectsCount: number;

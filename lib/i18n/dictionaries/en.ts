@@ -325,6 +325,7 @@ export interface Dictionary {
     ui: {
       user: string;
       admin: string;
+      superAdmin: string;
       developer: string;
       settings: string;
       changePassword: string;
@@ -344,6 +345,7 @@ export interface Dictionary {
       success: string;
       error: string;
       deleting: string;
+      loading: string;
     };
     accountSettings: {
       title: string;
@@ -354,6 +356,7 @@ export interface Dictionary {
       phoneNumber: string;
       companyName: string;
       email: string;
+      usersPerDeveloperNote: string;
     };
     projects: {
       add: string;
@@ -494,12 +497,14 @@ export interface Dictionary {
       active: string;
       name: string;
       adminName: string;
+      role: string;
       company: string;
       phone: string;
       joined: string;
       lastLogin: string;
       search: string;
       create: string;
+      createAdmin: string;
       edit: string;
       deleteTitle: string;
       deleteDesc: string;
@@ -511,6 +516,7 @@ export interface Dictionary {
       enableDesc: string;
       createForm: {
         title: string;
+        titleAdmin: string;
         description: string;
         firstName: string;
         lastName: string;
@@ -1064,6 +1070,7 @@ export const en: Dictionary = {
     ui: {
       user: "User",
       admin: "Admin",
+      superAdmin: "Super Admin",
       developer: "Developer",
       settings: "Settings",
       changePassword: "Change Password",
@@ -1083,6 +1090,7 @@ export const en: Dictionary = {
       success: "Operation successful",
       error: "An error occurred",
       deleting: "Deleting...",
+      loading: "Loading...",
     },
     accountSettings: {
       title: "Account Settings",
@@ -1093,6 +1101,7 @@ export const en: Dictionary = {
       phoneNumber: "Phone Number",
       companyName: "Company Name",
       email: "Email Address",
+      usersPerDeveloperNote: "Note: This field can only be edited by an administrator.",
     },
     projects: {
       add: "Add project",
@@ -1233,12 +1242,14 @@ export const en: Dictionary = {
       active: "Active Accounts",
       name: "Developer Name",
       adminName: "Admin Name",
+      role: "Role",
       company: "Company",
       phone: "Phone",
       joined: "Joined Date",
       lastLogin: "Last Login",
       search: "Search developers...",
       create: "Create Account",
+      createAdmin: "Create Admin",
       edit: "Edit Developer",
       deleteTitle: "Delete Account",
       deleteDesc: "Are you sure you want to delete this developer? This will permanently remove them from the system and Authentication.",
@@ -1250,6 +1261,7 @@ export const en: Dictionary = {
       enableDesc: "Are you sure you want to enable this account? They will regain access to log in to the system.",
       createForm: {
         title: "Create Developer Account",
+        titleAdmin: "Create Admin Account",
         description: "Add a new developer to the system. They will receive access to the developer portal.",
         firstName: "First Name",
         lastName: "Last Name",

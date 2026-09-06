@@ -182,29 +182,33 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
                         <p className="mt-2 text-xs font-semibold text-red-500">{errors.phone.message}</p>
                       )}
                     </div>
-                    <div>
-                      <label className={labelClass}>
-                        {t("admin.developers.createForm.company") || "Company Name"}
-                      </label>
-                      <input
-                        type="text"
-                        disabled={isSubmitting}
-                        {...register("company")}
-                        className={inputClass}
-                      />
-                    </div>
-                    <div>
-                      <label className={labelClass}>
-                        {t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        disabled={isSubmitting}
-                        {...register("usersPerDeveloper")}
-                        className={inputClass}
-                      />
-                    </div>
+                    {developer.role === "developer" && (
+                      <>
+                        <div>
+                          <label className={labelClass}>
+                            {t("admin.developers.createForm.company") || "Company Name"}
+                          </label>
+                          <input
+                            type="text"
+                            disabled={isSubmitting}
+                            {...register("company")}
+                            className={inputClass}
+                          />
+                        </div>
+                        <div>
+                          <label className={labelClass}>
+                            {t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            disabled={isSubmitting}
+                            {...register("usersPerDeveloper")}
+                            className={inputClass}
+                          />
+                        </div>
+                      </>
+                    )}
                   </div>
                 </div>
               </form>

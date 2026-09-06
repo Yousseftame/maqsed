@@ -388,6 +388,7 @@ export const ar: Dictionary = {
     ui: {
       user: "مستخدم",
       admin: "إداري",
+      superAdmin: "مدير عام",
       developer: "مطور",
       settings: "الإعدادات",
       changePassword: "تغيير كلمة المرور",
@@ -407,6 +408,7 @@ export const ar: Dictionary = {
       success: "تمت العملية بنجاح",
       error: "حدث خطأ ما",
       deleting: "جاري الحذف...",
+      loading: "جاري التحميل...",
     },
     accountSettings: {
       title: "إعدادات الحساب",
@@ -417,6 +419,7 @@ export const ar: Dictionary = {
       phoneNumber: "رقم الهاتف",
       companyName: "اسم الشركة",
       email: "البريد الإلكتروني",
+      usersPerDeveloperNote: "ملاحظة: هذا الحقل يمكن تعديله من قبل الإدارة فقط.",
     },
     projects: {
       add: "إضافة مشروع",
@@ -557,12 +560,14 @@ export const ar: Dictionary = {
       active: "الحسابات النشطة",
       name: "اسم المطور",
       adminName: "اسم الاداري",
+      role: "الصلاحية",
       company: "الشركة",
       phone: "رقم الجوال",
       joined: "تاريخ الانضمام",
       lastLogin: "آخر ظهور",
       search: "البحث عن مطورين...",
       create: "إنشاء حساب",
+      createAdmin: "إنشاء إداري",
       edit: "تعديل حساب المطور",
       deleteTitle: "حذف حساب المطور",
       deleteDesc: "هل أنت متأكد من حذف هذا المطور؟ سيتم حذفه نهائياً من النظام.",
@@ -574,6 +579,7 @@ export const ar: Dictionary = {
       enableDesc: "هل أنت متأكد من تنشيط هذا الحساب؟ سيتمكن من تسجيل الدخول إلى النظام مجدداً.",
       createForm: {
         title: "إنشاء حساب مطور",
+        titleAdmin: "إنشاء حساب إداري",
         description: "أضف مطوراً جديداً للنظام. سيتمكن من الوصول إلى لوحة المطورين.",
         firstName: "الاسم الأول",
         lastName: "الاسم الأخير",
