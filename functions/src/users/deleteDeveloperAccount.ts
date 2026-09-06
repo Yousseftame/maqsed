@@ -15,7 +15,8 @@ export const deleteDeveloperAccount = onCall(async (request) => {
   // Check if caller is admin
   const callerUid = request.auth.uid;
   const callerDoc = await admin.firestore().collection("users").doc(callerUid).get();
-  if (!callerDoc.exists || callerDoc.data()?.role !== "admin") {
+  const callerRole = callerDoc.data()?.role;
+  if (!callerDoc.exists || (callerRole !== "admin" && callerRole !== "superAdmin")) {
      throw new HttpsError("permission-denied", "Only administrators can delete developer accounts.");
   }
 
