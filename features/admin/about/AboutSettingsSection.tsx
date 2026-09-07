@@ -214,8 +214,8 @@ export function AboutSettingsSection() {
         buttonTextAr: buttonTextAr.trim(),
         buttonTextEn: buttonTextEn.trim(),
         features: features.map(({ textAr: textArValue, textEn: textEnValue }) => ({
-          textAr: textArValue.trim(),
-          textEn: textEnValue.trim(),
+          textAr: (textArValue ?? "").trim(),
+          textEn: (textEnValue ?? "").trim(),
         })),
         aboutImage: nextAboutImage,
         visionMissionImage: nextVisionImage,
