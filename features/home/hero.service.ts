@@ -6,7 +6,7 @@ import { ar } from "@/lib/i18n/dictionaries/ar";
 
 const COLLECTION = "herosection";
 const DOC_ID = "main";
-const DEFAULT_HERO_IMAGE = "/9.avif";
+export const DEFAULT_HERO_IMAGE = "/9.avif";
 
 function collapseText(value: string): string {
   return value.replace(/\n/g, " ").replace(/\s+/g, " ").trim();

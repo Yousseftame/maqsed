@@ -1,13 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
+import { BrandLogo } from "@/components/layout/BrandLogo";
 
 export function Navbar() {
   const pathname = usePathname();
@@ -23,6 +23,7 @@ export function Navbar() {
   const navLinks: NavLink[] = [
     { name: t("nav.home"), href: "/" },
     { name: t("nav.about"), href: "/about" },
+    { name: t("nav.blog"), href: "/blog" },
     { 
       name: isRtl ? "المشاريع" : "Projects", 
       dropdown: [
@@ -40,12 +41,8 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex flex-shrink-0 items-center">
             <Link href="/" className="flex items-center gap-2">
-              <Image
-                src="/svglogo.svg"
-                alt="MAQSED Logo"
-                width={180}
-                height={48}
-                className="w-[150px] h-auto object-contain"
+              <BrandLogo
+                className="h-auto w-[150px] object-contain"
                 priority
               />
             </Link>
@@ -173,13 +170,7 @@ export function Navbar() {
             className="flex items-center gap-2"
             onClick={() => setIsMobileMenuOpen(false)}
           >
-            <Image
-              src="/svglogo.svg"
-              alt="MAQSED Logo"
-              width={180}
-              height={48}
-              className="w-[150px] h-auto object-contain"
-            />
+            <BrandLogo className="h-auto w-[150px] object-contain" />
           </Link>
           <button
             type="button"

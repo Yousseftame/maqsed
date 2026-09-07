@@ -1,38 +1,34 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Plus, Minus } from "lucide-react";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { useFaqs } from "@/features/faq/useFaqs";
 
 export default function FAQPage() {
-  const { t, locale, dictionary } = useLocale();
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  
-  // Create an array of 20 items by repeating the existing FAQ items
-  const baseFaqs = dictionary.faq.items;
-  const faqs = Array.from({ length: 20 }, (_, i) => baseFaqs[i % baseFaqs.length]);
+  const { t, locale } = useLocale();
+  const { items } = useFaqs();
+  const [openIndex, setOpenIndex] = useState<string | null>(null);
 
-  const toggleFaq = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+  const toggleFaq = (id: string) => {
+    setOpenIndex(openIndex === id ? null : id);
   };
 
-  // Render a single FAQ item
-  const renderFaq = (faq: { q: string, a: string }, index: number) => {
-    const isOpen = openIndex === index;
+  const renderFaq = (faq: { id: string; question: string; answer: string }) => {
+    const isOpen = openIndex === faq.id;
     return (
       <div
-        key={`${locale}-faq-${index}`}
+        key={faq.id}
         className="w-full h-max bg-[#F5F5F5] overflow-hidden rounded-3xl transition-all duration-300"
       >
         <button
           type="button"
-          onClick={() => toggleFaq(index)}
+          onClick={() => toggleFaq(faq.id)}
           className="flex w-full items-center justify-between gap-6 px-6 py-4 sm:px-8 sm:py-5"
         >
           <h4 className="flex-1 text-start text-[15px] sm:text-[17px] font-bold text-[#333]">
-            {faq.q}
+            {faq.question}
           </h4>
           <div
             className={`flex items-center justify-center w-7 h-7 rounded-full border flex-shrink-0 ${
@@ -54,7 +50,7 @@ export default function FAQPage() {
         >
           <div className="overflow-hidden">
             <p className="text-[15px] leading-relaxed font-medium text-[#6b7280] text-start pe-10">
-              {faq.a}
+              {faq.answer}
             </p>
           </div>
         </div>
@@ -65,32 +61,6 @@ export default function FAQPage() {
   return (
     <div className="flex w-full flex-col bg-white">
       <section className="relative z-30 w-full overflow-hidden bg-white px-6 py-24 md:px-12 lg:px-20 min-h-screen">
-        {/* Background Watermarks */}
-        <div
-          className="pointer-events-none absolute bottom-0 left-0 select-none"
-          aria-hidden
-        >
-          <Image
-            src="/faq_left.png"
-            alt=""
-            width={600}
-            height={600}
-            className="h-[200px] w-auto max-w-none object-contain opacity-100 md:h-[280px]"
-          />
-        </div>
-        <div
-          className="pointer-events-none absolute bottom-0 right-0 select-none"
-          aria-hidden
-        >
-          <Image
-            src="/faq_right.png"
-            alt=""
-            width={600}
-            height={600}
-            className="h-[200px] w-auto max-w-none object-contain opacity-100 md:h-[280px]"
-          />
-        </div>
-
         <div className="relative z-10 mx-auto flex w-full max-w-[1400px] flex-col items-center text-center">
           
           {/* Top Badge */}
@@ -111,23 +81,18 @@ export default function FAQPage() {
             />
           </h1>
 
-          {/* FAQ Accordion Layout - Independent Columns */}
-          <div className="flex w-full flex-col lg:flex-row gap-4 lg:gap-6 text-start">
-            {/* Left Column (Even indexes) */}
-            <div className="flex flex-1 flex-col gap-4 lg:gap-6">
-              {faqs
-                .map((faq, idx) => ({ faq, idx }))
-                .filter((_, i) => i % 2 === 0)
-                .map(({ faq, idx }) => renderFaq(faq, idx))}
+          {items.length === 0 ? (
+            <p className="text-base font-medium text-[#8c8c8c]">{t("faq.empty")}</p>
+          ) : (
+            <div className="flex w-full flex-col lg:flex-row gap-4 lg:gap-6 text-start">
+              <div className="flex flex-1 flex-col gap-4 lg:gap-6">
+                {items.filter((_, i) => i % 2 === 0).map((faq) => renderFaq(faq))}
+              </div>
+              <div className="flex flex-1 flex-col gap-4 lg:gap-6">
+                {items.filter((_, i) => i % 2 !== 0).map((faq) => renderFaq(faq))}
+              </div>
             </div>
-            {/* Right Column (Odd indexes) */}
-            <div className="flex flex-1 flex-col gap-4 lg:gap-6">
-              {faqs
-                .map((faq, idx) => ({ faq, idx }))
-                .filter((_, i) => i % 2 !== 0)
-                .map(({ faq, idx }) => renderFaq(faq, idx))}
-            </div>
-          </div>
+          )}
         </div>
       </section>
     </div>

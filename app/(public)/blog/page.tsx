@@ -1,9 +1,11 @@
+import type { Metadata } from "next";
+import { BlogListPage } from "@/features/blog/components/BlogListPage";
+
+export const metadata: Metadata = {
+  title: "Blog | MAQSED",
+  description: "News and articles from MAQSED.",
+};
+
 export default function BlogPage() {
-  return (
-    <div className="flex min-h-[60vh] w-full flex-col bg-white px-6 py-24 md:px-12 lg:px-20">
-      <div className="mx-auto w-full max-w-[1400px]">
-        {/* Blog content coming soon */}
-      </div>
-    </div>
-  );
+  return <BlogListPage />;
 }

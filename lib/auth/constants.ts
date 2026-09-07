@@ -21,6 +21,31 @@ export function isAuthPath(pathname: string) {
   return AUTH_PATHS.some((path) => pathname === path);
 }
 
+export const MAINTENANCE_PATH = "/maintenance";
+export const MAINTENANCE_COOKIE = "maqsed_maintenance";
+
+export function isMaintenancePath(pathname: string) {
+  return pathname === MAINTENANCE_PATH || pathname.startsWith(`${MAINTENANCE_PATH}/`);
+}
+
+export function isMaintenanceExemptPath(pathname: string) {
+  if (isMaintenancePath(pathname)) return true;
+  if (isProtectedPath(pathname)) return true;
+  if (pathname === "/login" || pathname === "/forgot-password") return true;
+  if (pathname.startsWith("/api/")) return true;
+  return false;
+}
+
+export function writeMaintenanceCookie(enabled: boolean) {
+  if (typeof document === "undefined") return;
+  document.cookie = `${MAINTENANCE_COOKIE}=${enabled ? "1" : "0"}; path=/; max-age=86400; samesite=lax`;
+}
+
+export function readMaintenanceCookie(): boolean {
+  if (typeof document === "undefined") return false;
+  return new RegExp(`(?:^|; )${MAINTENANCE_COOKIE}=1(?:;|$)`).test(document.cookie);
+}
+
 export function getSafeNextPath(next: string | null | undefined, role?: UserRole | null) {
   if (
     !next ||

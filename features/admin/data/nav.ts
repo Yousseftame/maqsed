@@ -16,6 +16,7 @@ import {
   Info,
   Headphones,
   Handshake,
+  CircleHelp,
   type LucideIcon,
 } from "lucide-react";
 
@@ -46,6 +47,7 @@ export const ADMIN_NAV: AdminNavEntry[] = [
   { type: "link", labelKey: "admin.nav.projects", href: "/admin/projects", icon: Folder },
   { type: "link", labelKey: "admin.nav.units", href: "/admin/units", icon: Building2 },
   { type: "link", labelKey: "admin.nav.offers", href: "/admin/offers", icon: FileSignature },
+  { type: "link", labelKey: "admin.nav.blog", href: "/admin/blog", icon: FileText },
   { type: "divider" },
   {
     type: "link",
@@ -60,8 +62,8 @@ export const ADMIN_NAV: AdminNavEntry[] = [
   { type: "link", labelKey: "admin.nav.menu", href: "/admin/menu-settings", icon: Settings },
   { type: "link", labelKey: "admin.nav.interface", href: "/admin/interface", icon: AppWindow },
   { type: "link", labelKey: "admin.nav.partners", href: "/admin/partners", icon: Handshake },
-  { type: "link", labelKey: "admin.nav.blog", href: "/admin/blog", icon: FileText },
   { type: "link", labelKey: "admin.nav.additional", href: "/admin/additional-info", icon: ClipboardList },
+  { type: "link", labelKey: "admin.nav.faq", href: "/admin/faq", icon: CircleHelp },
   {
     type: "link",
     labelKey: "admin.nav.maintenance",

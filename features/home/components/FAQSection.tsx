@@ -1,18 +1,20 @@
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Plus, Minus } from "lucide-react";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { useFaqs } from "@/features/faq/useFaqs";
 
 export function FAQSection() {
-  const { t, locale, dictionary } = useLocale();
-  const [openIndex, setOpenIndex] = useState<number | null>(null);
-  const faqs = dictionary.faq.items;
+  const { t, locale } = useLocale();
+  const { featured, isFetched } = useFaqs();
+  const [openIndex, setOpenIndex] = useState<string | null>(null);
 
-  const toggleFaq = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
+  if (isFetched && featured.length === 0) return null;
+
+  const toggleFaq = (id: string) => {
+    setOpenIndex(openIndex === id ? null : id);
   };
 
   return (
@@ -39,20 +41,20 @@ export function FAQSection() {
 
         {/* FAQ Accordion List */}
         <div className="flex w-full flex-col gap-4">
-          {faqs.map((faq, index) => {
-            const isOpen = openIndex === index;
+          {featured.map((faq) => {
+            const isOpen = openIndex === faq.id;
             return (
               <div
-                key={`${locale}-${index}`}
+                key={faq.id}
                 className="w-full bg-[#F5F5F5] overflow-hidden rounded-3xl transition-all duration-300"
               >
                 <button
                   type="button"
-                  onClick={() => toggleFaq(index)}
+                  onClick={() => toggleFaq(faq.id)}
                   className="flex w-full items-center justify-between gap-6 px-6 py-4 sm:px-8 sm:py-5"
                 >
                   <h4 className="flex-1 text-start text-[15px] sm:text-[17px] font-bold text-[#333]">
-                    {faq.q}
+                    {faq.question}
                   </h4>
                   <div
                     className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border ${
@@ -74,7 +76,7 @@ export function FAQSection() {
                 >
                   <div className="overflow-hidden">
                     <p className="text-[15px] leading-relaxed font-medium text-[#6b7280] text-start pe-10">
-                      {faq.a}
+                      {faq.answer}
                     </p>
                   </div>
                 </div>

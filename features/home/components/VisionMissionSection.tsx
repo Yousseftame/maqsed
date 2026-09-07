@@ -2,9 +2,11 @@
 
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
+import { useAboutContent } from "@/features/about/useAboutContent";
 
 export function VisionMissionSection() {
-  const { t, isRtl } = useLocale();
+  const { isRtl } = useLocale();
+  const content = useAboutContent();
 
   return (
     <section className="relative w-full bg-[#6A2B92] py-16 lg:py-20 overflow-hidden">
@@ -19,7 +21,7 @@ export function VisionMissionSection() {
               ? "polygon(0 0%, 100% 60%, 100% 100%, 0 40%)" // Mirrored for RTL
               : "polygon(0 60%, 100% 0%, 100% 40%, 0 100%)", // Top-Left, Top-Right, Bottom-Right, Bottom-Left
             // Fixed background for parallax effect
-            backgroundImage: "url('/visionmission.webp')",
+            backgroundImage: `url("${content.visionMissionImage}")`,
             backgroundAttachment: "fixed",
             backgroundPosition: "center",
             backgroundSize: "cover",
@@ -35,10 +37,10 @@ export function VisionMissionSection() {
           className="lg:col-span-4 lg:col-start-1 self-start pt-16"
         >
           <h2 className="mb-6 text-4xl sm:text-5xl font-medium tracking-tight text-white">
-            <DiaTextReveal text={t("visionMission.mission.title")} textColor="white" colors={["white"]} />
+            <DiaTextReveal text={content.missionTitle} textColor="white" colors={["white"]} />
           </h2>
           <p className="text-base sm:text-lg leading-relaxed text-gray-300">
-            {t("visionMission.mission.description")}
+            {content.missionSubtitle}
           </p>
         </div>
 
@@ -47,10 +49,10 @@ export function VisionMissionSection() {
           className="lg:col-span-4 lg:col-start-9 self-end mt-48 lg:mt-0" 
         >
           <h2 className="mb-6 text-4xl sm:text-5xl font-medium tracking-tight text-white">
-            <DiaTextReveal text={t("visionMission.vision.title")} textColor="white" colors={["white"]} />
+            <DiaTextReveal text={content.visionTitle} textColor="white" colors={["white"]} />
           </h2>
           <p className="text-base sm:text-lg leading-relaxed text-gray-300">
-            {t("visionMission.vision.description")}
+            {content.visionSubtitle}
           </p>
         </div>
 

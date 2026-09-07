@@ -1,9 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { MapPin, Mail, Phone } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { BrandLogo } from "@/components/layout/BrandLogo";
+import { useCompanyContent } from "@/features/company/useCompanyContent";
 
 const FacebookIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -34,10 +35,12 @@ const socialIconClass =
 
 export function Footer() {
   const { t, locale } = useLocale();
+  const company = useCompanyContent();
 
   const importantLinks = [
     { label: t("nav.home"), href: "/" },
     { label: t("nav.about"), href: "/about" },
+    { label: t("nav.blog"), href: "/blog" },
     { label: t("nav.properties"), href: "/properties" },
     { label: t("nav.units"), href: "/units" },
     { label: t("nav.sell"), href: "/sell" },
@@ -45,8 +48,8 @@ export function Footer() {
   ];
 
   const legalLinks = [
-    { label: t("footer.privacyPolicy"), href: "#" },
-    { label: t("footer.termsConditions"), href: "#" },
+    { label: t("footer.privacyPolicy"), href: "/privacy" },
+    { label: t("footer.termsConditions"), href: "/terms" },
     { label: t("nav.faq"), href: "/faq" },
   ];
 
@@ -54,24 +57,31 @@ export function Footer() {
     {
       icon: Phone,
       label: t("contactPage.contactDetails.phone"),
-      value: t("footer.phone"),
-      href: `tel:${t("footer.phone").replace(/\s/g, "")}`,
+      value: company.phone,
+      href: `tel:${company.phone.replace(/\s/g, "")}`,
       dir: "ltr" as const,
     },
     {
       icon: Mail,
       label: t("contactPage.contactDetails.email"),
-      value: t("footer.email"),
-      href: `mailto:${t("footer.email")}`,
+      value: company.email,
+      href: `mailto:${company.email}`,
       dir: "ltr" as const,
     },
     {
       icon: MapPin,
       label: t("contactPage.contactDetails.office"),
-      value: t("footer.location"),
+      value: company.location,
       href: undefined,
       dir: undefined,
     },
+  ];
+
+  const socialLinks = [
+    { href: company.linkedin, label: t("footer.socials.linkedin"), icon: LinkedinIcon },
+    { href: company.facebook, label: t("footer.socials.facebook"), icon: FacebookIcon },
+    { href: company.instagram, label: t("footer.socials.instagram"), icon: InstagramIcon },
+    { href: company.twitter, label: t("footer.socials.twitter"), icon: TwitterIcon },
   ];
 
   return (
@@ -82,13 +92,7 @@ export function Footer() {
           {/* Column 1: Logo & Description */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="w-fit rounded-lg bg-white p-2">
-              <Image
-                src="/svglogo.svg"
-                alt="MAQSED Logo"
-                width={150}
-                height={40}
-                className="h-auto w-[150px] object-contain"
-              />
+              <BrandLogo className="h-auto w-[150px] object-contain" />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-gray-400">
               {t("footer.description")}
@@ -147,18 +151,22 @@ export function Footer() {
               {locale === 'ar' ? 'تابعنا' : 'Follow Us'}
             </h3>
             <div className="flex items-center gap-3">
-              <Link href="#" className={socialIconClass} aria-label={t("footer.socials.linkedin")}>
-                <LinkedinIcon className="h-4 w-4" />
-              </Link>
-              <Link href="#" className={socialIconClass} aria-label={t("footer.socials.facebook")}>
-                <FacebookIcon className="h-4 w-4" />
-              </Link>
-              <Link href="#" className={socialIconClass} aria-label={t("footer.socials.instagram")}>
-                <InstagramIcon className="h-4 w-4" />
-              </Link>
-              <Link href="#" className={socialIconClass} aria-label={t("footer.socials.twitter")}>
-                <TwitterIcon className="h-4 w-4" />
-              </Link>
+              {socialLinks.map((social) => {
+                const Icon = social.icon;
+                const href = social.href || "#";
+                const isExternal = href.startsWith("http");
+                return (
+                  <a
+                    key={social.label}
+                    href={href}
+                    className={socialIconClass}
+                    aria-label={social.label}
+                    {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                  >
+                    <Icon className="h-4 w-4" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 

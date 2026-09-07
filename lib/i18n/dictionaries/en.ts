@@ -127,6 +127,7 @@ export interface Dictionary {
     pill: string;
     title: string;
     intro: string;
+    empty: string;
     items: { q: string; a: string }[];
   };
   stats: {
@@ -160,6 +161,26 @@ export interface Dictionary {
     pill: string;
     title: string;
     description: string;
+  };
+  blogPage: {
+    title: string;
+    empty: string;
+    readMore: string;
+    authorFallback: string;
+    featured: string;
+    contentTitle: string;
+    minutes: string;
+    back: string;
+    notFound: string;
+  };
+  legalPages: {
+    privacyTitle: string;
+    termsTitle: string;
+    empty: string;
+  };
+  maintenancePage: {
+    fallbackTitle: string;
+    fallbackText: string;
   };
   sellPage: {
     hero: {
@@ -322,6 +343,7 @@ export interface Dictionary {
       partners: string;
       blog: string;
       additional: string;
+      faq: string;
       maintenance: string;
       developers: string;
       offers: string;
@@ -485,6 +507,20 @@ export interface Dictionary {
       privacyPolicyPlaceholder: string;
       terms: string;
       termsPlaceholder: string;
+      addItem: string;
+      itemsHint: string;
+      empty: string;
+      untitled: string;
+      search: string;
+      addModalTitle: string;
+      questionRequired: string;
+      saveAndAdd: string;
+      questionAr: string;
+      questionEn: string;
+      answerAr: string;
+      answerEn: string;
+      deleteTitle: string;
+      deleteDescription: string;
       socialTitle: string;
       instagram: string;
       twitter: string;
@@ -492,13 +528,39 @@ export interface Dictionary {
       linkedin: string;
       tiktok: string;
     };
+    faq: {
+      addItem: string;
+      itemsHint: string;
+      empty: string;
+      untitled: string;
+      search: string;
+      addModalTitle: string;
+      questionRequired: string;
+      saveAndAdd: string;
+      question: string;
+      answer: string;
+      langAr: string;
+      langEn: string;
+      questionAr: string;
+      questionEn: string;
+      answerAr: string;
+      answerEn: string;
+      deleteTitle: string;
+      deleteDescription: string;
+      featured: string;
+      featuredLimit: string;
+    };
     maintenance: {
       enableTitle: string;
       enableDesc: string;
-      messageTitle: string;
-      messageTitlePlaceholder: string;
-      messageText: string;
-      messageTextPlaceholder: string;
+      messageTitleAr: string;
+      messageTitleEn: string;
+      messageTitlePlaceholderAr: string;
+      messageTitlePlaceholderEn: string;
+      messageTextAr: string;
+      messageTextEn: string;
+      messageTextPlaceholderAr: string;
+      messageTextPlaceholderEn: string;
     };
     developers: {
       title: string;
@@ -599,6 +661,43 @@ export interface Dictionary {
       viewLink: string;
     };
 
+    about: {
+      headerSection: string;
+      headerTitleAr: string;
+      headerTitleEn: string;
+      aboutSection: string;
+      aboutImage: string;
+      aboutImageUpload: string;
+      aboutImageHint: string;
+      badgeAr: string;
+      badgeEn: string;
+      titleAr: string;
+      titleEn: string;
+      subtitleAr: string;
+      subtitleEn: string;
+      descriptionAr: string;
+      descriptionEn: string;
+      features: string;
+      featureAr: string;
+      featureEn: string;
+      addFeature: string;
+      buttonTextAr: string;
+      buttonTextEn: string;
+      profilePdf: string;
+      profilePdfUpload: string;
+      profilePdfHint: string;
+      visionMissionSection: string;
+      visionMissionImage: string;
+      visionMissionImageUpload: string;
+      missionTitleAr: string;
+      missionTitleEn: string;
+      missionSubtitleAr: string;
+      missionSubtitleEn: string;
+      visionTitleAr: string;
+      visionTitleEn: string;
+      visionSubtitleAr: string;
+      visionSubtitleEn: string;
+    };
 
     company: {
       logo: string;
@@ -608,11 +707,69 @@ export interface Dictionary {
       aboutPlaceholder: string;
       contacts: string;
       number: string;
+      phone: string;
+      email: string;
+      locationAr: string;
+      locationEn: string;
+      socials: string;
+      facebook: string;
+      instagram: string;
+      twitter: string;
+      linkedin: string;
       legal: string;
       owner: string;
+      ownerAr: string;
+      ownerEn: string;
       commercial: string;
       fal: string;
       complaints: string;
+    };
+    partners: {
+      name: string;
+      namePlaceholder: string;
+      order: string;
+      moveUp: string;
+      moveDown: string;
+      deleteTitle: string;
+      deleteDescription: string;
+      empty: string;
+      uploading: string;
+    };
+    blog: {
+      add: string;
+      edit: string;
+      back: string;
+      search: string;
+      empty: string;
+      title: string;
+      titleAr: string;
+      titleEn: string;
+      slug: string;
+      slugHint: string;
+      slugRequired: string;
+      slugTaken: string;
+      titleRequired: string;
+      excerptAr: string;
+      excerptEn: string;
+      cover: string;
+      coverUpload: string;
+      contentAr: string;
+      contentEn: string;
+      publish: string;
+      published: string;
+      draft: string;
+      status: string;
+      date: string;
+      details: string;
+      order: string;
+      authorAr: string;
+      authorEn: string;
+      categoryAr: string;
+      categoryEn: string;
+      moveUp: string;
+      moveDown: string;
+      deleteTitle: string;
+      deleteDescription: string;
     };
     analytics: {
       customers: string;
@@ -882,6 +1039,7 @@ export const en: Dictionary = {
     pill: "Frequently Asked Questions",
     title: "Browse the most common questions",
     intro: "",
+    empty: "No questions available yet",
     items: [
       {
         q: "How do I start searching for a property with MAQSED?",
@@ -934,6 +1092,26 @@ export const en: Dictionary = {
     title: "Trusted Partners",
     description:
       "Built on strong alliances with leading brands and institutions that share our standard for trust, quality, and long-term value",
+  },
+  blogPage: {
+    title: "Our Articles",
+    empty: "No articles have been published yet",
+    readMore: "Read post",
+    authorFallback: "MAQSED",
+    featured: "Featured",
+    contentTitle: "Article content",
+    minutes: "min read",
+    back: "Back to blog",
+    notFound: "This article is not available",
+  },
+  legalPages: {
+    privacyTitle: "Terms of Use and Privacy Policy",
+    termsTitle: "Terms and Conditions",
+    empty: "This page has no content yet",
+  },
+  maintenancePage: {
+    fallbackTitle: "Site under development",
+    fallbackText: "We are working on some technical updates to improve your experience",
   },
   sellPage: {
     hero: {
@@ -1103,6 +1281,7 @@ export const en: Dictionary = {
       partners: "Success Partners Logos",
       blog: "Blog Management",
       additional: "Additional Information",
+      faq: "FAQ",
       maintenance: "Maintenance Mode",
       developers: "Developers",
       offers: "Technical Offers",
@@ -1266,6 +1445,20 @@ export const en: Dictionary = {
       privacyPolicyPlaceholder: "Enter privacy policy here..",
       terms: "Terms and Conditions",
       termsPlaceholder: "Enter terms and conditions here..",
+      addItem: "Add question",
+      itemsHint: "Add questions and answers. They appear on the public page in this order",
+      empty: "No questions yet. Add the first question",
+      untitled: "Untitled question",
+      search: "Search questions...",
+      addModalTitle: "Add a new question",
+      questionRequired: "Please add the question in Arabic or English",
+      saveAndAdd: "Save and add",
+      questionAr: "Question (Arabic)",
+      questionEn: "Question (English)",
+      answerAr: "Answer (Arabic)",
+      answerEn: "Answer (English)",
+      deleteTitle: "Delete this question?",
+      deleteDescription: "This will remove the question from the website",
       socialTitle: "Social Media Platforms",
       instagram: "Instagram Link",
       twitter: "X (formerly Twitter) Link",
@@ -1273,13 +1466,39 @@ export const en: Dictionary = {
       linkedin: "LinkedIn Link",
       tiktok: "TikTok Link",
     },
+    faq: {
+      addItem: "Add question",
+      itemsHint: "Add questions and answers. Star up to 10 questions to show them in the homepage FAQ section. All questions appear on the FAQ page.",
+      empty: "No questions yet. Add the first question",
+      untitled: "Untitled question",
+      search: "Search questions...",
+      addModalTitle: "Add a new question",
+      questionRequired: "Please add the question in Arabic or English",
+      saveAndAdd: "Save and add",
+      question: "Question",
+      answer: "Answer",
+      langAr: "Arabic",
+      langEn: "English",
+      questionAr: "Question (Arabic)",
+      questionEn: "Question (English)",
+      answerAr: "Answer (Arabic)",
+      answerEn: "Answer (English)",
+      deleteTitle: "Delete this question?",
+      deleteDescription: "This will remove the question from the website",
+      featured: "Featured",
+      featuredLimit: "You can choose up to 10 questions for the homepage section",
+    },
     maintenance: {
       enableTitle: "Close site to visitors (Enable Maintenance)",
       enableDesc: "When enabled, customers will not be able to browse projects and will only see the maintenance page",
-      messageTitle: "Maintenance Message Title",
-      messageTitlePlaceholder: "Site under development",
-      messageText: "Explanatory Message Text for Visitors",
-      messageTextPlaceholder: "We are working on some technical updates to improve your experience",
+      messageTitleAr: "Maintenance Title (Arabic)",
+      messageTitleEn: "Maintenance Title (English)",
+      messageTitlePlaceholderAr: "الموقع قيد التطوير",
+      messageTitlePlaceholderEn: "Site under development",
+      messageTextAr: "Message Text (Arabic)",
+      messageTextEn: "Message Text (English)",
+      messageTextPlaceholderAr: "نعمل على بعض التحديثات التقنية لتحسين تجربتكم",
+      messageTextPlaceholderEn: "We are working on some technical updates to improve your experience",
     },
     developers: {
       title: "User Management",
@@ -1380,6 +1599,43 @@ export const en: Dictionary = {
       viewLink: "View Public Link",
     },
 
+    about: {
+      headerSection: "Header section",
+      headerTitleAr: "Header title (Arabic)",
+      headerTitleEn: "Header title (English)",
+      aboutSection: "About us section",
+      aboutImage: "Section image",
+      aboutImageUpload: "Click to upload the about image",
+      aboutImageHint: "Recommended landscape image",
+      badgeAr: "Badge text (Arabic)",
+      badgeEn: "Badge text (English)",
+      titleAr: "Title (Arabic)",
+      titleEn: "Title (English)",
+      subtitleAr: "Subtitle (Arabic)",
+      subtitleEn: "Subtitle (English)",
+      descriptionAr: "Description (Arabic)",
+      descriptionEn: "Description (English)",
+      features: "Features",
+      featureAr: "Feature (Arabic)",
+      featureEn: "Feature (English)",
+      addFeature: "Add feature",
+      buttonTextAr: "Button text (Arabic)",
+      buttonTextEn: "Button text (English)",
+      profilePdf: "Company profile (PDF)",
+      profilePdfUpload: "Click to upload a PDF",
+      profilePdfHint: "PDF only",
+      visionMissionSection: "Vision and mission section",
+      visionMissionImage: "Background image",
+      visionMissionImageUpload: "Click to upload the background image",
+      missionTitleAr: "Mission title (Arabic)",
+      missionTitleEn: "Mission title (English)",
+      missionSubtitleAr: "Mission subtitle (Arabic)",
+      missionSubtitleEn: "Mission subtitle (English)",
+      visionTitleAr: "Vision title (Arabic)",
+      visionTitleEn: "Vision title (English)",
+      visionSubtitleAr: "Vision subtitle (Arabic)",
+      visionSubtitleEn: "Vision subtitle (English)",
+    },
 
     company: {
       logo: "Company logo",
@@ -1387,13 +1643,71 @@ export const en: Dictionary = {
       changeLogo: "Change logo",
       about: "About the company",
       aboutPlaceholder: "Write a short description of the company…",
-      contacts: "Contact numbers",
+      contacts: "Contact us",
       number: "Number",
+      phone: "Phone number",
+      email: "Email",
+      locationAr: "Location (Arabic)",
+      locationEn: "Location (English)",
+      socials: "Social media links",
+      facebook: "Facebook link",
+      instagram: "Instagram link",
+      twitter: "X (Twitter) link",
+      linkedin: "LinkedIn link",
       legal: "Official and legal details",
       owner: "Owner name",
+      ownerAr: "Owner name (Arabic)",
+      ownerEn: "Owner name (English)",
       commercial: "Commercial registration",
       fal: "Fal license",
       complaints: "Complaints number",
+    },
+    partners: {
+      name: "Partner name",
+      namePlaceholder: "Partner name",
+      order: "Display order",
+      moveUp: "Move up",
+      moveDown: "Move down",
+      deleteTitle: "Delete partner?",
+      deleteDescription: "This will remove the logo from the website",
+      empty: "No partner logos yet. Add the first logo to show it on the About page",
+      uploading: "Uploading...",
+    },
+    blog: {
+      add: "New article",
+      edit: "Edit article",
+      back: "Back to articles",
+      search: "Search articles...",
+      empty: "No articles yet",
+      title: "Title",
+      titleAr: "Article title (Arabic)",
+      titleEn: "Article title (English)",
+      slug: "Article URL slug (SEO)",
+      slugHint: "Used in the article link, for example /blog/real-estate-news",
+      slugRequired: "Please add a URL slug",
+      slugTaken: "This slug is already used",
+      titleRequired: "Please add an article title",
+      excerptAr: "Short description (Arabic)",
+      excerptEn: "Short description (English)",
+      cover: "Cover image",
+      coverUpload: "Click to upload a cover image",
+      contentAr: "Article content (Arabic)",
+      contentEn: "Article content (English)",
+      publish: "Publish immediately (visible to visitors)",
+      published: "Published",
+      draft: "Draft",
+      status: "Status",
+      date: "Date",
+      details: "Article details",
+      order: "Display order",
+      authorAr: "Author (Arabic)",
+      authorEn: "Author (English)",
+      categoryAr: "Category (Arabic)",
+      categoryEn: "Category (English)",
+      moveUp: "Move up",
+      moveDown: "Move down",
+      deleteTitle: "Delete article?",
+      deleteDescription: "This will remove the article from the website",
     },
     analytics: {
       customers: "Customers",
@@ -1449,7 +1763,7 @@ export const en: Dictionary = {
     rightsSuffix: "All Rights Reserved",
     email: "marketing@maqsed.com",
     phone: "+966 55 555 5555",
-    privacyPolicy: "Privacy Policy",
+    privacyPolicy: "Terms of Use and Privacy Policy",
     termsConditions: "Terms & Conditions",
     techSupport: "Tech Support",
     socials: {

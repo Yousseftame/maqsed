@@ -1,11 +1,12 @@
 "use client";
 
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { useCompanyContent } from "@/features/company/useCompanyContent";
 
 export function WhatsAppBubble() {
   const { t } = useLocale();
-  const phone = t("footer.phone").replace(/\D/g, "");
-  const href = `https://wa.me/${phone}?text=${encodeURIComponent(t("whatsappBubble.message"))}`;
+  const { phone } = useCompanyContent();
+  const href = `https://wa.me/${phone.replace(/\D/g, "")}?text=${encodeURIComponent(t("whatsappBubble.message"))}`;
 
   return (
     <div className="fixed right-[5.75rem] bottom-6 z-[60] size-[52px] sm:right-[6.25rem] sm:bottom-8">

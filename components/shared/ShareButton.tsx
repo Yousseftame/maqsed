@@ -8,21 +8,26 @@ import { cn } from "@/lib/utils";
 
 type ShareButtonProps = {
   title: string;
-  variant?: "property" | "unit";
+  variant?: "property" | "unit" | "blog";
+  url?: string;
   className?: string;
 };
 
-function getPageUrl() {
-  if (typeof window === "undefined") return "";
-  return window.location.href;
+function resolveUrl(url?: string) {
+  if (typeof window === "undefined") return url || "";
+  if (!url) return window.location.href;
+  if (/^https?:\/\//i.test(url)) return url;
+  return `${window.location.origin}${url.startsWith("/") ? url : `/${url}`}`;
 }
 
-function buildWhatsAppMessage(title: string, url: string, isRtl: boolean, variant: "property" | "unit") {
+function buildWhatsAppMessage(title: string, url: string, isRtl: boolean, variant: "property" | "unit" | "blog") {
   if (isRtl) {
     const intro =
       variant === "unit"
         ? "يسرّنا مشاركتكم إحدى وحداتنا العقارية المميزة:"
-        : "يسرّنا مشاركتكم أحد مشاريعنا العقارية المميزة:";
+        : variant === "blog"
+          ? "يسرّنا مشاركتكم أحد مقالاتنا:"
+          : "يسرّنا مشاركتكم أحد مشاريعنا العقارية المميزة:";
     return [
       "*مقصد*",
       "",
@@ -39,7 +44,9 @@ function buildWhatsAppMessage(title: string, url: string, isRtl: boolean, varian
   const intro =
     variant === "unit"
       ? "We are pleased to share one of our distinguished residential units:"
-      : "We are pleased to share one of our distinguished real estate projects:";
+      : variant === "blog"
+        ? "We are pleased to share one of our articles:"
+        : "We are pleased to share one of our distinguished real estate projects:";
   return [
     "*Maqsed*",
     "",
@@ -53,7 +60,7 @@ function buildWhatsAppMessage(title: string, url: string, isRtl: boolean, varian
   ].join("\n");
 }
 
-export function ShareButton({ title, variant = "property", className }: ShareButtonProps) {
+export function ShareButton({ title, variant = "property", url, className }: ShareButtonProps) {
   const { isRtl } = useLocale();
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -81,12 +88,12 @@ export function ShareButton({ title, variant = "property", className }: ShareBut
   }, [open]);
 
   async function copyLink() {
-    const url = getPageUrl();
+    const pageUrl = resolveUrl(url);
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(pageUrl);
     } catch {
       const input = document.createElement("textarea");
-      input.value = url;
+      input.value = pageUrl;
       input.setAttribute("readonly", "");
       input.style.position = "absolute";
       input.style.left = "-9999px";
@@ -102,14 +109,19 @@ export function ShareButton({ title, variant = "property", className }: ShareBut
   }
 
   function shareWhatsApp() {
-    const url = getPageUrl();
-    const message = buildWhatsAppMessage(title, url, isRtl, variant);
+    const pageUrl = resolveUrl(url);
+    const message = buildWhatsAppMessage(title, pageUrl, isRtl, variant);
     window.open(`https://wa.me/?text=${encodeURIComponent(message)}`, "_blank", "noopener,noreferrer");
     setOpen(false);
   }
 
   return (
-    <div ref={rootRef} className="relative">
+    <div
+      ref={rootRef}
+      className="relative"
+      onClick={(event) => event.stopPropagation()}
+      onPointerDown={(event) => event.stopPropagation()}
+    >
       <button
         type="button"
         onClick={() => setOpen((value) => !value)}

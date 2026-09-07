@@ -1,5 +1,5 @@
-import { AdminPagePlaceholder } from "@/features/admin/components/AdminPagePlaceholder";
+import { BlogSection } from "@/features/admin/blog/BlogSection";
 
 export default function AdminBlogPage() {
-  return <AdminPagePlaceholder />;
+  return <BlogSection />;
 }

@@ -274,6 +274,10 @@
   }
 }
 
+html.maintenance-pending body {
+  visibility: hidden !important;
+}
+
 body.is-admin nextjs-portal,
 body.is-admin #chatbase-bubble-button,
 body.is-admin #chatbase-message-bubbles,
@@ -281,7 +285,11 @@ body.is-admin #chatbase-bubble-window,
 body.is-developer nextjs-portal,
 body.is-developer #chatbase-bubble-button,
 body.is-developer #chatbase-message-bubbles,
-body.is-developer #chatbase-bubble-window {
+body.is-developer #chatbase-bubble-window,
+body.is-maintenance nextjs-portal,
+body.is-maintenance #chatbase-bubble-button,
+body.is-maintenance #chatbase-message-bubbles,
+body.is-maintenance #chatbase-bubble-window {
   display: none !important;
 }
 
