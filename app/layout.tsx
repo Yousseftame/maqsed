@@ -44,9 +44,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
-        {/* <Script id="chatbase-embed" strategy="afterInteractive">
+        <Script id="chatbase-embed" strategy="afterInteractive">
           {chatbaseEmbed}
-        </Script> */}
+        </Script>
         <LocaleProvider>
           <QueryProvider>
             <AuthProvider>

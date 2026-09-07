@@ -138,8 +138,20 @@ export function OfferDetailModal({ offer, onClose }: Props) {
               </div>
             </div>
 
-            {/* Body — 2 columns, no scroll */}
-            <div className="p-5 grid grid-cols-2 gap-5">
+            {/* Body */}
+            <div className="p-5 space-y-4 max-h-[calc(90vh-160px)] overflow-y-auto">
+              {(offer.description || "").trim() ? (
+                <div>
+                  <SectionTitle>{isRtl ? "وصف العرض" : "Description"}</SectionTitle>
+                  <div className="rounded-[14px] border border-[#F0F0F0] bg-[#FAFAFA] px-4 py-3 max-h-36 overflow-y-auto">
+                    <p className="text-sm font-medium text-[#0a0f1d] whitespace-pre-wrap leading-relaxed">
+                      {(offer.description || "").trim()}
+                    </p>
+                  </div>
+                </div>
+              ) : null}
+
+              <div className="grid grid-cols-2 gap-5">
               {/* LEFT COLUMN */}
               <div className="space-y-4">
                 {/* Developer Info */}
@@ -241,6 +253,7 @@ export function OfferDetailModal({ offer, onClose }: Props) {
                     </div>
                   </div>
                 </div>
+              </div>
               </div>
             </div>
 

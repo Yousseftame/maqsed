@@ -26,6 +26,7 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
 
   const [formData, setFormData] = useState({
     title: "",
+    description: "",
     developerName: "",
     projectName: "",
     developerEmail: "",
@@ -39,6 +40,7 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
     if (!offer) return;
     setFormData({
       title: offer.title || "",
+      description: offer.description || "",
       developerName: offer.developerName || "",
       projectName: offer.projectName || "",
       developerEmail: offer.developerEmail || "",
@@ -56,7 +58,7 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
   const vat = subtotal * 0.15;
   const total = subtotal + vat;
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
@@ -93,6 +95,7 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
     try {
       await offersService.updateOffer(offer.id, {
         ...formData,
+        description: formData.description.trim(),
         agreementTypes,
         services,
         subtotal,
@@ -173,6 +176,18 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
                     <div>
                       <label className={labelClass}>{isRtl ? "اسم المشروع" : "Project Name"}</label>
                       <input name="projectName" value={formData.projectName} onChange={handleChange} required className={inputClass} placeholder={isRtl ? "اسم المشروع..." : "Project name..."} />
+                    </div>
+                    <div className="sm:col-span-2">
+                      <label className={labelClass}>{isRtl ? "وصف العرض" : "Description"}</label>
+                      <textarea
+                        name="description"
+                        dir="auto"
+                        rows={4}
+                        value={formData.description}
+                        onChange={handleChange}
+                        placeholder={isRtl ? "أضف وصفاً للعرض (اختياري)..." : "Add an offer description (optional)..."}
+                        className="w-full resize-none rounded-[14px] border border-[#0a0f1d]/10 bg-[#F4F4F4] px-4 py-3 text-sm font-bold text-[#0a0f1d] outline-none transition-colors focus:border-[#0a0f1d] focus:bg-white placeholder:font-medium placeholder:text-[#8c8c8c]"
+                      />
                     </div>
                   </div>
                 </div>

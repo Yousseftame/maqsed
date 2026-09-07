@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { Bed, Bath, LayoutGrid, CheckCircle2, Home, Share2, Printer, Building2, Heart, Calendar, ArrowUpRight, ArrowUpLeft, ChevronLeft, ChevronRight, Car, Sofa, Coffee, Maximize, User, Headset } from "lucide-react";
+import { Bed, Bath, LayoutGrid, CheckCircle2, Home, Printer, Building2, Heart, ArrowUpRight, ArrowUpLeft, ChevronLeft, ChevronRight, Car, Sofa, Coffee, Maximize, User, Headset } from "lucide-react";
 import type { UnitListing } from "@/features/units/data/units";
 import { getPropertyById } from "@/features/properties/data/listings";
 import { useLocale } from "@/components/providers/LocaleProvider";
@@ -10,6 +10,7 @@ import { useState } from "react";
 import { Lightbox } from "@/components/ui/Lightbox";
 import { cn } from "@/lib/utils";
 import { SalesContactModal } from "./SalesContactModal";
+import { ShareButton } from "@/components/shared/ShareButton";
 
 type UnitDetailProps = {
   unit: UnitListing;
@@ -105,18 +106,26 @@ export function UnitDetail({ unit }: UnitDetailProps) {
             </div>
             
             <div className="flex flex-wrap items-center gap-3">
-              <p className="text-xl font-bold text-gray-700 mt-2">
-                {isRtl ? "السعر —" : "Price —"} 
-                {!isSold && <span className="text-[#6A2B92] font-black ms-2" dir="ltr">{unit.price}</span>}
-              </p>
+              <ShareButton
+                variant="unit"
+                title={
+                  property
+                    ? `${isRtl ? property.titleAr : property.title} - ${unit.id}`
+                    : `${isRtl ? unit.typeAr : unit.typeEn} - ${unit.id}`
+                }
+              />
+              {property ? (
+                <Link href={`/properties/${property.id}`} className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#6A2B92]">
+                  {isRtl ? <ArrowUpLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
+                  {isRtl ? "العودة للمشروع" : "Back to Project"}
+                </Link>
+              ) : null}
             </div>
 
-            {property && (
-              <Link href={`/properties/${property.id}`} className="mt-2 flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#6A2B92]">
-                {isRtl ? <ArrowUpLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
-                {isRtl ? "العودة للمشروع" : "Back to Project"}
-              </Link>
-            )}
+            <p className="text-xl font-bold text-gray-700">
+              {isRtl ? "السعر —" : "Price —"} 
+              {!isSold && <span className="text-[#6A2B92] font-black ms-2" dir="ltr">{unit.price}</span>}
+            </p>
           </div>
         </div>
       </section>
@@ -173,29 +182,12 @@ export function UnitDetail({ unit }: UnitDetailProps) {
                   isSold ? "bg-[#f7f7f7] text-gray-400 cursor-not-allowed" : "bg-[#f7f7f7] text-gray-700 hover:bg-gray-100"
                 )} disabled={isSold}>
                   <Headset className="h-5 w-5" />
-                  {isRtl ? "تواصل مع المبيعات" : "Contact Sales"}
+                  {isRtl ? "طلب اهتمام" : "Request Interest"}
                 </button>
                 <p className="mt-4 text-xs font-medium text-gray-400 text-center">
                   {isSold 
                     ? (isRtl ? "الوحدة مباعة" : "Unit is sold") 
                     : (isRtl ? "سجل اهتمامك وسيتواصل معك فريقنا" : "Register and our team will contact you")
-                  }
-                </p>
-              </div>
-
-              {/* Card 2: Schedule Visit */}
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <button className={cn(
-                  "flex w-full items-center justify-center gap-2 rounded-full px-6 py-4 text-sm font-bold transition-all",
-                  isSold ? "bg-[#f7f7f7] text-gray-400 cursor-not-allowed" : "bg-[#6A2B92] text-white hover:bg-[#522070] shadow-md"
-                )} disabled={isSold}>
-                  <Calendar className="h-5 w-5" />
-                  {isRtl ? "حدد موعد للزيارة" : "Schedule a Visit"}
-                </button>
-                <p className="mt-4 text-xs font-medium text-gray-400 text-center">
-                  {isSold 
-                    ? (isRtl ? "الوحدة مباعة" : "Unit is sold") 
-                    : (isRtl ? "الزيارة متاحة من 10 ص حتى 10 م" : "Visits available from 10 AM to 10 PM")
                   }
                 </p>
               </div>

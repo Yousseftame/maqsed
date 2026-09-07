@@ -51,7 +51,7 @@ const initialForm = {
   mobileNumber: "",
 };
 
-export function SellForm() {
+export function SellForm({ embedded = false }: { embedded?: boolean }) {
   const { t, isRtl } = useLocale();
   const [form, setForm] = useState(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -77,9 +77,9 @@ export function SellForm() {
     }
   };
 
-  return (
-    <div className="rounded-3xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(10,15,29,0.08)] sm:px-10 sm:py-12 lg:px-14 h-full">
-      <div className="mb-10 border-b border-gray-100 pb-8">
+  const content = (
+    <>
+      <div className={cn("mb-10 border-b border-gray-100 pb-8", embedded && "pt-2")}>
         <p className="mb-3 text-sm font-medium tracking-wide text-[#8c8c8c]">
           {t("sellPage.form.pill")}
         </p>
@@ -259,6 +259,14 @@ export function SellForm() {
           </button>
         </div>
       </form>
+    </>
+  );
+
+  if (embedded) return content;
+
+  return (
+    <div className="rounded-3xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(10,15,29,0.08)] sm:px-10 sm:py-12 lg:px-14 h-full">
+      {content}
     </div>
   );
 }

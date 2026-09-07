@@ -95,10 +95,20 @@ export function CustomersSection() {
     const q = query.trim().toLowerCase();
     return salesRequests.filter((row) => {
       if (statusFilter !== "all" && row.status !== statusFilter) return false;
-      if (q && !row.fullName.toLowerCase().includes(q) && !row.phone.includes(q) && !row.unitNumber.toLowerCase().includes(q)) return false;
+      const paymentLabels = (row.paymentTypes ?? [])
+        .map((type) => (type === "cash" ? `${t("admin.customers.cash")} cash` : `${t("admin.customers.finance")} finance`))
+        .join(" ")
+        .toLowerCase();
+      if (
+        q &&
+        !row.fullName.toLowerCase().includes(q) &&
+        !row.phone.includes(q) &&
+        !row.unitNumber.toLowerCase().includes(q) &&
+        !paymentLabels.includes(q)
+      ) return false;
       return true;
     });
-  }, [salesRequests, query, statusFilter]);
+  }, [salesRequests, query, statusFilter, t]);
 
   const totalRequests = contactRequests.length + sellRequests.length + salesRequests.length;
   const newRequestsCount = contactRequests.filter(r => r.status === "new").length + sellRequests.filter(r => r.status === "new").length + salesRequests.filter(r => r.status === "new").length;
@@ -270,7 +280,26 @@ export function CustomersSection() {
         </div>
       ),
     },
-
+    {
+      id: "paymentMethod",
+      header: t("admin.customers.paymentMethod") || "Payment method",
+      cell: (row) => {
+        const types = row.paymentTypes ?? [];
+        if (!types.length) return <span className="text-[#6B7280]">—</span>;
+        return (
+          <div className="flex flex-wrap gap-1.5">
+            {types.map((type) => (
+              <span
+                key={type}
+                className="inline-flex items-center rounded-full bg-[#F4F4F4] px-2.5 py-1 text-xs font-bold text-[#0a0f1d]"
+              >
+                {type === "cash" ? t("admin.customers.cash") : t("admin.customers.finance")}
+              </span>
+            ))}
+          </div>
+        );
+      },
+    },
     {
       id: "status",
       header: t("admin.customers.status") || "Status",

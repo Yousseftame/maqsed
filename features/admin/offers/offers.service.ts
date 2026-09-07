@@ -10,6 +10,7 @@ export interface OfferData {
   id: string;
   offerNumber?: string;
   title: string;
+  description?: string;
   projectName: string;
   developerName: string;
   developerEmail: string;
@@ -92,6 +93,7 @@ class OffersService {
     id: string,
     data: {
       title: string;
+      description?: string;
       projectName: string;
       developerName: string;
       developerEmail: string;

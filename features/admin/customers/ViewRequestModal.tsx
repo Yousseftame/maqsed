@@ -91,6 +91,14 @@ export function ViewRequestModal({
                 <Field label={t("contactPage.form.phone") || "Phone"} value={(request as SalesRequest).phone} dir="ltr" />
                 <Field label={t("contactPage.form.email") || "Email"} value={(request as SalesRequest).email} dir="ltr" />
                 <Field label={t("admin.customers.unit") || "Unit"} value={(request as SalesRequest).unitNumber} />
+                <Field
+                  label={t("admin.customers.paymentMethod") || "Payment method"}
+                  value={
+                    ((request as SalesRequest).paymentTypes ?? [])
+                      .map((type) => (type === "cash" ? t("admin.customers.cash") : t("admin.customers.finance")))
+                      .join(" · ") || "—"
+                  }
+                />
                 <div className="sm:col-span-2">
                   <Field label={t("admin.customers.project") || "Project"} value={(request as SalesRequest).projectName} />
                 </div>

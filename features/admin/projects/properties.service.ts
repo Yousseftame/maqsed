@@ -39,6 +39,11 @@ export type PropertyModel = {
   blueprintImage: string;
 };
 
+export type NearbyPlace = {
+  name: string;
+  minutes: number;
+};
+
 export type Property = {
   id: string;
   name: string;
@@ -46,6 +51,7 @@ export type Property = {
   neighborhoodId: string;
   mapsLink: string;
   brochureLink?: string;
+  description?: string;
   projectType: string;
   commissionOption?: string;
   category: "luxury" | "medium" | "economic" | string;
@@ -66,6 +72,14 @@ export type Property = {
   locations: string[];
 
   images: string[];
+  nearbyPlaces?: NearbyPlace[];
+  partnerLogos?: string[];
+  developerName?: string;
+  developerLogo?: string;
+  contractorName?: string;
+  contractorLogo?: string;
+
+  views?: number;
 
   createdAt?: Timestamp | any;
   updatedAt?: Timestamp | any;
@@ -146,7 +160,7 @@ export const propertiesService = {
   },
 
   async uploadImage(file: File, folder: string = "properties"): Promise<string> {
-    const uniqueName = `${Date.now()}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+    const uniqueName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
     const storageRef = ref(storage, `${folder}/${uniqueName}`);
     await uploadBytes(storageRef, file);
     return getDownloadURL(storageRef);

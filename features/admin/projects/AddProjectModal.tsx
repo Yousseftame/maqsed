@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
-import { UploadCloud, X, Loader2, Image as ImageIcon, Trash2, ChevronDown } from "lucide-react";
+import { X, Loader2, ChevronDown } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { citiesService } from "@/features/admin/cities/cities.service";
 import { propertiesService } from "@/features/admin/projects/properties.service";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "./ProjectImageGallery";
+import { NearbyPlacesEditor, sanitizeNearbyPlaces, type NearbyPlaceInput } from "./NearbyPlacesEditor";
+import { PartyLogoField, revokeLogoPreview, resolveLogoUpload } from "./PartyLogoField";
 
 type AddProjectModalProps = {
   isOpen: boolean;
@@ -23,7 +26,10 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
       neighborhoodId: "",
       mapsLink: "",
       brochureLink: "",
+      description: "",
       projectType: "",
+      developerName: "",
+      contractorName: "",
       category: "luxury",
       buildingsCount: 1,
       totalUnits: 1,
@@ -37,43 +43,41 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
     },
   });
 
+  const queryClient = useQueryClient();
+  const { locale, t } = useLocale();
+  const [images, setImages] = useState<ProjectGalleryImage[]>([]);
+  const [partnerLogos, setPartnerLogos] = useState<ProjectGalleryImage[]>([]);
+  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlaceInput[]>([]);
+  const [developerLogo, setDeveloperLogo] = useState<ProjectGalleryImage | null>(null);
+  const [contractorLogo, setContractorLogo] = useState<ProjectGalleryImage | null>(null);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
     } else {
       document.body.style.overflow = "unset";
+      setImages((prev) => {
+        revokeGalleryPreviews(prev);
+        return [];
+      });
+      setPartnerLogos((prev) => {
+        revokeGalleryPreviews(prev);
+        return [];
+      });
+      setNearbyPlaces([]);
+      setDeveloperLogo((prev) => {
+        revokeLogoPreview(prev);
+        return null;
+      });
+      setContractorLogo((prev) => {
+        revokeLogoPreview(prev);
+        return null;
+      });
     }
     return () => {
       document.body.style.overflow = "unset";
     };
   }, [isOpen]);
-
-  const queryClient = useQueryClient();
-  const { locale, t } = useLocale();
-  const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      const validFiles = files.filter((f) => {
-        if (f.size > 700 * 1024) {
-          toast.error(`حجم الصورة ${f.name} يتجاوز 700 كيلوبايت`);
-          return false;
-        }
-        return true;
-      });
-
-      const newImages = validFiles.map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
-      setImages((prev) => [...prev, ...newImages]);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
 
   const { data: cities = [], isLoading: isLoadingCities } = useQuery({
     queryKey: ["cities"],
@@ -89,7 +93,22 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
       const id = propertiesService.generateId();
       
       const uploadedUrls = await Promise.all(
-        images.map((img) => propertiesService.uploadImage(img.file, `properties/${id}`))
+        images.map((img) => propertiesService.uploadImage(img.file as File, `properties/${id}`))
+      );
+      const uploadedPartnerLogos = await Promise.all(
+        partnerLogos.map((img) => propertiesService.uploadImage(img.file as File, `properties/${id}/partners`))
+      );
+      const developerLogoResult = await resolveLogoUpload(
+        developerLogo,
+        `properties/${id}/developer`,
+        undefined,
+        propertiesService.uploadImage
+      );
+      const contractorLogoResult = await resolveLogoUpload(
+        contractorLogo,
+        `properties/${id}/contractor`,
+        undefined,
+        propertiesService.uploadImage
       );
 
       await propertiesService.addProperty({
@@ -97,8 +116,9 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         name: data.name,
         cityId: data.cityId,
         neighborhoodId: data.neighborhoodId,
-        mapsLink: data.mapsLink,
-        brochureLink: data.brochureLink,
+        mapsLink: data.mapsLink || "",
+        brochureLink: data.brochureLink || "",
+        description: (data.description || "").trim(),
         projectType: data.projectType,
         category: data.category,
         status: "active",
@@ -112,13 +132,19 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         offers: data.offers,
         locations: data.locations,
         images: uploadedUrls,
+        nearbyPlaces: sanitizeNearbyPlaces(nearbyPlaces),
+        partnerLogos: uploadedPartnerLogos,
+        developerName: (data.developerName || "").trim(),
+        developerLogo: developerLogoResult.url,
+        contractorName: (data.contractorName || "").trim(),
+        contractorLogo: contractorLogoResult.url,
+        views: 0,
       });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["properties"] });
       toast.success(t("admin.ui.success") || "Project created successfully");
       reset();
-      setImages([]);
       onClose();
     },
     onError: (err: any) => {
@@ -181,6 +207,16 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                     <input {...register("name")} className={inputClass} />
                   </div>
 
+                  <div className="mb-5">
+                    <label className={labelClass}>وصف المشروع (اختياري)</label>
+                    <textarea
+                      {...register("description")}
+                      rows={4}
+                      placeholder="أضف وصفاً مختصراً عن المشروع..."
+                      className="w-full resize-none rounded-[16px] bg-[#F4F4F4] px-4 py-3 text-sm font-medium text-[#0a0f1d] outline-none transition-colors placeholder:text-[#8c8c8c] focus:bg-[#EAEAEA]"
+                    />
+                  </div>
+
                   <div className="mb-5 grid gap-5 sm:grid-cols-2">
                     <div>
                       <label className={labelClass}>المدينة</label>
@@ -214,7 +250,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
 
                   <div className="mb-5 grid gap-5 sm:grid-cols-2">
                     <div className="sm:col-span-2">
-                      <label className={labelClass}>رابط الموقع (Google Maps)</label>
+                      <label className={labelClass}>رابط موقع المشروع (اختياري)</label>
                       <input {...register("mapsLink")} placeholder="https://maps.google.com/..." className={inputClass} dir="ltr" />
                     </div>
                   </div>
@@ -235,9 +271,34 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                           <option value="شقق سكنية">شقق سكنية</option>
                           <option value="فلل">فلل</option>
                           <option value="عمائر">عمائر</option>
+                          <option value="ارض">ارض</option>
+                          <option value="منزل متعدد الطوابق TownHouse">منزل متعدد الطوابق TownHouse</option>
                         </select>
                         <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-6 grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className={labelClass}>اسم المطور (اختياري)</label>
+                      <input {...register("developerName")} placeholder="اسم المطور" className={`${inputClass} mb-3`} />
+                      <PartyLogoField
+                        label="شعار المطور"
+                        logo={developerLogo}
+                        onChange={setDeveloperLogo}
+                        disabled={addMutation.isPending}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>اسم المقاول (اختياري)</label>
+                      <input {...register("contractorName")} placeholder="اسم المقاول" className={`${inputClass} mb-3`} />
+                      <PartyLogoField
+                        label="شعار المقاول"
+                        logo={contractorLogo}
+                        onChange={setContractorLogo}
+                        disabled={addMutation.isPending}
+                      />
                     </div>
                   </div>
 
@@ -350,40 +411,36 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
 
                 <hr className="my-8 border-[#0a0f1d]/10" />
 
+                <div className={formSectionClass}>
+                  <NearbyPlacesEditor
+                    places={nearbyPlaces}
+                    onChange={setNearbyPlaces}
+                    disabled={addMutation.isPending}
+                  />
+                </div>
+
+                <hr className="my-8 border-[#0a0f1d]/10" />
+
                 {/* الصور والوسائط */}
                 <div className={formSectionClass}>
                   <h3 className={sectionTitleClass}>الصور والوسائط</h3>
-                  
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-[#0a0f1d]/20 bg-[#F4F4F4] py-14 transition-colors hover:border-[#0a0f1d]/40 hover:bg-[#EAEAEA]">
-                    <UploadCloud className="mb-4 h-10 w-10 text-[#8c8c8c]" />
-                    <p className="mb-1 text-base font-bold text-[#0a0f1d]">اضغط هنا لرفع الصور</p>
-                    <p className="text-sm font-medium text-[#8c8c8c]">المقاس: 1200x800 بكسل (نسبة 3:2) | الحد الأقصى: 700KB</p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={handleImageChange}
-                      disabled={addMutation.isPending}
-                    />
-                  </label>
+                  <ProjectImageGallery
+                    images={images}
+                    onChange={setImages}
+                    disabled={addMutation.isPending}
+                  />
+                </div>
 
-                  {images.length > 0 && (
-                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                      {images.map((img, index) => (
-                        <div key={index} className="group relative aspect-[3/2] overflow-hidden rounded-[16px] bg-[#F4F4F4]">
-                          <img src={img.preview} alt="" className="h-full w-full object-cover" />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(index)}
-                            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-500 opacity-0 shadow backdrop-blur transition-opacity hover:bg-white group-hover:opacity-100"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <hr className="my-8 border-[#0a0f1d]/10" />
+
+                <div className={formSectionClass}>
+                  <h3 className={sectionTitleClass}>شركاء النجاح</h3>
+                  <ProjectImageGallery
+                    images={partnerLogos}
+                    onChange={setPartnerLogos}
+                    disabled={addMutation.isPending}
+                    variant="logos"
+                  />
                 </div>
 
               </form>

@@ -198,6 +198,7 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
                         <option value="فيلا">فيلا</option>
                         <option value="شقة مزدوجة (دوبلكس)">شقة مزدوجة (دوبلكس)</option>
                         <option value="دور">دور</option>
+                        <option value="منزل متعدد الطوابق TownHouse">منزل متعدد الطوابق TownHouse</option>
                       </select>
                       <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
                     </div>

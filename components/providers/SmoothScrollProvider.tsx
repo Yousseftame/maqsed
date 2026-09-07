@@ -1,6 +1,14 @@
 "use client";
 
-import { useEffect, useRef, useState, type ReactNode } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+  type ReactNode,
+} from "react";
 import { usePathname } from "next/navigation";
 import Lenis from "lenis";
 import { ScrollToTopButton } from "@/components/layout/ScrollToTopButton";
@@ -21,12 +29,38 @@ function syncLenisToPage(instance: Lenis, { toTop }: { toTop: boolean }) {
   }
 }
 
+const SmoothScrollContext = createContext<{
+  lock: () => void;
+  unlock: () => void;
+}>({
+  lock: () => {},
+  unlock: () => {},
+});
+
+export function useLockPageScroll(locked: boolean) {
+  const { lock, unlock } = useContext(SmoothScrollContext);
+
+  useEffect(() => {
+    if (!locked) return;
+    lock();
+    return unlock;
+  }, [locked, lock, unlock]);
+}
+
 export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const disableSmooth =
     pathname.startsWith("/admin") || pathname.startsWith("/developer");
   const lenisRef = useRef<Lenis | null>(null);
   const [lenis, setLenis] = useState<Lenis | null>(null);
+
+  const lock = useCallback(() => {
+    lenisRef.current?.stop();
+  }, []);
+
+  const unlock = useCallback(() => {
+    lenisRef.current?.start();
+  }, []);
 
   useEffect(() => {
     if (disableSmooth) return;
@@ -85,9 +119,9 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   }, [pathname]);
 
   return (
-    <>
+    <SmoothScrollContext.Provider value={{ lock, unlock }}>
       {children}
       {/* {disableSmooth ? null : <ScrollToTopButton lenis={lenis} />} */}
-    </>
+    </SmoothScrollContext.Provider>
   );
 }

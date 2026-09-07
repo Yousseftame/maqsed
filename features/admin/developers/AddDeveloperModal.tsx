@@ -219,7 +219,7 @@ export function AddDeveloperModal({ isOpen, onClose }: AddDeveloperModalProps) {
                     </div>
                     <div>
                       <label className={labelClass}>
-                        {t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}
+                        {t("admin.developers.createForm.usersPerDeveloper")}
                       </label>
                       <input 
                         type="number"

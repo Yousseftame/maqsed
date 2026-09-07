@@ -257,7 +257,7 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
                         </div>
                         <div>
                           <label className={labelClass}>
-                            {t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}
+                            {t("admin.developers.createForm.usersPerDeveloper")}
                           </label>
                           <input
                             type="number"

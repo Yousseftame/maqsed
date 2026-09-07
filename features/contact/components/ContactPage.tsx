@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { useId, useState, type FormEvent } from "react";
+import { AnimatePresence, motion } from "motion/react";
 import toast from "react-hot-toast";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { ArrowUpRight, Mail, Phone, MapPin, Loader2 } from "lucide-react";
@@ -61,9 +62,11 @@ const initialForm = {
 
 export function ContactPage() {
   const { t, locale, isRtl } = useLocale();
+  const [activeTab, setActiveTab] = useState<"contact" | "sell">("contact");
   const [subject, setSubject] = useState(subjects[0]);
   const [form, setForm] = useState(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const tabsId = useId();
 
   const update = (key: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -164,113 +167,172 @@ export function ContactPage() {
       </section>
 
       <section className="relative z-10 -mt-10 px-6 pb-24 md:px-12 lg:px-20 lg:pb-32">
-        <div className="mx-auto max-w-[1400px] grid grid-cols-1 gap-8 xl:grid-cols-2 xl:gap-12 items-start">
-          <div className="rounded-3xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(10,15,29,0.08)] sm:px-10 sm:py-12 lg:px-14">
-          <div className="mb-10 border-b border-gray-100 pb-8">
-            <p className="mb-3 text-sm font-medium tracking-wide text-[#8c8c8c]">
-              {t("contactPage.form.pill")}
-            </p>
-            <h2 className="text-3xl font-bold tracking-tight text-[#6A2B92] sm:text-4xl">
-              {t("contactPage.form.title")}
-            </h2>
-            <p className="mt-3 max-w-2xl text-base font-semibold leading-snug text-[#8c8c8c]">
-              {t("contactPage.form.description")}
-            </p>
+        <div className="mx-auto max-w-5xl rounded-3xl border border-gray-200 bg-white shadow-[0_20px_60px_rgba(10,15,29,0.08)]">
+          <div className="border-b border-gray-100 px-4 pt-4 sm:px-6 sm:pt-6 lg:px-8">
+            <div
+              role="tablist"
+              aria-label={t("contactPage.hero.title1")}
+              className="grid grid-cols-2 gap-1.5 rounded-2xl bg-[#F4F4F4] p-1.5"
+            >
+              {([
+                { id: "contact" as const, label: t("contactPage.tabs.contact") },
+                { id: "sell" as const, label: t("contactPage.tabs.sell") },
+              ]).map((tab) => {
+                const selected = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    role="tab"
+                    id={`${tabsId}-${tab.id}`}
+                    aria-selected={selected}
+                    aria-controls={`${tabsId}-panel-${tab.id}`}
+                    onClick={() => setActiveTab(tab.id)}
+                    className={cn(
+                      "rounded-[14px] px-3 py-3.5 text-center text-sm font-bold leading-snug transition-all duration-300 sm:px-5 sm:text-base",
+                      selected
+                        ? "bg-[#6A2B92] text-white shadow-[0_8px_20px_rgba(106,43,146,0.28)]"
+                        : "text-[#6B7280] hover:bg-white hover:text-[#6A2B92]"
+                    )}
+                  >
+                    {tab.label}
+                  </button>
+                );
+              })}
+            </div>
           </div>
 
-          <form onSubmit={onSubmit} className="flex flex-col gap-8">
-            <div className="flex flex-col gap-3">
-              <span className="text-sm font-medium tracking-wide text-[#8c8c8c]">
-                {t("contactPage.form.subject")}
-              </span>
-              <div className="flex flex-wrap gap-2.5">
-                {subjects.map((item) => {
-                  const active = subject === item;
-                  return (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => setSubject(item)}
-                      className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-300 ${
-                        active
-                          ? "border-[#6A2B92] bg-[#6A2B92] text-white"
-                          : "border-gray-200 bg-white text-[#6A2B92] hover:border-[#6A2B92]"
-                      }`}
-                    >
-                      {t(`contactPage.subjects.${item}`)}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+          <div className="px-6 py-10 sm:px-10 sm:py-12 lg:px-14">
+            <AnimatePresence mode="wait">
+              {activeTab === "contact" ? (
+                <motion.div
+                  key="contact"
+                  role="tabpanel"
+                  id={`${tabsId}-panel-contact`}
+                  aria-labelledby={`${tabsId}-contact`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <div className="mb-10 border-b border-gray-100 pb-8">
+                    <p className="mb-3 text-sm font-medium tracking-wide text-[#8c8c8c]">
+                      {t("contactPage.form.pill")}
+                    </p>
+                    <h2 className="text-3xl font-bold tracking-tight text-[#6A2B92] sm:text-4xl">
+                      {t("contactPage.form.title")}
+                    </h2>
+                    <p className="mt-3 max-w-2xl text-base font-semibold leading-snug text-[#8c8c8c]">
+                      {t("contactPage.form.description")}
+                    </p>
+                  </div>
 
-            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
-              <Field label={t("contactPage.form.fullName")}>
-                <input
-                  required
-                  value={form.fullName}
-                  onChange={(e) => update("fullName", e.target.value)}
-                  className={inputClass}
-                  placeholder={t("contactPage.form.fullNamePlaceholder")}
-                />
-              </Field>
-              <Field label={t("contactPage.form.email")}>
-                <input
-                  required
-                  type="email"
-                  value={form.email}
-                  onChange={(e) => update("email", e.target.value)}
-                  className={inputClass}
-                  placeholder={t("contactPage.form.emailPlaceholder")}
-                />
-              </Field>
-              <Field label={t("contactPage.form.phone")} className="sm:col-span-2">
-                <input
-                  type="tel"
-                  required
-                  value={form.phone}
-                  onChange={(e) => update("phone", e.target.value.replace(/[^\d+]/g, ""))}
-                  className={inputClass}
-                  placeholder={t("contactPage.form.phonePlaceholder")}
-                  dir="ltr"
-                />
-              </Field>
-              <Field label={t("contactPage.form.message")} className="sm:col-span-2">
-                <textarea
-                  required
-                  rows={5}
-                  value={form.message}
-                  onChange={(e) => update("message", e.target.value)}
-                  className={`${inputClass} resize-none leading-relaxed`}
-                  placeholder={t("contactPage.form.messagePlaceholder")}
-                />
-              </Field>
-            </div>
+                  <form onSubmit={onSubmit} className="flex flex-col gap-8">
+                    <div className="flex flex-col gap-3">
+                      <span className="text-sm font-medium tracking-wide text-[#8c8c8c]">
+                        {t("contactPage.form.subject")}
+                      </span>
+                      <div className="flex flex-wrap gap-2.5">
+                        {subjects.map((item) => {
+                          const active = subject === item;
+                          return (
+                            <button
+                              key={item}
+                              type="button"
+                              onClick={() => setSubject(item)}
+                              className={`rounded-full border px-4 py-2 text-sm font-semibold transition-colors duration-300 ${
+                                active
+                                  ? "border-[#6A2B92] bg-[#6A2B92] text-white"
+                                  : "border-gray-200 bg-white text-[#6A2B92] hover:border-[#6A2B92]"
+                              }`}
+                            >
+                              {t(`contactPage.subjects.${item}`)}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
 
-            <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
-              <p className="max-w-sm text-sm font-medium leading-snug text-[#8c8c8c]">
-                {t("contactPage.form.agreement")}
-              </p>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#17C3B3] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none"
-              >
-                {isSubmitting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <>
-                    {t("contactPage.form.submit")}
-                    <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+                    <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+                      <Field label={t("contactPage.form.fullName")}>
+                        <input
+                          required
+                          value={form.fullName}
+                          onChange={(e) => update("fullName", e.target.value)}
+                          className={inputClass}
+                          placeholder={t("contactPage.form.fullNamePlaceholder")}
+                        />
+                      </Field>
+                      <Field label={t("contactPage.form.email")}>
+                        <input
+                          required
+                          type="email"
+                          value={form.email}
+                          onChange={(e) => update("email", e.target.value)}
+                          className={inputClass}
+                          placeholder={t("contactPage.form.emailPlaceholder")}
+                        />
+                      </Field>
+                      <Field label={t("contactPage.form.phone")} className="sm:col-span-2">
+                        <input
+                          type="tel"
+                          required
+                          value={form.phone}
+                          onChange={(e) => update("phone", e.target.value.replace(/[^\d+]/g, ""))}
+                          className={inputClass}
+                          placeholder={t("contactPage.form.phonePlaceholder")}
+                          dir="ltr"
+                        />
+                      </Field>
+                      <Field label={t("contactPage.form.message")} className="sm:col-span-2">
+                        <textarea
+                          required
+                          rows={5}
+                          value={form.message}
+                          onChange={(e) => update("message", e.target.value)}
+                          className={`${inputClass} resize-none leading-relaxed`}
+                          placeholder={t("contactPage.form.messagePlaceholder")}
+                        />
+                      </Field>
+                    </div>
+
+                    <div className="flex flex-col gap-4 pt-4 sm:flex-row sm:items-center sm:justify-between">
+                      <p className="max-w-sm text-sm font-medium leading-snug text-[#8c8c8c]">
+                        {t("contactPage.form.agreement")}
+                      </p>
+                      <button
+                        type="submit"
+                        disabled={isSubmitting}
+                        className="group inline-flex items-center justify-center gap-2.5 rounded-full bg-[#17C3B3] px-7 py-4 text-sm font-medium tracking-wide text-white transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] hover:bg-white hover:text-[#17C3B3] hover:ring-1 hover:ring-[#17C3B3]/15 active:scale-[0.98] disabled:opacity-70 disabled:pointer-events-none"
+                      >
+                        {isSubmitting ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            {t("contactPage.form.submit")}
+                            <ArrowUpRight className={cn("h-4 w-4 transition-transform duration-300", isRtl ? "group-hover:-translate-x-0.5 group-hover:-translate-y-0.5 rotate-[-90deg]" : "group-hover:translate-x-0.5 group-hover:-translate-y-0.5")} />
+                          </>
+                        )}
+                      </button>
+                    </div>
+                  </form>
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="sell"
+                  role="tabpanel"
+                  id={`${tabsId}-panel-sell`}
+                  aria-labelledby={`${tabsId}-sell`}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1] }}
+                >
+                  <SellForm embedded />
+                </motion.div>
+              )}
+            </AnimatePresence>
           </div>
-          
-          {/* Sell Form Component */}
-          <SellForm />
         </div>
       </section>
     </div>

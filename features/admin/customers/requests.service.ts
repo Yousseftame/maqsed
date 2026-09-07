@@ -45,6 +45,8 @@ export interface SellRequest {
   updatedAt: any;
 }
 
+export type PaymentType = "cash" | "finance";
+
 export interface SalesRequest {
   id: string;
   fullName: string;
@@ -52,6 +54,7 @@ export interface SalesRequest {
   phone: string;
   unitNumber: string;
   projectName?: string;
+  paymentTypes?: PaymentType[];
   status: RequestStatus;
   createdAt: any;
   updatedAt: any;

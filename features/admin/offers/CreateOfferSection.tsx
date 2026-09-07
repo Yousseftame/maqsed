@@ -23,10 +23,11 @@ export function CreateOfferSection() {
   const { t, isRtl } = useLocale();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successData, setSuccessData] = useState<{ otp: string; offerNumber: string } | null>(null);
+  const [successData, setSuccessData] = useState<{ otp: string; offerNumber: string; offerId: string } | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
+    description: "",
     developerName: "",
     projectName: "",
     developerEmail: "",
@@ -82,8 +83,9 @@ export function CreateOfferSection() {
       const otp = Math.floor(100000 + Math.random() * 900000).toString();
       const nextNumber = await offersService.getNextOfferNumber();
       
-      await addDoc(collection(db, "offers"), {
+      const docRef = await addDoc(collection(db, "offers"), {
         ...formData,
+        description: formData.description.trim(),
         offerNumber: nextNumber,
         agreementTypes,
         services,
@@ -95,7 +97,7 @@ export function CreateOfferSection() {
         secretCode: otp,
       });
 
-      setSuccessData({ otp, offerNumber: nextNumber });
+      setSuccessData({ otp, offerNumber: nextNumber, offerId: docRef.id });
       queryClient.invalidateQueries({ queryKey: ["offers"] });
     } catch (error) {
       console.error("Error creating offer:", error);
@@ -117,15 +119,20 @@ export function CreateOfferSection() {
   const sectionTitleClass = "mb-6 text-xl font-black text-[#0a0f1d] flex items-center gap-2 before:content-[''] before:block before:h-6 before:w-1.5 before:bg-[#0a0f1d] before:rounded-full";
   const formSectionClass = "mb-8 rounded-[24px] border border-[#0a0f1d]/5 bg-white p-6 sm:p-8 shadow-sm";
 
-  const whatsappMessage = successData ? encodeURIComponent(
-    `مرحباً ${formData.developerName}،\n\nنرفق لكم العرض الفني/المالي رقم ${successData.offerNumber} لمشروع ${formData.projectName}.\n\nقيمة العرض الإجمالية (شامل الضريبة): ${total.toLocaleString()} ريال.\n\nرمز الوصول الآمن الخاص بك هو: ${successData.otp}\n\nنسعد بخدمتكم.`
-  ) : "";
+  const offerDescriptionBlock = formData.description.trim()
+    ? `\n${formData.description.trim()}\n`
+    : "";
+  const offerUrl = successData
+    ? `${window.location.origin}/offer/${successData.offerId}`
+    : "";
+  const offerMessage = successData
+    ? `مرحباً ${formData.developerName}،\n\nنرفق لكم العرض الفني رقم ${successData.offerNumber} لمشروع ${formData.projectName}.${offerDescriptionBlock}\nللاطلاع على العرض يرجى فتح الرابط التالي وإدخال رمز الوصول:\n${offerUrl}\n\nرمز الوصول الآمن الخاص بك هو: ${successData.otp}\n\nنسعد بخدمتكم.`
+    : "";
+  const whatsappMessage = offerMessage ? encodeURIComponent(offerMessage) : "";
   const whatsappUrl = `https://wa.me/${formData.developerPhone.replace(/\D/g, '')}?text=${whatsappMessage}`;
   
-  const emailSubject = successData ? encodeURIComponent(`عرض فني ومالي - ${formData.projectName} (${successData.offerNumber})`) : "";
-  const emailBody = successData ? encodeURIComponent(
-    `مرحباً ${formData.developerName}،\n\nنرفق لكم العرض الفني/المالي رقم ${successData.offerNumber} لمشروع ${formData.projectName}.\n\nقيمة العرض الإجمالية (شامل الضريبة): ${total.toLocaleString()} ريال.\n\nرمز الوصول الآمن الخاص بك هو: ${successData.otp}\n\nنسعد بخدمتكم.`
-  ) : "";
+  const emailSubject = successData ? encodeURIComponent(`عرض فني - ${formData.projectName} (${successData.offerNumber})`) : "";
+  const emailBody = offerMessage ? encodeURIComponent(offerMessage) : "";
   const emailUrl = `mailto:${formData.developerEmail}?subject=${emailSubject}&body=${emailBody}`;
 
   return (
@@ -135,7 +142,7 @@ export function CreateOfferSection() {
           {t("admin.offers.create") || "Create Technical & Financial Offer"}
         </h1>
         <p className="text-[#8c8c8c] font-medium text-lg">
-          {isRtl ? "قم بتعبئة النموذج لإصدار عرض فني ومالي برقم تسلسلي تلقائي." : "Fill out the form to generate a technical & financial offer with an auto-sequential number."}
+          {isRtl ? "قم بتعبئة النموذج لإصدار عرض فني برقم تسلسلي تلقائي." : "Fill out the form to generate a technical offer with an auto-sequential number."}
         </p>
       </div>
 
@@ -156,6 +163,19 @@ export function CreateOfferSection() {
               onChange={handleChange}
               placeholder={isRtl ? "عنوان العرض (مثال: عرض إدارة الأملاك)" : "Offer Title"}
               className={inputClass}
+            />
+          </div>
+
+          <div className="mb-5">
+            <label className={labelClass}>{isRtl ? "وصف العرض" : "Description"}</label>
+            <textarea
+              name="description"
+              dir="auto"
+              rows={4}
+              value={formData.description}
+              onChange={handleChange}
+              placeholder={isRtl ? "أضف وصفاً للعرض (اختياري)..." : "Add an offer description (optional)..."}
+              className="w-full resize-none rounded-[16px] border border-[#0a0f1d]/10 bg-[#F4F4F4] px-5 py-4 text-sm font-bold text-[#0a0f1d] outline-none transition-colors focus:border-[#0a0f1d] focus:bg-white placeholder:font-medium placeholder:text-[#8c8c8c]"
             />
           </div>
 
@@ -446,6 +466,7 @@ export function CreateOfferSection() {
                     id: "",
                     offerNumber: successData.offerNumber,
                     title: formData.title,
+                    description: formData.description.trim(),
                     projectName: formData.projectName,
                     developerName: formData.developerName,
                     developerEmail: formData.developerEmail,

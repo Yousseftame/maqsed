@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
 import { X, Loader2, Building, Hash } from "lucide-react";
@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { useLockPageScroll } from "@/components/providers/SmoothScrollProvider";
 import { requestsService } from "@/features/admin/customers/requests.service";
 import { cn } from "@/lib/utils";
 
@@ -22,10 +23,25 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
   const { isRtl } = useLocale();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  useLockPageScroll(isOpen);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const previousBodyOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+    };
+  }, [isOpen]);
+
   const salesContactSchema = z.object({
     fullName: z.string().min(2, isRtl ? "الاسم مطلوب" : "Name is required"),
     email: z.string().email(isRtl ? "بريد إلكتروني غير صالح" : "Invalid email address").optional().or(z.literal("")),
     phone: z.string().min(8, isRtl ? "رقم الهاتف مطلوب" : "Phone number is required"),
+    paymentCash: z.boolean().optional(),
+    paymentFinance: z.boolean().optional(),
   });
 
   type SalesContactForm = z.infer<typeof salesContactSchema>;
@@ -34,6 +50,7 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<SalesContactForm>({
     resolver: zodResolver(salesContactSchema),
@@ -41,18 +58,29 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
       fullName: "",
       email: "",
       phone: "",
+      paymentCash: false,
+      paymentFinance: false,
     },
   });
+
+  const paymentCash = watch("paymentCash");
+  const paymentFinance = watch("paymentFinance");
 
   const onSubmit = async (data: SalesContactForm) => {
     setIsSubmitting(true);
     try {
+      const paymentTypes = [
+        ...(data.paymentCash ? (["cash"] as const) : []),
+        ...(data.paymentFinance ? (["finance"] as const) : []),
+      ];
+
       await requestsService.addSalesRequest({
         fullName: data.fullName,
         email: data.email || "",
         phone: data.phone,
         unitNumber: unitId,
         projectName: projectName,
+        ...(paymentTypes.length ? { paymentTypes } : {}),
       });
 
       toast.success(isRtl ? "تم إرسال طلبك بنجاح!" : "Request sent successfully!");
@@ -72,7 +100,13 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-6" dir={isRtl ? "rtl" : "ltr"}>
+        <div
+          className="fixed inset-0 z-[100] flex items-center justify-center overflow-hidden overscroll-none p-4 sm:p-6"
+          dir={isRtl ? "rtl" : "ltr"}
+          data-lenis-prevent
+          data-lenis-prevent-wheel
+          data-lenis-prevent-touch
+        >
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -87,10 +121,10 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="relative flex w-full max-w-lg max-h-[90vh] flex-col overflow-hidden rounded-[32px] bg-white shadow-2xl"
+            className="relative flex w-full max-w-lg max-h-full flex-col overflow-hidden rounded-[32px] bg-white shadow-2xl"
           >
             {/* Header */}
-            <div className="relative overflow-hidden bg-gradient-to-br from-[#6A2B92] to-[#451862] px-8 py-6">
+            <div className="relative shrink-0 overflow-hidden bg-gradient-to-br from-[#6A2B92] to-[#451862] px-8 py-6">
               <div className="absolute inset-0 opacity-10" style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, white 1px, transparent 0)', backgroundSize: '24px 24px' }}></div>
               <button
                 onClick={onClose}
@@ -100,7 +134,7 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
               </button>
               <div className="relative z-10">
                 <h2 className="text-3xl font-black tracking-tight text-white mb-2">
-                  {isRtl ? "تواصل مع المبيعات" : "Contact Sales"}
+                  {isRtl ? "طلب اهتمام" : "Request Interest"}
                 </h2>
                 <p className="text-white/80 font-medium leading-relaxed">
                   {isRtl ? "سجل اهتمامك وسيقوم فريق المبيعات بالتواصل معك في أقرب وقت." : "Register your interest and our sales team will contact you shortly."}
@@ -109,7 +143,7 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
             </div>
 
             {/* Body */}
-            <div className="flex-1 overflow-y-auto px-8 py-6 no-scrollbar">
+            <div className="min-h-0 max-h-[calc(90dvh-17rem)] flex-1 overflow-y-auto overscroll-contain px-8 py-6">
               
               {/* Unit Info Context */}
               <div className="mb-6 flex flex-col gap-3 rounded-2xl bg-gray-50 p-4 border border-gray-100">
@@ -182,11 +216,51 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
                   />
                   {errors.email && <p className="mt-2 text-xs font-semibold text-red-500">{errors.email.message}</p>}
                 </div>
+
+                <div>
+                  <label className={labelClass}>
+                    {isRtl ? "طريقة الدفع" : "Payment method"}
+                  </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <label
+                      className={cn(
+                        "flex h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 text-sm font-bold transition-all",
+                        paymentCash
+                          ? "border-[#6A2B92] bg-[#6A2B92]/5 text-[#6A2B92]"
+                          : "border-gray-200 bg-gray-50/50 text-gray-700 hover:border-[#6A2B92]/40"
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        disabled={isSubmitting}
+                        {...register("paymentCash")}
+                        className="h-4 w-4 shrink-0 accent-[#6A2B92]"
+                      />
+                      {isRtl ? "نقدي" : "Cash"}
+                    </label>
+                    <label
+                      className={cn(
+                        "flex h-12 cursor-pointer items-center gap-3 rounded-xl border px-4 text-sm font-bold transition-all",
+                        paymentFinance
+                          ? "border-[#6A2B92] bg-[#6A2B92]/5 text-[#6A2B92]"
+                          : "border-gray-200 bg-gray-50/50 text-gray-700 hover:border-[#6A2B92]/40"
+                      )}
+                    >
+                      <input
+                        type="checkbox"
+                        disabled={isSubmitting}
+                        {...register("paymentFinance")}
+                        className="h-4 w-4 shrink-0 accent-[#6A2B92]"
+                      />
+                      {isRtl ? "تمويل" : "Finance"}
+                    </label>
+                  </div>
+                </div>
               </form>
             </div>
 
             {/* Footer */}
-            <div className="bg-gray-50 px-8 py-6 border-t border-gray-100 flex items-center justify-end gap-3">
+            <div className="shrink-0 bg-gray-50 px-8 py-6 border-t border-gray-100 flex items-center justify-end gap-3">
               <button
                 type="button"
                 onClick={onClose}

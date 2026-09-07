@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X, MapPin, Building2, Bed, Bath, Expand, Tag, Info, Eye } from "lucide-react";
 import type { Unit } from "@/features/admin/units/units.service";
@@ -13,6 +14,12 @@ interface ViewUnitModalProps {
 }
 
 export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
+  const [activeImage, setActiveImage] = useState(0);
+
+  useEffect(() => {
+    if (isOpen) setActiveImage(0);
+  }, [isOpen, unit?.id]);
+
   if (!unit) return null;
 
   return (
@@ -216,13 +223,41 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
               {unit.images && unit.images.length > 0 && (
                 <div>
                   <h3 className="text-lg font-bold text-[#0a0f1d] mb-4">صور الوحدة</h3>
-                  <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
-                    {unit.images.map((url: string, idx: number) => (
-                      <div key={idx} className="aspect-video overflow-hidden rounded-[16px] border border-[#0a0f1d]/10 bg-white">
-                        <img src={url} alt="" className="h-full w-full object-cover" />
-                      </div>
-                    ))}
+                  <div className="relative overflow-hidden rounded-[20px] bg-[#F4F4F4]">
+                    <div className="aspect-[16/8] w-full">
+                      <img
+                        src={unit.images[activeImage] || unit.images[0]}
+                        alt={unit.displayUnitNumber || unit.unitNumber}
+                        className="h-full w-full object-cover"
+                      />
+                    </div>
+                    {activeImage === 0 && (
+                      <span className="absolute bottom-4 start-4 rounded-full bg-[#0a0f1d] px-3 py-1 text-xs font-bold text-white">
+                        الغلاف
+                      </span>
+                    )}
                   </div>
+                  {unit.images.length > 1 && (
+                    <div className="mt-4 grid grid-cols-4 gap-3 sm:grid-cols-6">
+                      {unit.images.map((url: string, i: number) => (
+                        <button
+                          key={`${url}-${i}`}
+                          type="button"
+                          onClick={() => setActiveImage(i)}
+                          className={`relative aspect-[3/2] overflow-hidden rounded-[12px] bg-[#F4F4F4] ring-2 transition-all ${
+                            activeImage === i ? "ring-[#0a0f1d]" : "ring-transparent hover:ring-[#0a0f1d]/20"
+                          }`}
+                        >
+                          <img src={url} alt={`صورة ${i + 1}`} className="h-full w-full object-cover" />
+                          {i === 0 && (
+                            <span className="absolute bottom-1 start-1 rounded-full bg-[#0a0f1d]/90 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                              غلاف
+                            </span>
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
 

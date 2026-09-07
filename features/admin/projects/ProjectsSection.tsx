@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useRef, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Building2, CircleCheck, Folder, Map, Plus, Search, ChevronDown, RefreshCw } from "lucide-react";
+import { Building2, CircleCheck, Eye, Folder, Map, Plus, Search, ChevronDown, RefreshCw } from "lucide-react";
 import { DataTable, TableAction, type Column } from "@/features/admin/ui/DataTable";
 import { StatCard, StatGrid } from "@/features/admin/ui/StatCard";
 import { StatusBadge } from "@/features/admin/ui/StatusBadge";
@@ -61,6 +61,15 @@ export function ProjectsSection() {
     mutationFn: async (row: any) => {
       if (row.images && row.images.length > 0) {
         await Promise.all(row.images.map((url: string) => propertiesService.deleteImage(url)));
+      }
+      if (row.partnerLogos && row.partnerLogos.length > 0) {
+        await Promise.all(row.partnerLogos.map((url: string) => propertiesService.deleteImage(url)));
+      }
+      if (row.developerLogo) {
+        await propertiesService.deleteImage(row.developerLogo);
+      }
+      if (row.contractorLogo) {
+        await propertiesService.deleteImage(row.contractorLogo);
       }
       return propertiesService.deleteProperty(row.id);
     },
@@ -158,6 +167,16 @@ export function ProjectsSection() {
       id: "units",
       header: t("admin.projects.unitsCol"),
       cell: (row) => <span className="tabular-nums font-semibold">{row.computedUnitsCount}</span>,
+    },
+    {
+      id: "views",
+      header: t("admin.projects.viewsCol") || "المشاهدات",
+      cell: (row) => (
+        <div className="flex items-center gap-1.5 text-[#6B7280]">
+          <Eye className="h-4 w-4" />
+          <span className="tabular-nums">{row.views?.toLocaleString() || 0}</span>
+        </div>
+      ),
     },
     {
       id: "status",

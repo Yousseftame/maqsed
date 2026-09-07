@@ -16,6 +16,14 @@ function formatDate(ts: any): string {
   }).format(d);
 }
 
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export async function downloadOfferPDF(offer: OfferData) {
   // Dynamically import to avoid SSR issues
   const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
@@ -66,7 +74,7 @@ export async function downloadOfferPDF(offer: OfferData) {
       <!-- Teal top accent bar -->
       <div style="height: 6px; background: #0d9488; width: 100%;"></div>
 
-      <div style="padding: 48px 56px 40px;">
+      <div style="padding: 40px 56px 28px;">
 
         <!-- Header -->
         <div style="display: flex; justify-content: space-between; align-items: flex-start; padding-bottom: 22px; border-bottom: 2px solid #0d9488; margin-bottom: 32px;">
@@ -75,7 +83,7 @@ export async function downloadOfferPDF(offer: OfferData) {
             <div style="font-size: 13px; color: #6b7280; margin-top: 3px; direction: ltr;">Maqsed Real Estate</div>
           </div>
           <div style="text-align: right;">
-            <div style="font-size: 16px; font-weight: 800; color: #0a0f1d; ${AR}">عرض فني ومالي</div>
+            <div style="font-size: 16px; font-weight: 800; color: #0a0f1d; ${AR}">عرض فني</div>
             <div style="font-size: 13px; color: #0d9488; margin-top: 5px; font-weight: 700; direction: ltr;">${offer.offerNumber ? `#${offer.offerNumber}` : "—"}</div>
           </div>
         </div>
@@ -91,6 +99,17 @@ export async function downloadOfferPDF(offer: OfferData) {
             <div style="font-size: 14px; font-weight: 700; color: #0a0f1d; line-height: 2; ${AR}">${formatDate(offer.createdAt)}</div>
           </div>
         </div>
+
+        ${
+          (offer.description || "").trim()
+            ? `
+          <div style="margin-bottom: 28px; background: #f8fafc; border-right: 3px solid #0d9488; padding: 14px 18px; border-radius: 4px;">
+            <div style="font-size: 11px; font-weight: 700; color: #0d9488; margin-bottom: 8px; ${AR}">وصف العرض</div>
+            <div style="font-size: 14px; color: #374151; line-height: 1.8; white-space: pre-wrap; ${AR}">${escapeHtml(offer.description!.trim()).replace(/\n/g, "<br/>")}</div>
+          </div>
+        `
+            : ""
+        }
 
         <hr style="border: none; border-top: 1px solid #e5e7eb; margin-bottom: 28px;" />
 
@@ -136,25 +155,23 @@ export async function downloadOfferPDF(offer: OfferData) {
             : ""
         }
 
-        <!-- Totals -->
-        <div style="border-top: 2px solid #e5e7eb; padding-top: 22px; margin-bottom: 40px;">
+        <!-- Totals + footer kept together so they never orphan onto a second page -->
+        <div style="border-top: 2px solid #e5e7eb; padding-top: 18px;">
           <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <span style="font-size: 15px; color: #6b7280; ${AR}">المجموع قبل الضريبة</span>
             <span style="font-size: 15px; color: #374151; font-weight: 600; direction: ltr;">${Number(offer.subtotal || 0).toLocaleString()} SAR</span>
           </div>
-          <div style="display: flex; justify-content: space-between; margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 14px; padding-bottom: 14px; border-bottom: 1px solid #e5e7eb;">
             <span style="font-size: 15px; color: #6b7280; ${AR}">ضريبة القيمة المضافة (15%)</span>
             <span style="font-size: 15px; color: #374151; font-weight: 600; direction: ltr;">${Number(offer.vat || 0).toLocaleString()} SAR</span>
           </div>
-          <div style="display: flex; justify-content: space-between; background: #0d9488; padding: 14px 18px; border-radius: 8px;">
+          <div style="display: flex; justify-content: space-between; background: #0d9488; padding: 14px 18px; border-radius: 8px; margin-bottom: 18px;">
             <span style="font-size: 17px; font-weight: 800; color: #ffffff; ${AR}">الإجمالي شامل الضريبة</span>
             <span style="font-size: 17px; font-weight: 800; color: #ffffff; direction: ltr;">${Number(offer.total || offer.financialAmount || 0).toLocaleString()} SAR</span>
           </div>
-        </div>
-
-        <!-- Footer -->
-        <div style="border-top: 1px solid #e5e7eb; padding-top: 18px; text-align: left;">
-          <div style="font-size: 12px; font-weight: 700; color: #0d9488; direction: rtl; unicode-bidi: embed;">مقصد للعقارات</div>
+          <div style="border-top: 1px solid #e5e7eb; padding-top: 14px; text-align: left;">
+            <div style="font-size: 12px; font-weight: 700; color: #0d9488; direction: rtl; unicode-bidi: embed;">مقصد للعقارات</div>
+          </div>
         </div>
 
       </div>
@@ -187,20 +204,19 @@ export async function downloadOfferPDF(offer: OfferData) {
 
     const pdfWidth = pdf.internal.pageSize.getWidth();
     const pdfHeight = pdf.internal.pageSize.getHeight();
-    const imgWidth = canvas.width;
-    const imgHeight = canvas.height;
-    const ratio = pdfWidth / imgWidth;
-    const scaledHeight = imgHeight * ratio;
+    let drawWidth = pdfWidth;
+    let drawHeight = (canvas.height * pdfWidth) / canvas.width;
 
-    let yPos = 0;
-    let remainingHeight = scaledHeight;
-
-    while (remainingHeight > 0) {
-      if (yPos > 0) pdf.addPage();
-      pdf.addImage(imgData, "PNG", 0, -yPos, pdfWidth, scaledHeight);
-      yPos += pdfHeight;
-      remainingHeight -= pdfHeight;
+    // Always keep the offer on a single A4 page. If content is a few pixels over,
+    // scale it down instead of creating a nearly empty second page.
+    if (drawHeight > pdfHeight) {
+      const fit = pdfHeight / drawHeight;
+      drawWidth = pdfWidth * fit;
+      drawHeight = pdfHeight;
     }
+
+    const x = (pdfWidth - drawWidth) / 2;
+    pdf.addImage(imgData, "PNG", x, 0, drawWidth, drawHeight);
 
     const fileName = `عرض-${offer.offerNumber || offer.id}-${offer.developerName || "offer"}.pdf`;
     pdf.save(fileName);

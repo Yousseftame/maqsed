@@ -233,6 +233,10 @@ export interface Dictionary {
       submit: string;
       success: string;
     };
+    tabs: {
+      contact: string;
+      sell: string;
+    };
     subjects: {
       general: string;
       buy: string;
@@ -315,6 +319,7 @@ export interface Dictionary {
       company: string;
       menu: string;
       interface: string;
+      partners: string;
       blog: string;
       additional: string;
       maintenance: string;
@@ -368,6 +373,7 @@ export interface Dictionary {
       name: string;
       city: string;
       unitsCol: string;
+      viewsCol: string;
       status: string;
       updated: string;
       deleteTitle: string;
@@ -425,6 +431,9 @@ export interface Dictionary {
       customer: string;
       targetUnit: string;
       unit: string;
+      paymentMethod: string;
+      cash: string;
+      finance: string;
       status: string;
       action: string;
       date: string;
@@ -459,6 +468,10 @@ export interface Dictionary {
       heroTitlePlaceholder: string;
       heroSubtitle: string;
       heroSubtitlePlaceholder: string;
+      heroTitleAr: string;
+      heroTitleEn: string;
+      heroSubtitleAr: string;
+      heroSubtitleEn: string;
       bgImage: string;
       bgImageUpload: string;
       bgImageHint: string;
@@ -664,6 +677,10 @@ export interface Dictionary {
       twitter: string;
       instagram: string;
     };
+  };
+  whatsappBubble: {
+    label: string;
+    message: string;
   };
   developer: {
     panelName: string;
@@ -995,6 +1012,10 @@ export const en: Dictionary = {
       submit: "Send Message",
       success: "Message sent",
     },
+    tabs: {
+      contact: "Send a message",
+      sell: "Sell a property",
+    },
     subjects: {
       general: "General Inquiry",
       buy: "Buy a Unit",
@@ -1079,11 +1100,12 @@ export const en: Dictionary = {
       company: "Company Information",
       menu: "Menu Settings",
       interface: "Interface Settings",
+      partners: "Success Partners Logos",
       blog: "Blog Management",
       additional: "Additional Information",
       maintenance: "Maintenance Mode",
       developers: "Developers",
-      offers: "Technical / Financial Offer",
+      offers: "Technical Offers",
       users: "Users",
     },
     ui: {
@@ -1132,6 +1154,7 @@ export const en: Dictionary = {
       name: "Project",
       city: "City",
       unitsCol: "Units",
+      viewsCol: "Views",
       status: "Status",
       updated: "Updated",
       deleteTitle: "Delete project?",
@@ -1189,6 +1212,9 @@ export const en: Dictionary = {
       complaint: "Complaints & Suggestions",
       customer: "Customer",
       unit: "Unit",
+      paymentMethod: "Payment method",
+      cash: "Cash",
+      finance: "Finance",
       status: "Status",
       action: "Action",
       date: "Date",
@@ -1223,6 +1249,10 @@ export const en: Dictionary = {
       heroTitlePlaceholder: "Your optimal choice..",
       heroSubtitle: "Hero Subtitle",
       heroSubtitlePlaceholder: "Notice! The platform is under development..",
+      heroTitleAr: "Hero Title (Arabic)",
+      heroTitleEn: "Hero Title (English)",
+      heroSubtitleAr: "Hero Subtitle (Arabic)",
+      heroSubtitleEn: "Hero Subtitle (English)",
       bgImage: "Background Image",
       bgImageUpload: "Click to upload a professional background",
       bgImageHint: "Recommended size 1920x1080 (Horizontal) | Max: 700KB",
@@ -1288,7 +1318,7 @@ export const en: Dictionary = {
         email: "Email Address",
         phone: "Phone Number",
         company: "Company Name",
-        usersPerDeveloper: "Users per developer",
+        usersPerDeveloper: "Number of users",
         password: "Password",
         confirmPassword: "Confirm Password",
         submit: "Create Account",
@@ -1428,6 +1458,10 @@ export const en: Dictionary = {
       twitter: "Twitter",
       instagram: "Instagram",
     },
+  },
+  whatsappBubble: {
+    label: "Chat on WhatsApp",
+    message: "مرحبا",
   },
   developer: {
     panelName: "Developer Panel",

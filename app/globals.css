@@ -229,6 +229,10 @@
     animation: marquee-rtl 30s linear infinite;
   }
 
+  .whatsapp-pulse {
+    animation: whatsapp-pulse 3s ease-out infinite;
+  }
+
   @keyframes marquee {
     0% {
       transform: translateX(0%);
@@ -246,58 +250,49 @@
       transform: translateX(100%);
     }
   }
+
+  @keyframes whatsapp-pulse {
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    40% {
+      transform: scale(1.16);
+      opacity: 0;
+    }
+    40.01%,
+    100% {
+      transform: scale(1);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .whatsapp-pulse {
+      animation: none;
+    }
+  }
 }
 
 body.is-admin nextjs-portal,
 body.is-admin #chatbase-bubble-button,
 body.is-admin #chatbase-message-bubbles,
-body.is-admin #chatbase-bubble-window {
+body.is-admin #chatbase-bubble-window,
+body.is-developer nextjs-portal,
+body.is-developer #chatbase-bubble-button,
+body.is-developer #chatbase-message-bubbles,
+body.is-developer #chatbase-bubble-window {
   display: none !important;
 }
 
 #chatbase-bubble-button {
-  right: 1rem !important;
+  right: 1.5rem !important;
   left: auto !important;
   bottom: 1.5rem !important;
 }
 
-#chatbase-message-bubbles {
-  right: 1rem !important;
-  left: auto !important;
-  bottom: 5.75rem !important;
-  width: auto !important;
-  max-width: min(22rem, calc(100vw - 2rem)) !important;
-  height: auto !important;
-  min-width: 0 !important;
-  min-height: 0 !important;
-  max-height: none !important;
-  overflow: visible !important;
-  padding: 0 !important;
-  gap: 0.25rem !important;
-  row-gap: 0.25rem !important;
-}
-
-#chatbase-message-bubbles,
-#chatbase-message-bubbles * {
-  white-space: normal !important;
-  overflow: visible !important;
-  text-overflow: unset !important;
-  word-break: break-word !important;
-  box-sizing: border-box !important;
-  min-height: 0 !important;
-  line-height: 1.25 !important;
-}
-
-#chatbase-message-bubbles > * {
-  width: max-content !important;
-  max-width: min(22rem, calc(100vw - 2.5rem)) !important;
-  height: auto !important;
-  padding-block: 0.28rem !important;
-  padding-inline: 0.75rem !important;
-}
-
 #chatbase-bubble-window {
-  right: 1rem !important;
+  right: 1.5rem !important;
   left: auto !important;
   bottom: 6rem !important;
 }
@@ -306,16 +301,6 @@ body.is-admin #chatbase-bubble-window {
   #chatbase-bubble-button {
     right: 2rem !important;
     bottom: 2rem !important;
-  }
-
-  #chatbase-message-bubbles {
-    right: 2rem !important;
-    bottom: 6.25rem !important;
-    max-width: min(24rem, calc(100vw - 3rem)) !important;
-  }
-
-  #chatbase-message-bubbles > * {
-    max-width: min(24rem, calc(100vw - 3.5rem)) !important;
   }
 
   #chatbase-bubble-window {

@@ -3,12 +3,15 @@
 import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
-import { UploadCloud, X, Loader2, Image as ImageIcon, Trash2, ChevronDown } from "lucide-react";
+import { X, Loader2, ChevronDown } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { citiesService } from "@/features/admin/cities/cities.service";
 import { propertiesService, type Property } from "@/features/admin/projects/properties.service";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "./ProjectImageGallery";
+import { NearbyPlacesEditor, sanitizeNearbyPlaces, type NearbyPlaceInput } from "./NearbyPlacesEditor";
+import { PartyLogoField, logoFromUrl, revokeLogoPreview, resolveLogoUpload } from "./PartyLogoField";
 
 interface EditProjectModalProps {
   isOpen: boolean;
@@ -24,7 +27,10 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
       neighborhoodId: "",
       mapsLink: "",
       brochureLink: "",
+      description: "",
       projectType: "",
+      developerName: "",
+      contractorName: "",
       category: "متوسطة",
       buildingsCount: 1,
       modelsCount: 1,
@@ -49,7 +55,11 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
 
   const queryClient = useQueryClient();
   const { locale, t } = useLocale();
-  const [images, setImages] = useState<Array<{ file: File | null; preview: string }>>([]);
+  const [images, setImages] = useState<ProjectGalleryImage[]>([]);
+  const [partnerLogos, setPartnerLogos] = useState<ProjectGalleryImage[]>([]);
+  const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlaceInput[]>([]);
+  const [developerLogo, setDeveloperLogo] = useState<ProjectGalleryImage | null>(null);
+  const [contractorLogo, setContractorLogo] = useState<ProjectGalleryImage | null>(null);
 
   useEffect(() => {
     if (isOpen && property) {
@@ -59,7 +69,10 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
         neighborhoodId: property.neighborhoodId,
         mapsLink: property.mapsLink || "",
         brochureLink: property.brochureLink || "",
+        description: property.description || "",
         projectType: property.projectType || "",
+        developerName: property.developerName || "",
+        contractorName: property.contractorName || "",
         category: property.category || "متوسطة",
         buildingsCount: property.buildingsCount || 1,
         modelsCount: property.modelsCount || 1,
@@ -69,35 +82,37 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
         offers: property.offers || [],
         locations: property.locations || [],
       });
-      setImages((property.images || []).map(url => ({ file: null, preview: url })));
+      setImages((property.images || []).map((url) => ({ file: null, preview: url })));
+      setPartnerLogos((property.partnerLogos || []).map((url) => ({ file: null, preview: url })));
+      setNearbyPlaces(
+        (property.nearbyPlaces || []).map((place) => ({
+          name: place.name || "",
+          minutes: place.minutes === undefined || place.minutes === null ? "" : String(place.minutes),
+        }))
+      );
+      setDeveloperLogo(logoFromUrl(property.developerLogo));
+      setContractorLogo(logoFromUrl(property.contractorLogo));
     } else if (!isOpen) {
       reset();
-      setImages([]);
+      setImages((prev) => {
+        revokeGalleryPreviews(prev);
+        return [];
+      });
+      setPartnerLogos((prev) => {
+        revokeGalleryPreviews(prev);
+        return [];
+      });
+      setNearbyPlaces([]);
+      setDeveloperLogo((prev) => {
+        revokeLogoPreview(prev);
+        return null;
+      });
+      setContractorLogo((prev) => {
+        revokeLogoPreview(prev);
+        return null;
+      });
     }
   }, [isOpen, property, reset]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      const validFiles = files.filter((f) => {
-        if (f.size > 700 * 1024) {
-          toast.error(`حجم الصورة ${f.name} يتجاوز 700 كيلوبايت`);
-          return false;
-        }
-        return true;
-      });
-
-      const newImages = validFiles.map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
-      setImages((prev) => [...prev, ...newImages]);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
 
   const { data: cities = [], isLoading: isLoadingCities } = useQuery({
     queryKey: ["cities"],
@@ -112,27 +127,60 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
     mutationFn: async (data: any) => {
       if (!property) return;
       
-      const newFiles = images.filter(img => img.file !== null);
-      const existingUrls = images.filter(img => img.file === null).map(img => img.preview);
       const originalUrls = property.images || [];
-      const deletedUrls = originalUrls.filter(url => !existingUrls.includes(url));
+      const keptRemoteUrls = images.filter((img) => !img.file).map((img) => img.preview);
+      const deletedUrls = originalUrls.filter((url) => !keptRemoteUrls.includes(url));
 
-      if (deletedUrls.length > 0) {
-        await Promise.all(deletedUrls.map(url => propertiesService.deleteImage(url)));
+      const originalPartnerUrls = property.partnerLogos || [];
+      const keptPartnerUrls = partnerLogos.filter((img) => !img.file).map((img) => img.preview);
+      const deletedPartnerUrls = originalPartnerUrls.filter((url) => !keptPartnerUrls.includes(url));
+
+      const filesToDelete = [...deletedUrls, ...deletedPartnerUrls];
+      if (filesToDelete.length > 0) {
+        await Promise.all(filesToDelete.map((url) => propertiesService.deleteImage(url)));
       }
-      
-      const uploadedUrls = await Promise.all(
-        newFiles.map((img) => propertiesService.uploadImage(img.file as File, `properties/${property.id}`))
+
+      const allImages = await Promise.all(
+        images.map((img) =>
+          img.file
+            ? propertiesService.uploadImage(img.file, `properties/${property.id}`)
+            : Promise.resolve(img.preview)
+        )
       );
 
-      const allImages = [...existingUrls, ...uploadedUrls];
+      const allPartnerLogos = await Promise.all(
+        partnerLogos.map((img) =>
+          img.file
+            ? propertiesService.uploadImage(img.file, `properties/${property.id}/partners`)
+            : Promise.resolve(img.preview)
+        )
+      );
+
+      const developerLogoResult = await resolveLogoUpload(
+        developerLogo,
+        `properties/${property.id}/developer`,
+        property.developerLogo,
+        propertiesService.uploadImage
+      );
+      const contractorLogoResult = await resolveLogoUpload(
+        contractorLogo,
+        `properties/${property.id}/contractor`,
+        property.contractorLogo,
+        propertiesService.uploadImage
+      );
+
+      const extraDeletes = [...developerLogoResult.toDelete, ...contractorLogoResult.toDelete];
+      if (extraDeletes.length > 0) {
+        await Promise.all(extraDeletes.map((url) => propertiesService.deleteImage(url)));
+      }
 
       await propertiesService.updateProperty(property.id, {
         name: data.name,
         cityId: data.cityId,
         neighborhoodId: data.neighborhoodId,
-        mapsLink: data.mapsLink,
-        brochureLink: data.brochureLink,
+        mapsLink: data.mapsLink || "",
+        brochureLink: data.brochureLink || "",
+        description: (data.description || "").trim(),
         projectType: data.projectType,
         category: data.category,
         buildingsCount: parseInt(data.buildingsCount, 10),
@@ -143,6 +191,12 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
         offers: data.offers,
         locations: data.locations,
         images: allImages,
+        nearbyPlaces: sanitizeNearbyPlaces(nearbyPlaces),
+        partnerLogos: allPartnerLogos,
+        developerName: (data.developerName || "").trim(),
+        developerLogo: developerLogoResult.url,
+        contractorName: (data.contractorName || "").trim(),
+        contractorLogo: contractorLogoResult.url,
       });
     },
     onSuccess: () => {
@@ -211,6 +265,16 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
                     <input {...register("name")} className={inputClass} />
                   </div>
 
+                  <div className="mb-5">
+                    <label className={labelClass}>وصف المشروع (اختياري)</label>
+                    <textarea
+                      {...register("description")}
+                      rows={4}
+                      placeholder="أضف وصفاً مختصراً عن المشروع..."
+                      className="w-full resize-none rounded-[16px] bg-[#F4F4F4] px-4 py-3 text-sm font-medium text-[#0a0f1d] outline-none transition-colors placeholder:text-[#8c8c8c] focus:bg-[#EAEAEA]"
+                    />
+                  </div>
+
                   <div className="mb-5 grid gap-5 sm:grid-cols-2">
                     <div>
                       <label className={labelClass}>المدينة</label>
@@ -244,7 +308,7 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
 
                   <div className="mb-5 grid gap-5 sm:grid-cols-2">
                     <div className="sm:col-span-2">
-                      <label className={labelClass}>رابط الموقع (Google Maps)</label>
+                      <label className={labelClass}>رابط موقع المشروع (اختياري)</label>
                       <input {...register("mapsLink")} placeholder="https://maps.google.com/..." className={inputClass} dir="ltr" />
                     </div>
                   </div>
@@ -265,9 +329,34 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
                           <option value="شقق سكنية">شقق سكنية</option>
                           <option value="فلل">فلل</option>
                           <option value="عمائر">عمائر</option>
+                          <option value="ارض">ارض</option>
+                          <option value="منزل متعدد الطوابق TownHouse">منزل متعدد الطوابق TownHouse</option>
                         </select>
                         <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
                       </div>
+                    </div>
+                  </div>
+
+                  <div className="mb-6 grid gap-5 sm:grid-cols-2">
+                    <div>
+                      <label className={labelClass}>اسم المطور (اختياري)</label>
+                      <input {...register("developerName")} placeholder="اسم المطور" className={`${inputClass} mb-3`} />
+                      <PartyLogoField
+                        label="شعار المطور"
+                        logo={developerLogo}
+                        onChange={setDeveloperLogo}
+                        disabled={updateMutation.isPending}
+                      />
+                    </div>
+                    <div>
+                      <label className={labelClass}>اسم المقاول (اختياري)</label>
+                      <input {...register("contractorName")} placeholder="اسم المقاول" className={`${inputClass} mb-3`} />
+                      <PartyLogoField
+                        label="شعار المقاول"
+                        logo={contractorLogo}
+                        onChange={setContractorLogo}
+                        disabled={updateMutation.isPending}
+                      />
                     </div>
                   </div>
 
@@ -371,40 +460,36 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
 
                 <hr className="my-8 border-[#0a0f1d]/10" />
 
+                <div className={formSectionClass}>
+                  <NearbyPlacesEditor
+                    places={nearbyPlaces}
+                    onChange={setNearbyPlaces}
+                    disabled={updateMutation.isPending}
+                  />
+                </div>
+
+                <hr className="my-8 border-[#0a0f1d]/10" />
+
                 {/* الصور والوسائط */}
                 <div className={formSectionClass}>
                   <h3 className={sectionTitleClass}>الصور والوسائط</h3>
-                  
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-[#0a0f1d]/20 bg-[#F4F4F4] py-14 transition-colors hover:border-[#0a0f1d]/40 hover:bg-[#EAEAEA]">
-                    <UploadCloud className="mb-4 h-10 w-10 text-[#8c8c8c]" />
-                    <p className="mb-1 text-base font-bold text-[#0a0f1d]">اضغط هنا لرفع الصور</p>
-                    <p className="text-sm font-medium text-[#8c8c8c]">المقاس: 1200x800 بكسل (نسبة 3:2) | الحد الأقصى: 700KB</p>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={handleImageChange}
-                      disabled={updateMutation.isPending}
-                    />
-                  </label>
+                  <ProjectImageGallery
+                    images={images}
+                    onChange={setImages}
+                    disabled={updateMutation.isPending}
+                  />
+                </div>
 
-                  {images.length > 0 && (
-                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                      {images.map((img, index) => (
-                        <div key={index} className="group relative aspect-[3/2] overflow-hidden rounded-[16px] bg-[#F4F4F4]">
-                          <img src={img.preview} alt="" className="h-full w-full object-cover" />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(index)}
-                            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-500 opacity-0 shadow backdrop-blur transition-opacity hover:bg-white group-hover:opacity-100"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                <hr className="my-8 border-[#0a0f1d]/10" />
+
+                <div className={formSectionClass}>
+                  <h3 className={sectionTitleClass}>شركاء النجاح</h3>
+                  <ProjectImageGallery
+                    images={partnerLogos}
+                    onChange={setPartnerLogos}
+                    disabled={updateMutation.isPending}
+                    variant="logos"
+                  />
                 </div>
 
                 <div className="mt-8 flex items-center justify-end gap-3 border-t border-[#0a0f1d]/10 pt-6">

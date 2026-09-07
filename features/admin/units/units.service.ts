@@ -97,7 +97,8 @@ export const unitsService = {
   },
 
   uploadImage: async (file: File, path: string) => {
-    const storageRef = ref(storage, `${path}/${file.name}`);
+    const uniqueName = `${Date.now()}_${Math.random().toString(36).slice(2, 8)}_${file.name.replace(/[^a-zA-Z0-9.-]/g, "_")}`;
+    const storageRef = ref(storage, `${path}/${uniqueName}`);
     await uploadBytes(storageRef, file);
     return getDownloadURL(storageRef);
   },

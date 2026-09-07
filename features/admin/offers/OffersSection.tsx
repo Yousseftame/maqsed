@@ -251,7 +251,7 @@ export function OffersSection() {
               <button
                 onClick={() => window.open(`/offer/${row.id}`, "_blank")}
                 title={t("admin.offers.viewLink") || "View Public Link"}
-                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d] transition-colors"
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#0d9488] hover:bg-[#f0fdfa] hover:text-[#0f766e] transition-colors"
               >
                 <FileText className="h-4 w-4" />
               </button>

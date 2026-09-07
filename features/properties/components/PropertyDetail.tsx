@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { Bed, Bath, LayoutGrid, MapPin, CheckCircle2, Car, Clock, Handshake, Share2, Home, ArrowUpRight, ArrowUpLeft, Heart, FileText, Calendar, ChevronRight, ChevronLeft, Building2 } from "lucide-react";
+import { Bed, Bath, LayoutGrid, MapPin, CheckCircle2, Car, Clock, Handshake, Home, ArrowUpRight, ArrowUpLeft, Heart, FileText, ChevronRight, ChevronLeft, Building2 } from "lucide-react";
 import type { PropertyListing } from "@/features/properties/data/listings";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useState } from "react";
@@ -9,6 +9,7 @@ import { Lightbox } from "@/components/ui/Lightbox";
 import Link from "next/link";
 import { getUnitsByPropertyId } from "@/features/units/data/units";
 import { cn } from "@/lib/utils";
+import { ShareButton } from "@/components/shared/ShareButton";
 
 type PropertyDetailProps = {
   property: PropertyListing;
@@ -94,10 +95,7 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                 {isRtl ? "عرض الوحدات" : "View Units"}
                 {isRtl ? <ArrowUpLeft className="h-4 w-4" /> : <ArrowUpRight className="h-4 w-4" />}
               </button>
-              <button className="flex items-center gap-2 rounded-full border border-gray-200 bg-white px-4 py-2 text-sm font-bold text-gray-700 transition-colors hover:bg-gray-50 hover:text-[#6A2B92]">
-                <Share2 className="h-4 w-4" />
-                {isRtl ? "مشاركة" : "Share"}
-              </button>
+              <ShareButton title={isRtl ? property.titleAr : property.title} variant="property" />
             </div>
           </div>
         </div>
@@ -158,17 +156,6 @@ export function PropertyDetail({ property }: PropertyDetailProps) {
                 </button>
                 <p className="mt-4 text-xs font-medium text-gray-400 text-center">
                   {isRtl ? "احصل على كافة تفاصيل المشروع" : "Get all project details"}
-                </p>
-              </div>
-
-              {/* Card 3: Schedule Visit */}
-              <div className="flex flex-col items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-                <button className="flex w-full items-center justify-center gap-2 rounded-full bg-[#6A2B92] px-6 py-4 text-sm font-bold text-white transition-all hover:bg-[#522070] shadow-md">
-                  <Calendar className="h-5 w-5" />
-                  {isRtl ? "حدد موعد للزيارة" : "Schedule a Visit"}
-                </button>
-                <p className="mt-4 text-xs leading-relaxed font-medium text-gray-400 text-center">
-                  {isRtl ? "الزيارة متاحة من الساعة 10 صباحًا وحتى 10 مساءً. حدد موعد للزيارة لتضمن وجود موظف المبيعات برفقتك." : "Visits available from 10 AM to 10 PM. Schedule a visit to ensure a sales representative is with you."}
                 </p>
               </div>
               

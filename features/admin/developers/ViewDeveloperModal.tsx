@@ -190,7 +190,7 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
                       <div className="flex flex-col justify-center gap-1 rounded-[16px] border border-[#0a0f1d]/5 bg-white p-5 transition-colors hover:bg-[#F4F4F4]">
                         <div className="mb-2 flex items-center gap-2">
                           <Users className="h-4 w-4 text-[#8c8c8c]" />
-                          <span className="text-xs font-bold text-[#8c8c8c]">{t("admin.developers.createForm.usersPerDeveloper") || "عدد المستخدمين لكل مطور"}</span>
+                          <span className="text-xs font-bold text-[#8c8c8c]">{t("admin.developers.createForm.usersPerDeveloper")}</span>
                         </div>
                         <span className="text-base font-semibold text-[#0a0f1d] text-start">{developer.usersPerDeveloper ?? "—"}</span>
                       </div>

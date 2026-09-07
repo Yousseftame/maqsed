@@ -3,13 +3,14 @@
 import { useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
-import { UploadCloud, X, Loader2, Image as ImageIcon, Trash2, ChevronDown } from "lucide-react";
+import { X, Loader2, ChevronDown } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { citiesService } from "@/features/admin/cities/cities.service";
 import { propertiesService } from "@/features/admin/projects/properties.service";
 import { unitsService } from "@/features/admin/units/units.service";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "@/features/admin/projects/ProjectImageGallery";
 
 interface AddUnitModalProps {
   isOpen: boolean;
@@ -53,12 +54,16 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
 
   const queryClient = useQueryClient();
   const { locale, t } = useLocale();
-  const [images, setImages] = useState<{ file: File; preview: string }[]>([]);
+  const [images, setImages] = useState<ProjectGalleryImage[]>([]);
+  const lastFilledModelId = useRef<string | null>(null);
 
   useEffect(() => {
     if (!isOpen) {
       reset();
-      setImages([]);
+      setImages((prev) => {
+        revokeGalleryPreviews(prev);
+        return [];
+      });
     } else if (copyUnit) {
       // Pre-fill from copied unit (exclude unitNumber so user sets a new one)
       reset({
@@ -98,29 +103,6 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
       setImages([]);
     }
   }, [isOpen, copyUnit, reset]);
-
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      const validFiles = files.filter((f) => {
-        if (f.size > 700 * 1024) {
-          toast.error(`حجم الصورة ${f.name} يتجاوز 700 كيلوبايت`);
-          return false;
-        }
-        return true;
-      });
-
-      const newImages = validFiles.map((file) => ({
-        file,
-        preview: URL.createObjectURL(file),
-      }));
-      setImages((prev) => [...prev, ...newImages]);
-    }
-  };
-
-  const removeImage = (index: number) => {
-    setImages((prev) => prev.filter((_, i) => i !== index));
-  };
 
   const { data: cities = [], isLoading: isLoadingCities } = useQuery({
     queryKey: ["cities"],
@@ -170,6 +152,10 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
   const selectedModel = isModelSelected ? selectedProject?.models.find((m: any) => m.id === selectedModelId) : null;
   
   useEffect(() => {
+    if (!isOpen) {
+      lastFilledModelId.current = null;
+      return;
+    }
     // Auto-fill logic when a model is selected
     if (isModelSelected && selectedProject) {
       const model = selectedProject.models.find(m => m.id === selectedModelId);
@@ -179,12 +165,18 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
         setValue("price", model.defaultPrice.toString());
         setValue("unitType", model.propertyType || "");
         setValue("totalArea", (model.totalArea || 0).toString());
-        setValue("additionalComponents", model.additionalComponents || []);
-        setValue("features", model.features || []);
-        setValue("facade", model.facade || []);
+        if (lastFilledModelId.current !== selectedModelId) {
+          const skipTechnicalPrefill = lastFilledModelId.current === null && !!copyUnit;
+          lastFilledModelId.current = selectedModelId || null;
+          if (!skipTechnicalPrefill) {
+            setValue("additionalComponents", model.additionalComponents || []);
+            setValue("features", model.features || []);
+            setValue("facade", model.facade || []);
+          }
+        }
       }
     }
-  }, [selectedModelId, selectedProject, setValue]);
+  }, [isOpen, isModelSelected, selectedModelId, selectedProject, setValue, copyUnit]);
 
   const discountActive = watch("discountActive");
   const statusValue = watch("status");
@@ -194,7 +186,7 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
       const id = unitsService.generateId();
       
       const uploadedUrls = await Promise.all(
-        images.map((img) => unitsService.uploadImage(img.file, `units/${id}`))
+        images.map((img) => unitsService.uploadImage(img.file as File, `units/${id}`))
       );
 
       const finalUnitNumber = data.unitNumber;
@@ -215,9 +207,9 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
           ? (Number(data.internalArea) || 0) + (Number(data.externalArea) || 0)
           : model ? (Number(model.totalArea) || 0) : (Number(data.totalArea) || 0),
         discountActive: data.discountActive,
-        additionalComponents: model ? (model.additionalComponents || []) : (data.additionalComponents || []),
-        features: model ? (model.features || []) : (data.features || []),
-        facade: model ? (model.facade || []) : (data.facade || []),
+        additionalComponents: data.additionalComponents || [],
+        features: data.features || [],
+        facade: data.facade || [],
         views: 0,
         images: uploadedUrls,
       };
@@ -441,6 +433,7 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                           <option value="فيلا">فيلا</option>
                           <option value="عمارة">عمارة</option>
                           <option value="دوبلكس">دوبلكس</option>
+                          <option value="منزل متعدد الطوابق TownHouse">منزل متعدد الطوابق TownHouse</option>
                         </select>
                         <ChevronDown className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c] pointer-events-none" />
                       </div>
@@ -534,15 +527,13 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                       {["مطبخ", "مجلس", "صالة واسعة", "مستودع", "غرفة غسيل", "غرفة سائق"].map((item) => {
                         const isSelected = (watch("additionalComponents") || []).includes(item);
                         return (
-                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
+                        <label key={item} className={`flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
                           isSelected 
                             ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
-                            : isModelSelected 
-                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
-                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                            : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
                         }`}>
                           <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
-                          <input type="checkbox" value={item} {...register("additionalComponents")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
+                          <input type="checkbox" value={item} {...register("additionalComponents")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
                         </label>
                       )})}
                     </div>
@@ -554,15 +545,13 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                       {["بلكونة", "تكييف مركزي", "مكيف راكب", "دخول ذكي", "موقف خاص"].map((item) => {
                         const isSelected = (watch("features") || []).includes(item);
                         return (
-                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
+                        <label key={item} className={`flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
                           isSelected 
                             ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
-                            : isModelSelected 
-                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
-                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                            : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
                         }`}>
                           <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
-                          <input type="checkbox" value={item} {...register("features")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
+                          <input type="checkbox" value={item} {...register("features")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
                         </label>
                       )})}
                     </div>
@@ -574,15 +563,13 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                       {["أمامية", "جانبية", "خلفية"].map((item) => {
                         const isSelected = (watch("facade") || []).includes(item);
                         return (
-                        <label key={item} className={`flex ${isModelSelected ? 'cursor-not-allowed' : 'cursor-pointer'} items-center justify-between gap-3 min-w-[120px] rounded-[12px] border px-4 py-3 transition-colors ${
+                        <label key={item} className={`flex cursor-pointer items-center justify-between gap-3 min-w-[120px] rounded-[12px] border px-4 py-3 transition-colors ${
                           isSelected 
                             ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
-                            : isModelSelected 
-                              ? 'bg-gray-50 opacity-40 border-[#0a0f1d]/5'
-                              : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
+                            : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
                         }`}>
                           <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
-                          <input type="checkbox" value={item} {...register("facade")} disabled={isModelSelected} className={`h-4 w-4 rounded-[4px] accent-[#0a0f1d] ${isModelSelected ? 'cursor-not-allowed' : ''}`} />
+                          <input type="checkbox" value={item} {...register("facade")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
                         </label>
                       )})}
                     </div>
@@ -616,37 +603,11 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                 {/* 6. صور العقار */}
                 <div className={formSectionClass}>
                   <h3 className={sectionTitleClass}>{isIndependent ? "6. صور العقار (اختياري)" : "5. صور العقار (اختياري)"}</h3>
-                  
-                  <label className="flex cursor-pointer flex-col items-center justify-center rounded-[24px] border border-dashed border-[#0a0f1d]/20 bg-white py-14 transition-colors hover:border-[#0a0f1d]/40 hover:bg-[#F4F4F4]">
-                    <UploadCloud className="mb-4 h-10 w-10 text-[#8c8c8c]" />
-                    <span className="text-sm font-bold text-[#0a0f1d]">اضغط لرفع صور إضافية للوحدة</span>
-                    <span className="mt-2 text-xs font-medium text-[#8c8c8c]">المقاس: 1200x800 بكسل (أفقي) | الحد الأقصى: 700KB</span>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      multiple
-                      className="hidden"
-                      onChange={handleImageChange}
-                      disabled={addMutation.isPending}
-                    />
-                  </label>
-
-                  {images.length > 0 && (
-                    <div className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-                      {images.map((img, idx) => (
-                        <div key={idx} className="group relative aspect-video overflow-hidden rounded-[16px] border border-[#0a0f1d]/10 bg-white">
-                          <img src={img.preview} alt="" className="h-full w-full object-cover" />
-                          <button
-                            type="button"
-                            onClick={() => removeImage(idx)}
-                            className="absolute right-2 top-2 flex h-8 w-8 items-center justify-center rounded-full bg-white/90 text-red-500 opacity-0 shadow-sm backdrop-blur transition-all hover:bg-red-50 hover:text-red-600 group-hover:opacity-100"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
+                  <ProjectImageGallery
+                    images={images}
+                    onChange={setImages}
+                    disabled={addMutation.isPending}
+                  />
                 </div>
 
                 {/* Footer Buttons */}

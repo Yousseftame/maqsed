@@ -240,6 +240,17 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
                     </div>
                   </div>
 
+                  {(offerData.description || "").trim() && (
+                    <div className="text-sm">
+                      <p className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-2">
+                        {isRtl ? "وصف العرض" : "Description"}
+                      </p>
+                      <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
+                        {offerData.description.trim()}
+                      </p>
+                    </div>
+                  )}
+
                   {/* Divider */}
                   <hr className="border-gray-100" />
 

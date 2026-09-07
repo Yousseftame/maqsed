@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { X } from "lucide-react";
+import { Car, X } from "lucide-react";
 import { type Property } from "@/features/admin/projects/properties.service";
 import { type City } from "@/features/admin/cities/data";
 import { useLocale } from "@/components/providers/LocaleProvider";
@@ -17,17 +17,19 @@ type ViewProjectModalProps = {
 
 export function ViewProjectModal({ isOpen, onClose, property, cities, unitsCount }: ViewProjectModalProps) {
   const { locale } = useLocale();
+  const [activeImage, setActiveImage] = useState(0);
 
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      setActiveImage(0);
     } else {
       document.body.style.overflow = "unset";
     }
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [isOpen]);
+  }, [isOpen, property?.id]);
 
   if (!property) return null;
 
@@ -90,10 +92,45 @@ export function ViewProjectModal({ isOpen, onClose, property, cities, unitsCount
                   <DetailRow label="نوع المشروع" value={property.projectType} />
                   <DetailRow label="فئة المشروع" value={property.category} />
                 </div>
+                {(property.developerName || property.developerLogo || property.contractorName || property.contractorLogo) && (
+                  <div className="mt-4 grid gap-4 sm:grid-cols-2">
+                    {(property.developerName || property.developerLogo) && (
+                      <div className="flex items-center gap-4 rounded-[16px] bg-[#F4F4F4] p-4">
+                        {property.developerLogo ? (
+                          <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5">
+                            <img src={property.developerLogo} alt={property.developerName || "المطور"} className="max-h-full max-w-full object-contain" />
+                          </span>
+                        ) : null}
+                        <div className="min-w-0">
+                          <span className="text-sm font-bold text-[#8c8c8c]">المطور</span>
+                          <div className="truncate text-base font-bold text-[#0a0f1d]">{property.developerName || "—"}</div>
+                        </div>
+                      </div>
+                    )}
+                    {(property.contractorName || property.contractorLogo) && (
+                      <div className="flex items-center gap-4 rounded-[16px] bg-[#F4F4F4] p-4">
+                        {property.contractorLogo ? (
+                          <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-1.5">
+                            <img src={property.contractorLogo} alt={property.contractorName || "المقاول"} className="max-h-full max-w-full object-contain" />
+                          </span>
+                        ) : null}
+                        <div className="min-w-0">
+                          <span className="text-sm font-bold text-[#8c8c8c]">المقاول</span>
+                          <div className="truncate text-base font-bold text-[#0a0f1d]">{property.contractorName || "—"}</div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+                {property.description && property.description.trim() && (
+                  <div className="mt-4">
+                    <DetailRow label="وصف المشروع" value={<span className="whitespace-pre-wrap font-medium leading-7">{property.description}</span>} />
+                  </div>
+                )}
                 {property.mapsLink && (
                   <div className="mt-4">
                     <DetailRow
-                      label="رابط الموقع (Google Maps)"
+                      label="رابط موقع المشروع"
                       value={
                         <a href={property.mapsLink} target="_blank" rel="noreferrer" className="text-blue-600 hover:underline">
                           {property.mapsLink}
@@ -264,15 +301,81 @@ export function ViewProjectModal({ isOpen, onClose, property, cities, unitsCount
                 </div>
               </div>
 
+              {property.nearbyPlaces && property.nearbyPlaces.length > 0 && (
+                <>
+                  <hr className="my-8 border-[#0a0f1d]/10" />
+                  <div className="mb-8">
+                    <p className="mb-1 text-sm font-medium text-[#8c8c8c]">الأماكن القريبة</p>
+                    <h3 className="mb-5 text-2xl font-bold tracking-tight text-[#0a0f1d]">على بُعد دقائق</h3>
+                    <div className="divide-y divide-[#0a0f1d]/10 border-y border-[#0a0f1d]/10">
+                      {property.nearbyPlaces.map((place, index) => (
+                        <div key={`${place.name}-${index}`} className="flex items-center justify-between gap-4 py-4">
+                          <div className="flex items-center gap-3">
+                            <Car className="h-5 w-5 shrink-0 text-[#17C3B3]" strokeWidth={2.2} />
+                            <span className="text-base font-bold text-[#0a0f1d]">{place.name}</span>
+                          </div>
+                          <span className="text-sm font-medium text-[#8c8c8c] tabular-nums">
+                            {place.minutes} دقائق
+                          </span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
               {property.images && property.images.length > 0 && (
                 <>
                   <hr className="my-8 border-[#0a0f1d]/10" />
                   <div className="mb-8">
                     <h3 className="mb-5 text-lg font-bold tracking-tight text-[#0a0f1d]">الصور والوسائط</h3>
-                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                      {property.images.map((img, i) => (
-                        <div key={i} className="aspect-[3/2] overflow-hidden rounded-[16px] bg-[#F4F4F4]">
-                          <img src={img} alt={`صورة ${i + 1}`} className="h-full w-full object-cover" />
+                    <div className="relative overflow-hidden rounded-[20px] bg-[#F4F4F4]">
+                      <div className="aspect-[16/8] w-full">
+                        <img
+                          src={property.images[activeImage] || property.images[0]}
+                          alt={property.name}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                      {activeImage === 0 && (
+                        <span className="absolute bottom-4 start-4 rounded-full bg-[#0a0f1d] px-3 py-1 text-xs font-bold text-white">
+                          الغلاف
+                        </span>
+                      )}
+                    </div>
+                    {property.images.length > 1 && (
+                      <div className="mt-4 grid grid-cols-4 gap-3 sm:grid-cols-6">
+                        {property.images.map((img, i) => (
+                          <button
+                            key={`${img}-${i}`}
+                            type="button"
+                            onClick={() => setActiveImage(i)}
+                            className={`relative aspect-[3/2] overflow-hidden rounded-[12px] bg-[#F4F4F4] ring-2 transition-all ${
+                              activeImage === i ? "ring-[#0a0f1d]" : "ring-transparent hover:ring-[#0a0f1d]/20"
+                            }`}
+                          >
+                            <img src={img} alt={`صورة ${i + 1}`} className="h-full w-full object-cover" />
+                            {i === 0 && (
+                              <span className="absolute bottom-1 start-1 rounded-full bg-[#0a0f1d]/90 px-1.5 py-0.5 text-[9px] font-bold text-white">
+                                غلاف
+                              </span>
+                            )}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </>
+              )}
+
+              {property.partnerLogos && property.partnerLogos.length > 0 && (
+                <>
+                  <hr className="my-8 border-[#0a0f1d]/10" />
+                  <div className="mb-8">
+                    <h3 className="mb-5 text-lg font-bold tracking-tight text-[#0a0f1d]">شركاء النجاح</h3>
+                    <div className="grid grid-cols-2 gap-4 sm:grid-cols-4 lg:grid-cols-5">
+                      {property.partnerLogos.map((logo, i) => (
+                        <div key={`${logo}-${i}`} className="flex aspect-square items-center justify-center overflow-hidden rounded-[16px] border border-[#0a0f1d]/10 bg-white p-4">
+                          <img src={logo} alt={`شريك ${i + 1}`} className="max-h-full max-w-full object-contain" />
                         </div>
                       ))}
                     </div>
