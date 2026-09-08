@@ -6,6 +6,8 @@ import { Car, X } from "lucide-react";
 import { type Property } from "@/features/admin/projects/properties.service";
 import { type City } from "@/features/admin/cities/data";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { MenuValuePills } from "@/features/admin/menus/MenuValuePills";
+import { asStringArray } from "@/features/admin/menus/menu-options.service";
 
 type ViewProjectModalProps = {
   isOpen: boolean;
@@ -87,6 +89,7 @@ export function ViewProjectModal({ isOpen, onClose, property, cities, unitsCount
                 <h3 className="mb-5 text-lg font-bold tracking-tight text-[#0a0f1d]">البيانات الأساسية</h3>
                 <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                   <DetailRow label="اسم المشروع" value={property.name} />
+                  {property.slug ? <DetailRow label="رابط المشروع" value={`/properties/${property.slug}`} /> : null}
                   <DetailRow label="المدينة" value={cityName} />
                   <DetailRow label="الحي" value={neighborhoodName} />
                   <DetailRow label="نوع المشروع" value={property.projectType} />
@@ -214,40 +217,34 @@ export function ViewProjectModal({ isOpen, onClose, property, cities, unitsCount
                               </div>
                             )}
                             
-                            {((m.features && m.features.length > 0) || (m.additionalComponents && m.additionalComponents.length > 0) || (m.facade && m.facade.length > 0)) && (
+                            {(() => {
+                              const extraComponents = asStringArray(m.additionalComponents);
+                              const extraFeatures = asStringArray(m.features);
+                              const extraFacade = asStringArray(m.facade);
+                              if (extraComponents.length + extraFeatures.length + extraFacade.length === 0) return null;
+                              return (
                               <div className="mt-3 flex flex-col gap-2 border-t border-[#0a0f1d]/10 pt-3">
-                                {m.additionalComponents && m.additionalComponents.length > 0 && (
+                                {extraComponents.length > 0 && (
                                   <div>
                                     <span className="text-[10px] font-bold text-[#8c8c8c] block mb-1">المكونات الإضافية:</span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {m.additionalComponents.map((f: string) => (
-                                        <span key={f} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#0a0f1d]/10">{f}</span>
-                                      ))}
-                                    </div>
+                                    <MenuValuePills values={extraComponents} size="sm" />
                                   </div>
                                 )}
-                                {m.features && m.features.length > 0 && (
+                                {extraFeatures.length > 0 && (
                                   <div>
                                     <span className="text-[10px] font-bold text-[#8c8c8c] block mb-1">المميزات:</span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {m.features.map((f: string) => (
-                                        <span key={f} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#0a0f1d]/10">{f}</span>
-                                      ))}
-                                    </div>
+                                    <MenuValuePills values={extraFeatures} size="sm" />
                                   </div>
                                 )}
-                                {m.facade && m.facade.length > 0 && (
+                                {extraFacade.length > 0 && (
                                   <div>
                                     <span className="text-[10px] font-bold text-[#8c8c8c] block mb-1">الواجهة:</span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {m.facade.map((f: string) => (
-                                        <span key={f} className="text-[10px] bg-white px-2 py-0.5 rounded-full border border-[#0a0f1d]/10">{f}</span>
-                                      ))}
-                                    </div>
+                                    <MenuValuePills values={extraFacade} size="sm" />
                                   </div>
                                 )}
                               </div>
-                            )}
+                              );
+                            })()}
                           </div>
                         </div>
                       ))}
@@ -264,39 +261,23 @@ export function ViewProjectModal({ isOpen, onClose, property, cities, unitsCount
                 <div className="grid gap-6 sm:grid-cols-2">
                   <div>
                     <h4 className="mb-3 text-sm font-bold text-[#8c8c8c]">مميزات المشروع</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {property.features?.map((f) => (
-                        <span key={f} className="rounded-full bg-[#F4F4F4] px-4 py-2 text-sm font-bold text-[#0a0f1d]">{f}</span>
-                      ))}
-                      {(!property.features || property.features.length === 0) && <span className="text-sm font-medium text-[#8c8c8c]">لا يوجد</span>}
-                    </div>
+                    <MenuValuePills values={property.features} />
                   </div>
                   <div>
                     <h4 className="mb-3 text-sm font-bold text-[#8c8c8c]">خدمات ما بعد البيع</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {property.services?.map((f) => (
-                        <span key={f} className="rounded-full bg-[#F4F4F4] px-4 py-2 text-sm font-bold text-[#0a0f1d]">{f}</span>
-                      ))}
-                      {(!property.services || property.services.length === 0) && <span className="text-sm font-medium text-[#8c8c8c]">لا يوجد</span>}
-                    </div>
+                    <MenuValuePills values={property.services} />
                   </div>
                   <div>
                     <h4 className="mb-3 text-sm font-bold text-[#8c8c8c]">الضمانات</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {property.guarantees?.map((f) => (
-                        <span key={f} className="rounded-full bg-[#F4F4F4] px-4 py-2 text-sm font-bold text-[#0a0f1d]">{f}</span>
-                      ))}
-                      {(!property.guarantees || property.guarantees.length === 0) && <span className="text-sm font-medium text-[#8c8c8c]">لا يوجد</span>}
-                    </div>
+                    <MenuValuePills values={property.guarantees} />
+                  </div>
+                  <div>
+                    <h4 className="mb-3 text-sm font-bold text-[#8c8c8c]">العروض الخاصة</h4>
+                    <MenuValuePills values={property.offers} />
                   </div>
                   <div>
                     <h4 className="mb-3 text-sm font-bold text-[#8c8c8c]">المواقع القريبة</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {property.locations?.map((f) => (
-                        <span key={f} className="rounded-full bg-[#F4F4F4] px-4 py-2 text-sm font-bold text-[#0a0f1d]">{f}</span>
-                      ))}
-                      {(!property.locations || property.locations.length === 0) && <span className="text-sm font-medium text-[#8c8c8c]">لا يوجد</span>}
-                    </div>
+                    <MenuValuePills values={property.locations} />
                   </div>
                 </div>
               </div>

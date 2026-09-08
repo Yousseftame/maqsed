@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
@@ -70,13 +69,10 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
 
       {/* Image Container */}
       <div className="relative h-[90vh] w-[90vw] max-w-7xl">
-        <Image
+        <img
           src={images[currentIndex]}
           alt={`Gallery image ${currentIndex + 1}`}
-          fill
-          className="object-contain"
-          sizes="100vw"
-          priority
+          className="h-full w-full object-contain"
         />
       </div>
     </div>

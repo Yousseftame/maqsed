@@ -2,19 +2,23 @@ import { db } from "@/lib/firebase/firebase";
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   deleteDoc,
   query,
   orderBy,
+  where,
   Timestamp,
   serverTimestamp,
   updateDoc,
+  increment,
   arrayUnion,
   arrayRemove,
 } from "firebase/firestore";
 import { storage } from "@/lib/firebase/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { asStringArray } from "@/features/admin/menus/menu-options.service";
 
 export type Building = {
   id: string;
@@ -47,6 +51,7 @@ export type NearbyPlace = {
 export type Property = {
   id: string;
   name: string;
+  slug?: string;
   cityId: string;
   neighborhoodId: string;
   mapsLink: string;
@@ -87,6 +92,45 @@ export type Property = {
 
 const PROPERTIES_COLLECTION = "properties";
 
+function normalizeModel(model: PropertyModel): PropertyModel {
+  return {
+    ...model,
+    additionalComponents: asStringArray(model.additionalComponents),
+    features: asStringArray(model.features),
+    facade: asStringArray(model.facade),
+  };
+}
+
+export function slugify(value: string): string {
+  return value
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "-")
+    .replace(/[^\u0600-\u06FFa-z0-9-]/g, "")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+export function propertyPublicPath(property: { id: string; slug?: string }): string {
+  const slug = String(property.slug || "").trim();
+  return `/properties/${encodeURIComponent(slug || property.id)}`;
+}
+
+function normalizeProperty(raw: Record<string, unknown> & { id: string }): Property {
+  return {
+    ...(raw as Property),
+    id: raw.id,
+    slug: String(raw.slug || "").trim(),
+    features: asStringArray(raw.features),
+    services: asStringArray(raw.services),
+    guarantees: asStringArray(raw.guarantees),
+    offers: asStringArray(raw.offers),
+    locations: asStringArray(raw.locations),
+    models: Array.isArray(raw.models) ? (raw.models as PropertyModel[]).map(normalizeModel) : [],
+    buildings: Array.isArray(raw.buildings) ? (raw.buildings as Building[]) : [],
+  };
+}
+
 export const propertiesService = {
   generateId(): string {
     return doc(collection(db, PROPERTIES_COLLECTION)).id;
@@ -95,16 +139,43 @@ export const propertiesService = {
   async getProperties(): Promise<Property[]> {
     const q = query(collection(db, PROPERTIES_COLLECTION), orderBy("createdAt", "desc"));
     const querySnapshot = await getDocs(q);
-    return querySnapshot.docs.map((doc) => ({
-      id: doc.id,
-      ...doc.data(),
-    })) as Property[];
+    return querySnapshot.docs.map((item) =>
+      normalizeProperty({ id: item.id, ...item.data() })
+    );
+  },
+
+  async getPropertyById(id: string): Promise<Property | null> {
+    if (!id) return null;
+    const snap = await getDoc(doc(db, PROPERTIES_COLLECTION, id));
+    if (!snap.exists()) return null;
+    return normalizeProperty({ id: snap.id, ...snap.data() });
+  },
+
+  async getPropertyBySlugOrId(key: string): Promise<Property | null> {
+    const value = decodeURIComponent(String(key || "").trim());
+    if (!value) return null;
+
+    const byId = await this.getPropertyById(value);
+    if (byId) return byId;
+
+    const snap = await getDocs(query(collection(db, PROPERTIES_COLLECTION), where("slug", "==", value)));
+    const docSnap = snap.docs[0];
+    if (!docSnap) return null;
+    return normalizeProperty({ id: docSnap.id, ...docSnap.data() });
+  },
+
+  async isSlugTaken(slug: string, excludeId?: string): Promise<boolean> {
+    const value = slugify(slug);
+    if (!value) return false;
+    const snap = await getDocs(query(collection(db, PROPERTIES_COLLECTION), where("slug", "==", value)));
+    return snap.docs.some((item) => item.id !== excludeId);
   },
 
   async addProperty(property: Omit<Property, "createdAt" | "updatedAt">): Promise<void> {
     const docRef = doc(db, PROPERTIES_COLLECTION, property.id);
+    const normalized = normalizeProperty({ ...property, id: property.id });
     await setDoc(docRef, {
-      ...property,
+      ...normalized,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
@@ -112,14 +183,31 @@ export const propertiesService = {
 
   async updateProperty(propertyId: string, data: Partial<Property>): Promise<void> {
     const docRef = doc(db, PROPERTIES_COLLECTION, propertyId);
+    const { views: _views, ...rest } = data;
     await setDoc(
       docRef,
       {
-        ...data,
+        ...rest,
+        ...(data.features !== undefined ? { features: asStringArray(data.features) } : {}),
+        ...(data.services !== undefined ? { services: asStringArray(data.services) } : {}),
+        ...(data.guarantees !== undefined ? { guarantees: asStringArray(data.guarantees) } : {}),
+        ...(data.offers !== undefined ? { offers: asStringArray(data.offers) } : {}),
+        ...(data.locations !== undefined ? { locations: asStringArray(data.locations) } : {}),
+        ...(data.models !== undefined
+          ? { models: data.models.map((model) => normalizeModel(model)) }
+          : {}),
         updatedAt: serverTimestamp(),
       },
       { merge: true }
     );
+  },
+
+  async incrementViews(propertyId: string): Promise<void> {
+    const id = String(propertyId || "").trim();
+    if (!id) return;
+    await updateDoc(doc(db, PROPERTIES_COLLECTION, id), {
+      views: increment(1),
+    });
   },
 
   async addBuilding(propertyId: string, building: Building): Promise<void> {
@@ -141,7 +229,7 @@ export const propertiesService = {
   async addModel(propertyId: string, model: PropertyModel): Promise<void> {
     const docRef = doc(db, PROPERTIES_COLLECTION, propertyId);
     await updateDoc(docRef, {
-      models: arrayUnion(model),
+      models: arrayUnion(normalizeModel(model)),
       updatedAt: serverTimestamp(),
     });
   },

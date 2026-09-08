@@ -17,6 +17,12 @@ export type UnitListing = {
   relation: "Property" | "Standalone"; // Used for filters
   buyerEn?: string;
   buyerAr?: string;
+  pathId?: string;
+  slug?: string;
+  internalArea?: number;
+  externalArea?: number;
+  affiliationAr?: string;
+  affiliationEn?: string;
 };
 
 export const allUnits: UnitListing[] = [

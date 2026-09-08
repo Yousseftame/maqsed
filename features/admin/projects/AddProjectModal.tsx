@@ -6,12 +6,15 @@ import { useForm } from "react-hook-form";
 import { X, Loader2, ChevronDown } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { citiesService } from "@/features/admin/cities/cities.service";
-import { propertiesService } from "@/features/admin/projects/properties.service";
+import { propertiesService, slugify } from "@/features/admin/projects/properties.service";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "./ProjectImageGallery";
 import { NearbyPlacesEditor, sanitizeNearbyPlaces, type NearbyPlaceInput } from "./NearbyPlacesEditor";
 import { PartyLogoField, revokeLogoPreview, resolveLogoUpload } from "./PartyLogoField";
+import { FeatureCheckboxGroup } from "@/features/admin/menus/FeatureCheckboxGroup";
+import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
+import { asStringArray } from "@/features/admin/menus/menu-options.service";
 
 type AddProjectModalProps = {
   isOpen: boolean;
@@ -19,9 +22,10 @@ type AddProjectModalProps = {
 };
 
 export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
-  const { register, handleSubmit, watch, reset } = useForm({
+  const { register, handleSubmit, watch, reset, setValue } = useForm({
     defaultValues: {
       name: "",
+      slug: "",
       cityId: "",
       neighborhoodId: "",
       mapsLink: "",
@@ -45,11 +49,20 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
 
   const queryClient = useQueryClient();
   const { locale, t } = useLocale();
+  const { of } = useMenuOptions();
   const [images, setImages] = useState<ProjectGalleryImage[]>([]);
   const [partnerLogos, setPartnerLogos] = useState<ProjectGalleryImage[]>([]);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlaceInput[]>([]);
   const [developerLogo, setDeveloperLogo] = useState<ProjectGalleryImage | null>(null);
   const [contractorLogo, setContractorLogo] = useState<ProjectGalleryImage | null>(null);
+  const [slugTouched, setSlugTouched] = useState(false);
+
+  const projectName = watch("name");
+
+  useEffect(() => {
+    if (slugTouched) return;
+    setValue("slug", slugify(projectName || ""));
+  }, [projectName, slugTouched, setValue]);
 
   useEffect(() => {
     if (isOpen) {
@@ -73,6 +86,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         revokeLogoPreview(prev);
         return null;
       });
+      setSlugTouched(false);
     }
     return () => {
       document.body.style.overflow = "unset";
@@ -114,6 +128,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
       await propertiesService.addProperty({
         id,
         name: data.name,
+        slug: data.slug,
         cityId: data.cityId,
         neighborhoodId: data.neighborhoodId,
         mapsLink: data.mapsLink || "",
@@ -126,11 +141,11 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         modelsCount: Number(data.modelsCount) || 1,
         buildings: [],
         models: [],
-        features: data.features,
-        services: data.services,
-        guarantees: data.guarantees,
-        offers: data.offers,
-        locations: data.locations,
+        features: asStringArray(data.features),
+        services: asStringArray(data.services),
+        guarantees: asStringArray(data.guarantees),
+        offers: asStringArray(data.offers),
+        locations: asStringArray(data.locations),
         images: uploadedUrls,
         nearbyPlaces: sanitizeNearbyPlaces(nearbyPlaces),
         partnerLogos: uploadedPartnerLogos,
@@ -152,8 +167,17 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
     },
   });
 
-  const onSubmit = (data: any) => {
-    addMutation.mutate(data);
+  const onSubmit = async (data: any) => {
+    const nextSlug = slugify(data.slug || data.name || "");
+    if (!nextSlug) {
+      toast.error("يرجى إدخال رابط المشروع");
+      return;
+    }
+    if (await propertiesService.isSlugTaken(nextSlug)) {
+      toast.error("هذا الرابط مستخدم بالفعل");
+      return;
+    }
+    addMutation.mutate({ ...data, slug: nextSlug });
   };
 
   const formSectionClass = "mb-8";
@@ -208,6 +232,21 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                   </div>
 
                   <div className="mb-5">
+                    <label className={labelClass}>رابط المشروع (URL Slug) - لتحسين الـ SEO</label>
+                    <input
+                      {...register("slug", {
+                        onChange: () => setSlugTouched(true),
+                      })}
+                      dir="ltr"
+                      placeholder="al-qirawan"
+                      className={`${inputClass} text-start font-mono`}
+                    />
+                    <span className="mt-2 block text-xs font-semibold text-[#8c8c8c]">
+                      يظهر في رابط المشروع مثل /properties/al-qirawan
+                    </span>
+                  </div>
+
+                  <div className="mb-5">
                     <label className={labelClass}>وصف المشروع (اختياري)</label>
                     <textarea
                       {...register("description")}
@@ -250,7 +289,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
 
                   <div className="mb-5 grid gap-5 sm:grid-cols-2">
                     <div className="sm:col-span-2">
-                      <label className={labelClass}>رابط موقع المشروع (اختياري)</label>
+                      <label className={labelClass}>رابط خرائط جوجل (اختياري)</label>
                       <input {...register("mapsLink")} placeholder="https://maps.google.com/..." className={inputClass} dir="ltr" />
                     </div>
                   </div>
@@ -346,66 +385,47 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                 <div className={formSectionClass}>
                   <div className="mb-8">
                     <h4 className="mb-4 text-base font-bold text-[#0a0f1d]">مميزات المشروع</h4>
-                    <div className="flex flex-wrap gap-3">
-                      <label className="flex cursor-pointer items-center gap-3 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                        <input type="checkbox" value="compound" {...register("features")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        <span className="text-sm font-bold text-[#0a0f1d]">كمباوند</span>
-                      </label>
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("project", "projectFeatures")}
+                      values={watch("features")}
+                      onChange={(next) => setValue("features", next, { shouldDirty: true })}
+                    />
                   </div>
 
                   <div className="mb-8">
                     <h4 className="mb-4 text-base font-bold text-[#0a0f1d]">خدمات ما بعد البيع</h4>
-                    <div className="flex flex-wrap gap-3">
-                      <label className="flex cursor-pointer items-center gap-3 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                        <input type="checkbox" value="cleaning" {...register("services")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        <span className="text-sm font-bold text-[#0a0f1d]">نظافة</span>
-                      </label>
-                      <label className="flex cursor-pointer items-center gap-3 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                        <input type="checkbox" value="cameras" {...register("services")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        <span className="text-sm font-bold text-[#0a0f1d]">كاميرات مراقبة</span>
-                      </label>
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("project", "services")}
+                      values={watch("services")}
+                      onChange={(next) => setValue("services", next, { shouldDirty: true })}
+                    />
                   </div>
 
                   <div className="mb-8">
                     <h4 className="mb-4 text-base font-bold text-[#0a0f1d]">الضمانات</h4>
-                    <div className="flex flex-wrap gap-3">
-                      <label className="flex cursor-pointer items-center gap-3 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                        <input type="checkbox" value="structure" {...register("guarantees")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        <span className="text-sm font-bold text-[#0a0f1d]">الهيكل 10 سنوات</span>
-                      </label>
-                      <label className="flex cursor-pointer items-center gap-3 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                        <input type="checkbox" value="electric" {...register("guarantees")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        <span className="text-sm font-bold text-[#0a0f1d]">الكهرباء 10 سنوات</span>
-                      </label>
-                      <label className="flex cursor-pointer items-center gap-3 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                        <input type="checkbox" value="plumbing" {...register("guarantees")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        <span className="text-sm font-bold text-[#0a0f1d]">السباكة</span>
-                      </label>
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("project", "guarantees")}
+                      values={watch("guarantees")}
+                      onChange={(next) => setValue("guarantees", next, { shouldDirty: true })}
+                    />
                   </div>
 
                   <div className="mb-8">
                     <h4 className="mb-4 text-base font-bold text-[#0a0f1d]">العروض الخاصة</h4>
-                    <div className="flex flex-wrap gap-3">
-                      <label className="flex cursor-pointer items-center gap-3 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                        <input type="checkbox" value="ac" {...register("offers")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        <span className="text-sm font-bold text-[#0a0f1d]">مكيفات مجانية</span>
-                      </label>
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("project", "specialOffers")}
+                      values={watch("offers")}
+                      onChange={(next) => setValue("offers", next, { shouldDirty: true })}
+                    />
                   </div>
 
                   <div>
                     <h4 className="mb-4 text-base font-bold text-[#0a0f1d]">المواقع القريبة</h4>
-                    <div className="flex flex-wrap gap-3">
-                      {["مدرسة", "مستشفى", "مسجد", "مول تجاري", "محطة مترو", "بقالة"].map((loc) => (
-                        <label key={loc} className="flex cursor-pointer items-center gap-3 rounded-[16px] bg-[#F4F4F4] px-5 py-3 transition-colors hover:bg-[#EAEAEA]">
-                          <input type="checkbox" value={loc} {...register("locations")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                          <span className="text-sm font-bold text-[#0a0f1d]">{loc}</span>
-                        </label>
-                      ))}
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("project", "nearbyLocations")}
+                      values={watch("locations")}
+                      onChange={(next) => setValue("locations", next, { shouldDirty: true })}
+                    />
                   </div>
                 </div>
 

@@ -6,11 +6,14 @@ import { useForm } from "react-hook-form";
 import { X, Loader2, ChevronDown } from "lucide-react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { citiesService } from "@/features/admin/cities/cities.service";
-import { propertiesService } from "@/features/admin/projects/properties.service";
+import { propertiesService, slugify } from "@/features/admin/projects/properties.service";
 import { unitsService, type Unit } from "@/features/admin/units/units.service";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "@/features/admin/projects/ProjectImageGallery";
+import { FeatureCheckboxGroup } from "@/features/admin/menus/FeatureCheckboxGroup";
+import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
+import { normalizeMenuValues } from "@/features/admin/menus/menu-options.service";
 
 interface EditUnitModalProps {
   isOpen: boolean;
@@ -32,6 +35,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
       unitNumber: "",
       unitType: "شقة سكنية",
       operationType: "للبيع",
+      slug: "",
       price: "",
       roomsCount: "",
       bathroomsCount: "",
@@ -54,6 +58,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
 
   const queryClient = useQueryClient();
   const { locale, t } = useLocale();
+  const { of, items } = useMenuOptions();
   const [images, setImages] = useState<ProjectGalleryImage[]>([]);
   const lastFilledModelId = useRef<string | null>(null);
 
@@ -69,6 +74,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
         
         status: unit.status || "available",
         unitNumber: unit.unitNumber?.includes("-") ? unit.unitNumber.split("-").pop() : (unit.unitNumber || ""),
+        slug: unit.slug || slugify(unit.unitNumber || ""),
         unitType: unit.unitType || "شقة سكنية",
         operationType: unit.operationType || "للبيع",
         price: unit.price?.toString() || "",
@@ -90,9 +96,9 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
         discountPercentage: unit.discountPercentage?.toString() || "",
         discountDays: unit.discountDays?.toString() || "",
 
-        additionalComponents: unit.additionalComponents || [],
-        features: unit.features || [],
-        facade: unit.facade || [],
+        additionalComponents: normalizeMenuValues(unit.additionalComponents, items),
+        features: normalizeMenuValues(unit.features, items),
+        facade: normalizeMenuValues(unit.facade, items),
 
         condition: unit.condition || "جديدة",
         age: unit.age?.toString() || "",
@@ -172,9 +178,9 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
           const skipTechnicalPrefill = lastFilledModelId.current === null && !!unit;
           lastFilledModelId.current = selectedModelId || null;
           if (!skipTechnicalPrefill) {
-            setValue("additionalComponents", model.additionalComponents || []);
-            setValue("features", model.features || []);
-            setValue("facade", model.facade || []);
+            setValue("additionalComponents", normalizeMenuValues(model.additionalComponents, items));
+            setValue("features", normalizeMenuValues(model.features, items));
+            setValue("facade", normalizeMenuValues(model.facade, items));
           }
         }
       }
@@ -212,6 +218,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
         projectId: data.projectId,
         status: data.status,
         unitNumber: finalUnitNumber,
+        slug: slugify(data.slug || ""),
         unitType: data.unitType,
         operationType: "للبيع",
         price: Number(data.price) || 0,
@@ -221,10 +228,9 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
           ? (Number(data.internalArea) || 0) + (Number(data.externalArea) || 0)
           : model ? (Number(model.totalArea) || 0) : (Number(data.totalArea) || 0),
         discountActive: data.discountActive,
-        additionalComponents: data.additionalComponents || [],
-        features: data.features || [],
-        facade: data.facade || [],
-        views: unit.views || 0,
+        additionalComponents: normalizeMenuValues(data.additionalComponents, items),
+        features: normalizeMenuValues(data.features, items),
+        facade: normalizeMenuValues(data.facade, items),
         images: allImages,
       };
 
@@ -275,8 +281,18 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
     },
   });
 
-  const onSubmit = (data: any) => {
-    updateMutation.mutate(data);
+  const onSubmit = async (data: any) => {
+    if (!unit) return;
+    const nextSlug = slugify(data.slug || data.unitNumber || "");
+    if (!nextSlug) {
+      toast.error("يرجى إدخال رابط الوحدة");
+      return;
+    }
+    if (await unitsService.isSlugTaken(nextSlug, unit.id)) {
+      toast.error("هذا الرابط مستخدم بالفعل");
+      return;
+    }
+    updateMutation.mutate({ ...data, slug: nextSlug });
   };
 
   const formSectionClass = "mb-8";
@@ -473,6 +489,19 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                     </div>
                   </div>
 
+                  <div className="mb-5">
+                    <label className={labelClass}>رابط الوحدة (URL Slug) - لتحسين الـ SEO</label>
+                    <input
+                      {...register("slug")}
+                      dir="ltr"
+                      placeholder="a15"
+                      className={`${inputClass} text-start font-mono`}
+                    />
+                    <span className="mt-2 block text-xs font-semibold text-[#8c8c8c]">
+                      يظهر في رابط الوحدة مثل /units/a15
+                    </span>
+                  </div>
+
                   <div className={`grid gap-5 ${isIndependent ? "sm:grid-cols-2" : "sm:grid-cols-3"}`}>
                     <div>
                       <label className={labelClass}>الغرف</label>
@@ -544,56 +573,32 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                   
                   <div className="mb-6">
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">المكونات الإضافية</h4>
-                    <div className="flex flex-wrap gap-4">
-                      {["مطبخ", "مجلس", "صالة واسعة", "مستودع", "غرفة غسيل", "غرفة سائق"].map((item) => {
-                        const isSelected = (watch("additionalComponents") || []).includes(item);
-                        return (
-                        <label key={item} className={`flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
-                          isSelected 
-                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
-                            : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
-                        }`}>
-                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
-                          <input type="checkbox" value={item} {...register("additionalComponents")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        </label>
-                      )})}
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("unit", "unitComponents")}
+                      values={watch("additionalComponents")}
+                      onChange={(next) => setValue("additionalComponents", next, { shouldDirty: true })}
+                      variant="unit"
+                    />
                   </div>
 
                   <div className="mb-6">
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">مميزات الوحدة</h4>
-                    <div className="flex flex-wrap gap-4">
-                      {["بلكونة", "تكييف مركزي", "مكيف راكب", "دخول ذكي", "موقف خاص"].map((item) => {
-                        const isSelected = (watch("features") || []).includes(item);
-                        return (
-                        <label key={item} className={`flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] border px-4 py-3 transition-colors ${
-                          isSelected 
-                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
-                            : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
-                        }`}>
-                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
-                          <input type="checkbox" value={item} {...register("features")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        </label>
-                      )})}
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("unit", "unitFeatures")}
+                      values={watch("features")}
+                      onChange={(next) => setValue("features", next, { shouldDirty: true })}
+                      variant="unit"
+                    />
                   </div>
 
                   <div>
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">واجهة الوحدة</h4>
-                    <div className="flex flex-wrap gap-4">
-                      {["أمامية", "جانبية", "خلفية"].map((item) => {
-                        const isSelected = (watch("facade") || []).includes(item);
-                        return (
-                        <label key={item} className={`flex cursor-pointer items-center justify-between gap-3 min-w-[120px] rounded-[12px] border px-4 py-3 transition-colors ${
-                          isSelected 
-                            ? 'bg-[#0a0f1d]/5 border-[#0a0f1d]/30' 
-                            : 'bg-white border-[#0a0f1d]/10 hover:bg-[#F4F4F4]'
-                        }`}>
-                          <span className={`text-sm ${isSelected ? 'font-bold text-[#0a0f1d]' : 'font-medium text-[#8c8c8c]'}`}>{item}</span>
-                          <input type="checkbox" value={item} {...register("facade")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" />
-                        </label>
-                      )})}
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("unit", "unitFacade")}
+                      values={watch("facade")}
+                      onChange={(next) => setValue("facade", next, { shouldDirty: true })}
+                      variant="unit"
+                    />
                   </div>
                 </div>
 

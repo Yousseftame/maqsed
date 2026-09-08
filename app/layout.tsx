@@ -40,17 +40,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       suppressHydrationWarning
       className={`${plusJakartaSans.variable} ${manrope.variable} ${ibmPlexSansArabic.variable} min-h-full antialiased`}
     >
-      <head>
-        <script
-          id="maqsed-locale-bootstrap"
-          dangerouslySetInnerHTML={{ __html: localeBootstrap }}
-        />
-        <script
-          id="maqsed-maintenance-bootstrap"
-          dangerouslySetInnerHTML={{ __html: maintenanceBootstrap }}
-        />
-      </head>
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
+        <Script id="maqsed-locale-bootstrap" strategy="beforeInteractive">
+          {localeBootstrap}
+        </Script>
+        <Script id="maqsed-maintenance-bootstrap" strategy="beforeInteractive">
+          {maintenanceBootstrap}
+        </Script>
         <Script id="chatbase-embed" strategy="afterInteractive">
           {chatbaseEmbed}
         </Script>

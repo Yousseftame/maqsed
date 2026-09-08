@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { PropertySearchBar } from "@/features/home/components/PropertySearchBar";
 import { useLocale } from "@/components/providers/LocaleProvider";

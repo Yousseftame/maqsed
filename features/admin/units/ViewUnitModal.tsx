@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X, MapPin, Building2, Bed, Bath, Expand, Tag, Info, Eye } from "lucide-react";
 import type { Unit } from "@/features/admin/units/units.service";
-import { useLocale } from "@/components/providers/LocaleProvider";
 import { StatusBadge } from "@/features/admin/ui/StatusBadge";
+import { MenuValuePills } from "@/features/admin/menus/MenuValuePills";
 
 interface ViewUnitModalProps {
   isOpen: boolean;
@@ -120,6 +120,12 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                       <span className="text-sm text-[#8c8c8c]">نوع الوحدة</span>
                       <span className="text-sm font-semibold">{unit.unitType}</span>
                     </div>
+                    {unit.slug ? (
+                      <div className="flex justify-between py-3 px-4 border-b border-[#0a0f1d]/5">
+                        <span className="text-sm text-[#8c8c8c]">رابط الوحدة</span>
+                        <span className="text-sm font-semibold" dir="ltr">/units/{unit.slug}</span>
+                      </div>
+                    ) : null}
                     <div className="flex justify-between py-3 px-4 border-b border-[#0a0f1d]/5">
                       <span className="text-sm text-[#8c8c8c]">العملية</span>
                       <span className="text-sm font-semibold">{unit.operationType}</span>
@@ -164,38 +170,20 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
               <div>
                 <h3 className="text-lg font-bold text-[#0a0f1d] mb-4">التفاصيل الفنية</h3>
                 
-                {unit.features?.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm text-[#8c8c8c] mb-2">مميزات الوحدة</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {unit.features.map((f: string) => (
-                        <span key={f} className="bg-[#F4F4F4] text-[#0a0f1d] px-3 py-1 rounded-full text-sm font-medium">{f}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="mb-4">
+                  <h4 className="text-sm text-[#8c8c8c] mb-2">مميزات الوحدة</h4>
+                  <MenuValuePills values={unit.features} />
+                </div>
                 
-                {unit.additionalComponents?.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm text-[#8c8c8c] mb-2">المكونات الإضافية</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {unit.additionalComponents.map((f: string) => (
-                        <span key={f} className="bg-[#F4F4F4] text-[#0a0f1d] px-3 py-1 rounded-full text-sm font-medium">{f}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="mb-4">
+                  <h4 className="text-sm text-[#8c8c8c] mb-2">المكونات الإضافية</h4>
+                  <MenuValuePills values={unit.additionalComponents} />
+                </div>
 
-                {unit.facade?.length > 0 && (
-                  <div className="mb-4">
-                    <h4 className="text-sm text-[#8c8c8c] mb-2">الواجهة</h4>
-                    <div className="flex flex-wrap gap-2">
-                      {unit.facade.map((f: string) => (
-                        <span key={f} className="bg-[#F4F4F4] text-[#0a0f1d] px-3 py-1 rounded-full text-sm font-medium">{f}</span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+                <div className="mb-4">
+                  <h4 className="text-sm text-[#8c8c8c] mb-2">الواجهة</h4>
+                  <MenuValuePills values={unit.facade} />
+                </div>
               </div>
 
               {/* Independent Unit Data */}

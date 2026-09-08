@@ -80,7 +80,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
 }
 
 export function OfferDetailModal({ offer, onClose }: Props) {
-  const { isRtl } = useLocale();
+  const { t, isRtl } = useLocale();
 
   const formatDate = (ts: any) => {
     if (!ts) return "—";
@@ -175,6 +175,15 @@ export function OfferDetailModal({ offer, onClose }: Props) {
                     {offer.viewedAt && (
                       <InfoRow icon={CheckCircle} label={isRtl ? "تاريخ المشاهدة" : "Viewed"} value={formatDate(offer.viewedAt)} />
                     )}
+                    <InfoRow
+                      icon={offer.paymentStatus === "received" ? CheckCircle : Clock}
+                      label={t("admin.offers.payment")}
+                      value={
+                        offer.paymentStatus === "received"
+                          ? t("admin.offers.paymentReceived")
+                          : t("admin.offers.paymentUnpaid")
+                      }
+                    />
                   </div>
                 </div>
 

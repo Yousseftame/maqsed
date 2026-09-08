@@ -1,7 +1,43 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { Bed, Bath, MapPin, Building2, ArrowUpRight } from "lucide-react";
+import { Building2, ArrowUpRight } from "lucide-react";
 import type { UnitListing } from "@/features/units/data/units";
+
+function formatArea(value: number, isRtl: boolean) {
+  const amount = value.toLocaleString(undefined, { maximumFractionDigits: 1 });
+  return isRtl ? `${amount} م²` : `${amount} sqm`;
+}
+
+function affiliationText(unit: UnitListing, isRtl: boolean) {
+  if (isRtl) return unit.affiliationAr || "";
+  return unit.affiliationEn || "";
+}
+
+function unitHref(unit: UnitListing) {
+  if (unit.slug) return `/units/${encodeURIComponent(unit.slug)}`;
+  return `/units/${unit.pathId || unit.id}`;
+}
+
+function UnitCover({ src, alt }: { src: string; alt: string }) {
+  const [failed, setFailed] = useState(false);
+
+  useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
+  if (!src || failed) return <div className="h-full w-full bg-gray-200" />;
+
+  return (
+    <img
+      src={src}
+      alt={alt}
+      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+      onError={() => setFailed(true)}
+    />
+  );
+}
 
 interface UnitCardProps {
   unit: UnitListing;
@@ -14,17 +50,11 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
   if (variant === "compact") {
     return (
       <Link
-        href={`/units/${unit.id}`}
+        href={unitHref(unit)}
         className="group flex flex-col justify-between rounded-2xl border border-gray-200 bg-white transition-all duration-300 hover:border-[#17C3B3] hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] hover:-translate-y-1 block h-full overflow-hidden"
       >
         <div className="relative h-32 w-full sm:h-40">
-          <Image
-            src={unit.gallery[0]}
-            alt={`Unit ${unit.id}`}
-            fill
-            className="object-cover transition-transform duration-700 group-hover:scale-105"
-            sizes="(min-width: 768px) 50vw, 100vw"
-          />
+          <UnitCover src={unit.gallery[0] || ""} alt={`Unit ${unit.id}`} />
           <div className="absolute inset-0 bg-black/5 transition-colors duration-300 group-hover:bg-black/0" />
         </div>
 
@@ -45,11 +75,15 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
             </span>
           </div>
           
-          {projectName && (
+          {affiliationText(unit, isRtl) ? (
+            <p className="mb-2 text-xs font-bold tracking-wide text-[#6A2B92]">
+              {affiliationText(unit, isRtl)}
+            </p>
+          ) : projectName ? (
             <p className="mb-2 text-xs font-bold tracking-wide text-[#17C3B3] bg-[#17C3B3]/10 inline-block px-2 py-1 rounded-md">
               {isRtl ? `مشروع: ${projectName}` : `Project: ${projectName}`}
             </p>
-          )}
+          ) : null}
 
           <div className="mb-6 flex items-center justify-between">
             <p className="text-sm font-semibold text-gray-500">
@@ -62,9 +96,20 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
             )}
           </div>
 
-          <div className="mb-6 flex items-center gap-2 text-sm font-semibold text-gray-500">
-            <div className="h-1.5 w-1.5 rounded-full bg-[#17C3B3]" />
-            <span>{isRtl ? "المساحة:" : "Area:"} {unit.sqft} {isRtl ? "م²" : "sqm"}</span>
+          <div className="mb-6 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-gray-500">
+            <div className="flex items-center gap-2">
+              <div className="h-1.5 w-1.5 rounded-full bg-[#17C3B3]" />
+              <span>
+                {isRtl ? "المساحة:" : "Area:"} {formatArea(unit.sqft, isRtl)}
+              </span>
+            </div>
+            {unit.internalArea || unit.externalArea ? (
+              <span className="text-[11px] font-medium text-gray-400">
+                {isRtl ? "داخلية" : "Internal"} {formatArea(unit.internalArea || 0, isRtl)}
+                <span className="mx-1">|</span>
+                {isRtl ? "خارجية" : "External"} {formatArea(unit.externalArea || 0, isRtl)}
+              </span>
+            ) : null}
           </div>
         </div>
 
@@ -100,26 +145,15 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
 
   return (
     <Link
-      href={`/units/${unit.id}`}
+      href={unitHref(unit)}
       className="group flex cursor-pointer flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
       {/* Image Section */}
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200">
-        <Image
-          src={unit.gallery[0]}
-          alt={`Unit ${unit.id}`}
-          fill
-          className="object-cover transition-transform duration-700 group-hover:scale-105"
-          sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
-        />
+        <UnitCover src={unit.gallery[0] || ""} alt={`Unit ${unit.id}`} />
         
         {/* Top Badges */}
         <div className="absolute top-4 start-4 z-10 flex flex-wrap items-center gap-2">
-          {projectName && (
-            <div className="flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-3 py-1.5 text-xs font-medium text-white shadow-sm backdrop-blur-md">
-              <span>{projectName}</span>
-            </div>
-          )}
           <div className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold text-white shadow-sm backdrop-blur-md ${unit.statusEn === "Sold" ? "bg-red-500/90" : "bg-[#17C3B3]/90"}`}>
             <span>{isRtl ? unit.statusAr : unit.statusEn}</span>
           </div>
@@ -148,12 +182,27 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
           <p className="text-sm font-medium text-[#8c8c8c]">
             {isRtl ? unit.locationAr : unit.locationEn}
           </p>
+          {affiliationText(unit, isRtl) ? (
+            <p className="mt-1.5 text-xs font-bold text-[#6A2B92]">
+              {affiliationText(unit, isRtl)}
+            </p>
+          ) : null}
         </div>
 
-        {/* Stats */}
-        <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-gray-500">
-          <div className="h-1.5 w-1.5 rounded-full bg-[#17C3B3]" />
-          <span>{isRtl ? "المساحة:" : "Area:"} {unit.sqft} {isRtl ? "م²" : "sqm"}</span>
+        <div className="mb-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-gray-500">
+          <div className="flex items-center gap-2">
+            <div className="h-1.5 w-1.5 rounded-full bg-[#17C3B3]" />
+            <span>
+              {isRtl ? "المساحة:" : "Area:"} {formatArea(unit.sqft, isRtl)}
+            </span>
+          </div>
+          {unit.internalArea || unit.externalArea ? (
+            <span className="text-[11px] font-medium text-gray-400">
+              {isRtl ? "داخلية" : "Internal"} {formatArea(unit.internalArea || 0, isRtl)}
+              <span className="mx-1">|</span>
+              {isRtl ? "خارجية" : "External"} {formatArea(unit.externalArea || 0, isRtl)}
+            </span>
+          ) : null}
         </div>
 
         <hr className="my-5 border-gray-100" />

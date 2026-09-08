@@ -40,8 +40,10 @@ export function usePermissions() {
   const isNavLinkVisible = useCallback(
     (href: string) => {
       const module = getModuleFromHref(href);
-      if (!module) return true;
-      return can(module, "read");
+      if (module) return can(module, "read");
+      const required = getRequiredPathPermission(href);
+      if (required) return can(required.module, required.action);
+      return true;
     },
     [can]
   );

@@ -1,21 +1,26 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { FileSignature, Search, Plus, FileText, CheckCircle, Clock, XCircle, RefreshCw, Eye, Download, Pencil } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { FileSignature, Search, Plus, FileText, CheckCircle, Clock, XCircle, RefreshCw, Eye, Download, Pencil, ChevronDown } from "lucide-react";
+import { createPortal } from "react-dom";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { DataTable, type Column } from "@/features/admin/ui/DataTable";
 import { StatCard, StatGrid } from "@/features/admin/ui/StatCard";
+import { StatusBadge, type StatusTone } from "@/features/admin/ui/StatusBadge";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { offersService, type OfferData } from "./offers.service";
 import { OfferDetailModal } from "./OfferDetailModal";
 import { EditOfferModal } from "./EditOfferModal";
 import { downloadOfferPDF } from "./offer-pdf";
 import { usePermissions } from "@/features/admin/permissions/usePermissions";
+import toast from "react-hot-toast";
+import { cn } from "@/lib/utils";
 
 export function OffersSection() {
   const { t, isRtl } = useLocale();
   const router = useRouter();
+  const queryClient = useQueryClient();
   const { can } = usePermissions();
   const canCreate = can("offers", "create");
   const canEditOffer = can("offers", "edit");
@@ -23,9 +28,31 @@ export function OffersSection() {
   const [selectedOffer, setSelectedOffer] = useState<OfferData | null>(null);
   const [editingOffer, setEditingOffer] = useState<OfferData | null>(null);
 
-  const { data: offers = [], isLoading, refetch, isRefetching } = useQuery({
+  const { data: offers = [], refetch, isRefetching } = useQuery({
     queryKey: ["offers"],
     queryFn: () => offersService.getOffers(),
+  });
+
+  useEffect(() => {
+    setSelectedOffer((current) => {
+      if (!current) return current;
+      return offers.find((item) => item.id === current.id) ?? current;
+    });
+  }, [offers]);
+
+  const paymentMutation = useMutation({
+    mutationFn: async ({ offer, status }: { offer: OfferData; status: "unpaid" | "received" }) => {
+      if (status === "received") await offersService.setPaymentReceived(offer);
+      else await offersService.setPaymentUnpaid(offer);
+    },
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({ queryKey: ["offers"] });
+      toast.success(t("admin.ui.success"));
+    },
+    onError: (error) => {
+      console.error("Failed to update payment status", error);
+      toast.error(t("admin.ui.error"));
+    },
   });
 
   const filtered = useMemo(() => {
@@ -100,39 +127,50 @@ export function OffersSection() {
       ),
     },
     {
+      id: "payment",
+      header: t("admin.offers.payment") || (isRtl ? "الدفع" : "Payment"),
+      cell: (row) => (
+        <PaymentStatusDropdown
+          received={row.paymentStatus === "received"}
+          enabled={canEditOffer && row.status === "accepted"}
+          unpaidLabel={t("admin.offers.paymentUnpaid")}
+          receivedLabel={t("admin.offers.paymentReceived")}
+          lockedTitle={isRtl ? "يتاح الدفع بعد قبول العرض" : "Payment is available after the offer is accepted"}
+          isPending={paymentMutation.isPending}
+          isRtl={isRtl}
+          onSelect={(status) => {
+            const received = row.paymentStatus === "received";
+            if (status === row.paymentStatus || (!received && status === "unpaid")) return;
+            paymentMutation.mutate({ offer: row, status });
+          }}
+        />
+      ),
+    },
+    {
       id: "status",
       header: t("admin.offers.status") || "Status",
       cell: (row) => {
-        if (row.status === "accepted") {
-          return (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-100 px-2.5 py-1 text-xs font-medium text-green-700">
-              <CheckCircle className="h-3.5 w-3.5" />
-              Accepted
-            </span>
-          );
-        }
-        if (row.status === "rejected") {
-          return (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-red-100 px-2.5 py-1 text-xs font-medium text-red-700">
-              <XCircle className="h-3.5 w-3.5" />
-              Rejected
-            </span>
-          );
-        }
-        if (row.status === "viewed") {
-          return (
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-blue-100 px-2.5 py-1 text-xs font-medium text-blue-700">
-              <CheckCircle className="h-3.5 w-3.5" />
-              Viewed & Pending
-            </span>
-          );
-        }
-        return (
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-amber-100 px-2.5 py-1 text-xs font-medium text-amber-700">
-            <Clock className="h-3.5 w-3.5" />
-            Not Viewed
-          </span>
-        );
+        const tone: StatusTone =
+          row.status === "accepted"
+            ? "success"
+            : row.status === "rejected"
+              ? "danger"
+              : row.status === "viewed"
+                ? "navy"
+                : "warning";
+        const label =
+          row.status === "accepted"
+            ? t("admin.offers.accepted")
+            : row.status === "rejected"
+              ? t("admin.offers.rejected")
+              : row.status === "viewed"
+                ? isRtl
+                  ? "تمت المشاهدة"
+                  : "Viewed"
+                : isRtl
+                  ? "لم يُشاهد"
+                  : "Not viewed";
+        return <StatusBadge tone={tone}>{label}</StatusBadge>;
       },
     },
     {
@@ -263,5 +301,134 @@ export function OffersSection() {
       <OfferDetailModal offer={selectedOffer} onClose={() => setSelectedOffer(null)} />
       <EditOfferModal offer={editingOffer} onClose={() => setEditingOffer(null)} />
     </div>
+  );
+}
+
+function PaymentStatusDropdown({
+  received,
+  enabled,
+  unpaidLabel,
+  receivedLabel,
+  lockedTitle,
+  isPending,
+  isRtl,
+  onSelect,
+}: {
+  received: boolean;
+  enabled: boolean;
+  unpaidLabel: string;
+  receivedLabel: string;
+  lockedTitle: string;
+  isPending: boolean;
+  isRtl: boolean;
+  onSelect: (status: "unpaid" | "received") => void;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState({ top: 0, left: 0 });
+  const current = received ? "received" : "unpaid";
+  const options = [
+    { id: "unpaid" as const, label: unpaidLabel },
+    { id: "received" as const, label: receivedLabel },
+  ];
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        buttonRef.current &&
+        !buttonRef.current.contains(event.target as Node) &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsOpen(false);
+      }
+    }
+
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      if (buttonRef.current) {
+        const rect = buttonRef.current.getBoundingClientRect();
+        setCoords({
+          top: rect.bottom + window.scrollY + 8,
+          left: isRtl ? rect.left + window.scrollX : rect.right + window.scrollX,
+        });
+      }
+    }
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [isOpen, isRtl]);
+
+  const label = received ? receivedLabel : unpaidLabel;
+  const tone = received ? "bg-[#E8F8EF] text-[#83BF6E]" : "bg-[#F4F4F4] text-[#6B7280]";
+
+  if (!enabled) {
+    return (
+      <span
+        title={lockedTitle}
+        className={cn(
+          "inline-flex h-8 cursor-not-allowed items-center whitespace-nowrap rounded-full px-3 text-xs font-bold",
+          tone
+        )}
+      >
+        {label}
+      </span>
+    );
+  }
+
+  return (
+    <>
+      <button
+        ref={buttonRef}
+        type="button"
+        onClick={(event) => {
+          event.stopPropagation();
+          setIsOpen((open) => !open);
+        }}
+        disabled={isPending}
+        className={cn(
+          "inline-flex h-8 items-center gap-1.5 whitespace-nowrap rounded-full px-3 text-xs font-bold transition-opacity hover:opacity-80 disabled:opacity-50",
+          tone
+        )}
+      >
+        <span>{label}</span>
+        <ChevronDown
+          className={cn("h-3.5 w-3.5 shrink-0 transition-transform", isOpen && "rotate-180")}
+          strokeWidth={2.4}
+        />
+      </button>
+      {isOpen && typeof document !== "undefined"
+        ? createPortal(
+            <div
+              ref={dropdownRef}
+              style={{
+                position: "absolute",
+                top: coords.top,
+                left: coords.left,
+                transform: isRtl ? "none" : "translateX(-100%)",
+              }}
+              className="z-50 min-w-[11rem] overflow-hidden rounded-[16px] border border-[#0a0f1d]/10 bg-white shadow-xl"
+            >
+              <div className="flex flex-col py-1">
+                {options.map((option) => (
+                  <button
+                    key={option.id}
+                    type="button"
+                    onClick={() => {
+                      onSelect(option.id);
+                      setIsOpen(false);
+                    }}
+                    className={`px-4 py-2 text-sm font-bold transition-colors hover:bg-[#F4F4F4] ${
+                      isRtl ? "text-right" : "text-left"
+                    } ${current === option.id ? "bg-[#F4F4F4] text-[#0a0f1d]" : "text-[#8c8c8c]"}`}
+                  >
+                    {option.label}
+                  </button>
+                ))}
+              </div>
+            </div>,
+            document.body
+          )
+        : null}
+    </>
   );
 }

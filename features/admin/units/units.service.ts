@@ -7,18 +7,23 @@ import {
   deleteDoc,
   query,
   updateDoc,
+  increment,
   orderBy,
+  where,
   Timestamp,
   serverTimestamp,
 } from "firebase/firestore";
 import { storage } from "@/lib/firebase/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
+import { asStringArray } from "@/features/admin/menus/menu-options.service";
+import { slugify } from "@/features/admin/projects/properties.service";
 
 export type Unit = {
   id: string;
   
   // Section 1: Affiliation (التبعية والموقع)
   projectId: string; // ID of the property OR "independent"
+  slug?: string;
   
   // If Independent
   cityId?: string;
@@ -66,25 +71,54 @@ export type Unit = {
   updatedAt?: Timestamp | any;
 };
 
+function normalizeUnit(raw: Record<string, unknown> & { id?: string }): Unit {
+  return {
+    ...(raw as Unit),
+    slug: String(raw.slug || "").trim(),
+    additionalComponents: asStringArray(raw.additionalComponents),
+    features: asStringArray(raw.features),
+    facade: asStringArray(raw.facade),
+  };
+}
+
+export function unitPublicPath(unit: { id: string; slug?: string }): string {
+  const slug = String(unit.slug || "").trim();
+  return `/units/${encodeURIComponent(slug || unit.id)}`;
+}
+
 export const unitsService = {
   getUnits: async (): Promise<Unit[]> => {
     const q = query(collection(db, "units"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map((doc) => doc.data() as Unit);
+    return snapshot.docs.map((item) => normalizeUnit({ id: item.id, ...item.data() }));
   },
 
   addUnit: async (unit: Unit) => {
     await setDoc(doc(db, "units", unit.id), {
-      ...unit,
+      ...normalizeUnit(unit),
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
   },
 
   updateUnit: async (id: string, data: Partial<Unit>) => {
+    const { views: _views, ...rest } = data;
     await updateDoc(doc(db, "units", id), {
-      ...data,
+      ...rest,
+      ...(data.additionalComponents !== undefined
+        ? { additionalComponents: asStringArray(data.additionalComponents) }
+        : {}),
+      ...(data.features !== undefined ? { features: asStringArray(data.features) } : {}),
+      ...(data.facade !== undefined ? { facade: asStringArray(data.facade) } : {}),
       updatedAt: serverTimestamp(),
+    });
+  },
+
+  incrementViews: async (unitId: string) => {
+    const id = String(unitId || "").trim();
+    if (!id) return;
+    await updateDoc(doc(db, "units", id), {
+      views: increment(1),
     });
   },
 
@@ -94,6 +128,13 @@ export const unitsService = {
 
   generateId: () => {
     return doc(collection(db, "units")).id;
+  },
+
+  async isSlugTaken(slug: string, excludeId?: string): Promise<boolean> {
+    const value = slugify(slug);
+    if (!value) return false;
+    const snap = await getDocs(query(collection(db, "units"), where("slug", "==", value)));
+    return snap.docs.some((item) => item.id !== excludeId);
   },
 
   uploadImage: async (file: File, path: string) => {

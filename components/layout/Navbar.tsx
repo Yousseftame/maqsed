@@ -27,8 +27,8 @@ export function Navbar() {
     { 
       name: isRtl ? "المشاريع" : "Projects", 
       dropdown: [
-        { name: isRtl ? "وحدات مستقلة" : "Independent Units", href: "/properties" },
-        { name: isRtl ? "وحدات" : "Units", href: "/properties" },
+        { name: t("nav.properties"), href: "/properties" },
+        { name: t("nav.units"), href: "/units" },
       ]
     },
   ];
@@ -51,7 +51,7 @@ export function Navbar() {
           <nav className="hidden items-center gap-5 md:flex">
             {navLinks.map((link) => {
               if (link.dropdown) {
-                const isActive = pathname.startsWith("/properties");
+                const isActive = pathname.startsWith("/properties") || pathname.startsWith("/units");
                 return (
                   <div key={link.name} className="group relative flex h-16 items-center">
                     <div

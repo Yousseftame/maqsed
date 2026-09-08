@@ -347,6 +347,7 @@ export interface Dictionary {
       maintenance: string;
       developers: string;
       offers: string;
+      payments: string;
       users: string;
     };
     ui: {
@@ -373,6 +374,7 @@ export interface Dictionary {
       error: string;
       deleting: string;
       loading: string;
+      refresh: string;
     };
     accountSettings: {
       title: string;
@@ -392,6 +394,7 @@ export interface Dictionary {
       active: string;
       units: string;
       cities: string;
+      views: string;
       name: string;
       city: string;
       unitsCol: string;
@@ -473,15 +476,25 @@ export interface Dictionary {
       };
     };
     menus: {
+      tabProjects: string;
+      tabUnits: string;
+      hintProjects: string;
+      hintUnits: string;
       unitFeatures: string;
       unitComponents: string;
+      unitFacade: string;
       projectFeatures: string;
       services: string;
       guarantees: string;
       specialOffers: string;
       nearbyLocations: string;
-      addPlaceholder: string;
       addButton: string;
+      addTo: string;
+      addModalTitle: string;
+      labelAr: string;
+      labelEn: string;
+      itemRequired: string;
+      emptyCategory: string;
       deleteTitle: string;
       deleteDescription: string;
     };
@@ -655,10 +668,26 @@ export interface Dictionary {
       accepted: string;
       pending: string;
       rejected: string;
+      payment: string;
+      paymentUnpaid: string;
+      paymentReceived: string;
       shareCode: string;
       simulated: string;
       backToOffers: string;
       viewLink: string;
+    };
+
+    payments: {
+      search: string;
+      total: string;
+      totalAmount: string;
+      offerNumber: string;
+      title: string;
+      developer: string;
+      project: string;
+      date: string;
+      amount: string;
+      empty: string;
     };
 
     about: {
@@ -777,9 +806,13 @@ export interface Dictionary {
       requests: string;
       views: string;
       last7Days: string;
+      last30Days: string;
+      last90Days: string;
       vsLastMonth: string;
       inquiries: string;
       visits: string;
+      projectViews: string;
+      unitViews: string;
       projects: string;
       units: string;
       traffic: string;
@@ -787,6 +820,21 @@ export interface Dictionary {
       byNeighborhood: string;
       recent: string;
       status: string;
+      team: string;
+      members: string;
+      admins: string;
+      developers: string;
+      requestTypes: string;
+      contactRequests: string;
+      sellRequests: string;
+      salesRequests: string;
+      affiliation: string;
+      independentUnits: string;
+      independentUnit: string;
+      projectUnits: string;
+      noUnitNumber: string;
+      topUnits: string;
+      payments: string;
       viewAll: string;
       new: string;
       pending: string;
@@ -802,6 +850,14 @@ export interface Dictionary {
         villas: string;
         floors: string;
         commercial: string;
+      };
+      unitDistribution: string;
+      unitTypes: {
+        apartment: string;
+        villa: string;
+        building: string;
+        duplex: string;
+        townhouse: string;
       };
       geographic: string;
       days: {
@@ -1285,6 +1341,7 @@ export const en: Dictionary = {
       maintenance: "Maintenance Mode",
       developers: "Developers",
       offers: "Technical Offers",
+      payments: "Payments",
       users: "Users",
     },
     ui: {
@@ -1311,6 +1368,7 @@ export const en: Dictionary = {
       error: "An error occurred",
       deleting: "Deleting...",
       loading: "Loading...",
+      refresh: "Refresh",
     },
     accountSettings: {
       title: "Account Settings",
@@ -1330,6 +1388,7 @@ export const en: Dictionary = {
       active: "Active projects",
       units: "Total units",
       cities: "Cities",
+      views: "Total views",
       name: "Project",
       city: "City",
       unitsCol: "Units",
@@ -1411,17 +1470,27 @@ export const en: Dictionary = {
       },
     },
     menus: {
-      unitFeatures: "Unit Features",
-      unitComponents: "Unit Additional Components",
+      tabProjects: "Projects",
+      tabUnits: "Units / Models",
+      hintProjects: "These checkboxes appear in the project creation and edit form, grouped by category.",
+      hintUnits: "These checkboxes appear in unit and model forms under Technical Details, grouped by category.",
+      unitFeatures: "Unit Features & Parking",
+      unitComponents: "Additional Components",
+      unitFacade: "Unit Facade",
       projectFeatures: "Project Features",
-      services: "Services Management",
-      guarantees: "Guarantees Management",
+      services: "After-sales Services",
+      guarantees: "Guarantees",
       specialOffers: "Special Offers",
       nearbyLocations: "Nearby Locations",
-      addPlaceholder: "Add a new item..",
-      addButton: "Add to list",
-      deleteTitle: "Delete Item?",
-      deleteDescription: "Are you sure you want to delete this item?",
+      addButton: "Add option",
+      addTo: "Adding to",
+      addModalTitle: "Add a checkbox option",
+      labelAr: "Label (Arabic)",
+      labelEn: "Label (English)",
+      itemRequired: "Please add the label in Arabic or English",
+      emptyCategory: "No options in this category yet",
+      deleteTitle: "Delete this option?",
+      deleteDescription: "It will no longer appear in creation forms. Existing records keep the old value.",
     },
     interface: {
       heroTitle: "Hero Title",
@@ -1593,10 +1662,26 @@ export const en: Dictionary = {
       accepted: "Accepted",
       pending: "Pending",
       rejected: "Rejected",
+      payment: "Payment",
+      paymentUnpaid: "Not received",
+      paymentReceived: "Money received",
       shareCode: "Please share this secure code with the developer via WhatsApp or Email:",
       simulated: "(The system has simulated sending this via Email/WhatsApp)",
       backToOffers: "Back to Offers",
       viewLink: "View Public Link",
+    },
+
+    payments: {
+      search: "Search payments...",
+      total: "Received payments",
+      totalAmount: "Total received",
+      offerNumber: "Offer number",
+      title: "Offer title",
+      developer: "Developer",
+      project: "Project",
+      date: "Received at",
+      amount: "Amount",
+      empty: "No payments received yet",
     },
 
     about: {
@@ -1715,9 +1800,13 @@ export const en: Dictionary = {
       requests: "All Requests",
       views: "Views",
       last7Days: "Last 7 days",
+      last30Days: "Last 30 days",
+      last90Days: "Last 90 days",
       vsLastMonth: "vs last month",
       inquiries: "Inquiries",
       visits: "Visits",
+      projectViews: "Projects",
+      unitViews: "Units",
       projects: "Projects",
       units: "Units",
       traffic: "Inquiries this week",
@@ -1725,6 +1814,21 @@ export const en: Dictionary = {
       byNeighborhood: "Properties distribution by neighborhoods",
       recent: "Recent inquiries",
       status: "Project status",
+      team: "Team",
+      members: "Members",
+      admins: "Admins",
+      developers: "Developers",
+      requestTypes: "Request types",
+      contactRequests: "Contact",
+      sellRequests: "Sell requests",
+      salesRequests: "Sales communication",
+      affiliation: "Unit affiliation",
+      independentUnits: "Independent units",
+      independentUnit: "Independent unit",
+      projectUnits: "Project units",
+      noUnitNumber: "No number",
+      topUnits: "Highest priced units",
+      payments: "Payments",
       viewAll: "View all",
       new: "New",
       pending: "Pending",
@@ -1740,6 +1844,14 @@ export const en: Dictionary = {
         villas: "Residential Villas",
         floors: "Residential Floors",
         commercial: "Commercial Units",
+      },
+      unitDistribution: "Unit distribution",
+      unitTypes: {
+        apartment: "Residential apartment",
+        villa: "Villa",
+        building: "Building",
+        duplex: "Duplex",
+        townhouse: "Townhouse",
       },
       geographic: "Geographic Distribution",
       days: {

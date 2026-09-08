@@ -1,33 +1,34 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { Plus, Trash2 } from "lucide-react";
-import { MENU_ITEMS, type MenuCategory, type MenuItem } from "./data";
-import { useConfirm } from "@/features/admin/components/ConfirmModal";
+import { Loader2, Plus, Trash2 } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
+import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
-
-const CATEGORIES: MenuCategory[] = [
-  "unitFeatures",
-  "unitComponents",
-  "projectFeatures",
-  "services",
-  "guarantees",
-  "specialOffers",
-  "nearbyLocations",
-];
+import { useConfirm } from "@/features/admin/components/ConfirmModal";
+import { AdminButton } from "@/features/admin/ui/AdminButton";
+import { Panel } from "@/features/admin/ui/Panel";
+import { cn } from "@/lib/utils";
+import { AddMenuItemModal } from "./AddMenuItemModal";
+import { categoriesForScope, type MenuCategoryKey, type MenuScope } from "./data";
+import { menuOptionsService } from "./menu-options.service";
+import { useMenuOptions } from "./useMenuOptions";
 
 export function MenuSettingsSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
-  
-  const [activeTab, setActiveTab] = useState<MenuCategory>("unitFeatures");
-  const [items, setItems] = useState<MenuItem[]>(MENU_ITEMS);
-  const [inputValue, setInputValue] = useState("");
+  const queryClient = useQueryClient();
+    const { of, isPending } = useMenuOptions();
 
-  const activeItems = useMemo(
-    () => items.filter((item) => item.category === activeTab),
-    [items, activeTab]
-  );
+  const [scope, setScope] = useState<MenuScope>("project");
+  const [addingCategory, setAddingCategory] = useState<MenuCategoryKey | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
+
+  const categories = useMemo(() => categoriesForScope(scope), [scope]);
+
+  async function refresh() {
+    await queryClient.invalidateQueries({ queryKey: ["menuOptions"] });
+  }
 
   async function handleDelete(id: string) {
     const ok = await confirm({
@@ -38,94 +39,111 @@ export function MenuSettingsSection() {
       tone: "danger",
     });
     if (!ok) return;
-    setItems((current) => current.filter((item) => item.id !== id));
-  }
 
-  function handleAdd(e: React.FormEvent) {
-    e.preventDefault();
-    const value = inputValue.trim();
-    if (!value) return;
-
-    const newItem: MenuItem = {
-      id: Math.random().toString(36).substr(2, 9),
-      category: activeTab,
-      name: { en: value, ar: value }, // In a real app, you might want inputs for both languages
-    };
-
-    setItems((current) => [...current, newItem]);
-    setInputValue("");
+    setBusyId(id);
+    try {
+      await menuOptionsService.deleteItem(id);
+      await refresh();
+      toast.success(t("admin.ui.saved"));
+    } catch (error) {
+      console.error("Error deleting menu option:", error);
+      toast.error(t("admin.ui.error") || "Failed to save.");
+    } finally {
+      setBusyId(null);
+    }
   }
 
   return (
-    <div className="flex flex-col gap-6 pt-4 sm:pt-6">
-      {/* Category Tabs */}
-      <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 gap-2 sm:gap-4 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {CATEGORIES.map((category) => (
-          <button
-            key={category}
-            onClick={() => setActiveTab(category)}
-            className={`shrink-0 px-4 py-2.5 rounded-full text-sm font-bold transition-colors ${
-              activeTab === category
-                ? "bg-[#0a0f1d] text-white"
-                : "bg-white text-[#6B7280] hover:bg-gray-50"
-            }`}
-          >
-            {t(`admin.menus.${category}`)}
-          </button>
-        ))}
-      </div>
+    <>
+      <div className="flex flex-col gap-6 pt-4 sm:pt-6 pb-20">
+        <div className="inline-flex w-fit rounded-full bg-white p-1 shadow-sm border border-gray-100">
+          {(["project", "unit"] as const).map((tab) => (
+            <button
+              key={tab}
+              type="button"
+              onClick={() => setScope(tab)}
+              className={cn(
+                "h-11 rounded-full px-5 text-sm font-bold transition-colors",
+                scope === tab ? "bg-[#0a0f1d] text-white" : "text-[#6B7280] hover:text-[#0a0f1d]"
+              )}
+            >
+              {tab === "project" ? t("admin.menus.tabProjects") : t("admin.menus.tabUnits")}
+            </button>
+          ))}
+        </div>
 
-      {/* Main Content Area */}
-      <div className="rounded-2xl bg-white p-4 sm:p-6 shadow-sm border border-gray-100">
-        
-        {/* Add Input Form */}
-        <form onSubmit={handleAdd} className="flex flex-col sm:flex-row gap-3 mb-8">
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            placeholder={t("admin.menus.addPlaceholder")}
-            className="flex-1 h-12 rounded-xl border border-gray-200 bg-[#F4F4F4] px-4 text-sm font-medium text-[#0a0f1d] outline-none transition-colors focus:border-[#0a0f1d] focus:bg-white placeholder:text-[#8c8c8c]"
-          />
-          <button
-            type="submit"
-            disabled={!inputValue.trim()}
-            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0a0f1d] px-6 text-sm font-bold text-white transition-colors duration-200 hover:bg-[#161c2d] disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <Plus className="h-4 w-4" strokeWidth={2.2} />
-            {t("admin.menus.addButton")}
-          </button>
-        </form>
+        <p className="text-sm font-semibold text-[#8c8c8c]">
+          {scope === "project" ? t("admin.menus.hintProjects") : t("admin.menus.hintUnits")}
+        </p>
 
-        {/* Items Grid */}
-        {activeItems.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {activeItems.map((item) => (
-              <div
-                key={item.id}
-                className="group flex items-center justify-between gap-3 rounded-xl border border-gray-100 bg-[#F9F9F9] p-3 transition-colors hover:border-gray-200 hover:bg-gray-50"
-              >
-                <span className="text-sm font-semibold text-[#0a0f1d] truncate">
-                  {item.name[locale]}
-                </span>
-                <button
-                  onClick={() => handleDelete(item.id)}
-                  className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500"
-                  aria-label="Delete item"
-                >
-                  <Trash2 className="h-4 w-4" />
-                </button>
-              </div>
-            ))}
+        {isPending ? (
+          <div className="flex items-center justify-center rounded-2xl bg-white py-16">
+            <Loader2 className="h-6 w-6 animate-spin text-[#8c8c8c]" />
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 text-center">
-            <p className="text-sm text-gray-500 font-medium">
-              {t("admin.ui.empty")}
-            </p>
+          <div className="flex flex-col gap-5">
+            {categories.map((category) => {
+              const categoryItems = of(scope, category);
+              return (
+                <Panel
+                  key={category}
+                  title={t(`admin.menus.${category}`)}
+                  action={
+                    <AdminButton type="button" onClick={() => setAddingCategory(category)} className="h-10 px-4">
+                      <Plus className="h-4 w-4" strokeWidth={2.5} />
+                      {t("admin.menus.addButton")}
+                    </AdminButton>
+                  }
+                >
+                  {categoryItems.length > 0 ? (
+                    <div className="flex flex-wrap gap-3">
+                      {categoryItems.map((item) => {
+                        const label =
+                          locale === "ar"
+                            ? item.labelAr.trim() || item.labelEn.trim()
+                            : item.labelEn.trim() || item.labelAr.trim();
+                        const isBusy = busyId === item.id;
+
+                        return (
+                          <div
+                            key={item.id}
+                            className="group flex items-center gap-3 rounded-2xl border border-gray-100 bg-[#F9F9F9] px-4 py-3"
+                          >
+                            <span className="text-sm font-semibold text-[#0a0f1d]">{label}</span>
+                            <button
+                              type="button"
+                              onClick={() => handleDelete(item.id)}
+                              disabled={isBusy}
+                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-50"
+                              aria-label={t("admin.ui.delete")}
+                            >
+                              {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <div className="rounded-2xl border border-dashed border-gray-200 bg-[#fcfcfc] px-6 py-10 text-center text-sm font-medium text-[#8c8c8c]">
+                      {t("admin.menus.emptyCategory")}
+                    </div>
+                  )}
+                </Panel>
+              );
+            })}
           </div>
         )}
       </div>
-    </div>
+
+      <AddMenuItemModal
+        isOpen={Boolean(addingCategory)}
+        scope={scope}
+        category={addingCategory}
+        categoryLabel={addingCategory ? t(`admin.menus.${addingCategory}`) : ""}
+        order={addingCategory ? of(scope, addingCategory).length : 0}
+        onClose={() => setAddingCategory(null)}
+        onSaved={refresh}
+      />
+    </>
   );
 }

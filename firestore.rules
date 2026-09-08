@@ -1,0 +1,145 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ==========================================
+    // HELPER FUNCTIONS
+    // ==========================================
+    
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    
+    function getUserData() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+    
+    function isAdmin() {
+      // [FIXED] Now allows both admin and superAdmin!
+      return isAuthenticated() && (getUserData().role == 'admin' || getUserData().role == 'superAdmin');
+    }
+
+    function isDeveloper() {
+      return isAuthenticated() && getUserData().role == 'developer';
+    }
+
+    function isViewIncrement() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
+        && request.resource.data.views is number
+        && request.resource.data.views == resource.data.get('views', 0) + 1;
+    }
+
+    // ==========================================
+    // COLLECTIONS
+    // ==========================================
+
+    match /users/{userId} {
+      allow read, write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      
+      // Allow users to log their own actions, and Admins to read them
+      match /auditLogs/{logId} {
+        allow read, write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      }
+    }
+
+    match /cities/{cityId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+    
+    match /properties/{propertyId} {
+      allow read: if true; 
+      allow write: if isAdmin() || isDeveloper();
+      allow update: if isViewIncrement();
+    }
+    
+    match /units/{unitId} {
+      allow read: if true;
+      allow write: if isAdmin() || isDeveloper();
+      allow update: if isViewIncrement();
+    }
+
+    match /herosection/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /about/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /company/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /partners/{partnerId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /blog/{postId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /legal/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /maintenance/{docId} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
+    match /faqs/{id} {
+  allow read: if true;
+  allow write: if isAdmin();
+}
+
+match /menuOptions/{id} {
+  allow read: if true;
+  allow write: if isAdmin();
+}
+
+    match /contact_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /sell_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // Sales Communication Requests
+    match /sales_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
+    // ==========================================
+    // OFFERS & CONTRACTS
+    // ==========================================
+    
+    match /offers/{offerId} {
+      // Admins can do anything
+      allow create, delete: if isAdmin();
+      // Developers can only read/update the offer if their UID is explicitly attached to it by the Cloud Function
+      allow read, update: if isAdmin() || (isAuthenticated() && resource.data.developerUid == request.auth.uid);
+    }
+
+    match /contracts/{contractId} {
+      // Admins can do anything, Developers can read their own contracts
+      allow read: if isAdmin() || (isAuthenticated() && resource.data.developerUid == request.auth.uid);
+      allow write: if isAdmin();
+    }
+    
+    // Lockdown everything else by default
+    match /{document=**} {
+      allow read, write: if false; 
+    }
+  }
+}

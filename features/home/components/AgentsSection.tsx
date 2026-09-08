@@ -1,19 +1,43 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import Image from "next/image";
 import Link from "next/link";
 import useEmblaCarousel from "embla-carousel-react";
 import AutoScroll from "embla-carousel-auto-scroll";
 import { ArrowUpRight } from "lucide-react";
+import { useQueries } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { allUnits } from "@/features/units/data/units";
-import { getPropertyById } from "@/features/properties/data/listings";
 import { UnitCard } from "@/features/units/components/UnitCard";
+import { unitsService, type Unit } from "@/features/admin/units/units.service";
+import { propertiesService, type Property } from "@/features/admin/projects/properties.service";
+import { citiesService } from "@/features/admin/cities/cities.service";
+import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
+import { mapPublicUnits } from "@/features/units/mapPublicUnits";
+
+const HOME_UNITS_LIMIT = 8;
+
+function CardSkeleton() {
+  return (
+    <div className="min-w-0 flex-[0_0_100%] ps-6 sm:flex-[0_0_50%] lg:flex-[0_0_25%]">
+      <div className="h-full overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm">
+        <div className="aspect-[4/3] w-full animate-pulse bg-gray-200" />
+        <div className="flex flex-col p-5">
+          <div className="mb-2 h-4 w-24 animate-pulse rounded bg-gray-100" />
+          <div className="mb-2 h-7 w-2/3 animate-pulse rounded-md bg-gray-200" />
+          <div className="mb-4 h-4 w-1/2 animate-pulse rounded bg-gray-100" />
+          <div className="h-4 w-28 animate-pulse rounded bg-gray-100" />
+          <hr className="my-5 border-gray-100" />
+          <div className="h-4 w-32 animate-pulse rounded bg-gray-100" />
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export function AgentsSection() {
   const { t, locale, isRtl } = useLocale();
+  const { label } = useMenuOptions();
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
       loop: true,
@@ -31,10 +55,34 @@ export function AgentsSection() {
     ]
   );
 
+  const results = useQueries({
+    queries: [
+      { queryKey: ["units"], queryFn: () => unitsService.getUnits() },
+      { queryKey: ["properties"], queryFn: () => propertiesService.getProperties() },
+      { queryKey: ["cities"], queryFn: () => citiesService.getCities() },
+    ],
+  });
+
+  const units = (results[0].data || []) as Unit[];
+  const properties = (results[1].data || []) as Property[];
+  const cities = (results[2].data || []) as City[];
+  const isPending = results.some((item) => item.isPending);
+  const unitsFailed = results[0].isError;
+
+  const mappedUnits = useMemo(
+    () => mapPublicUnits(units, properties, cities, locale, isRtl, label).slice(0, HOME_UNITS_LIMIT),
+    [units, properties, cities, locale, isRtl, label]
+  );
+
   useEffect(() => {
     if (!emblaApi) return;
-    emblaApi.reInit({ direction: isRtl ? "rtl" : "ltr" });
-  }, [emblaApi, isRtl]);
+    emblaApi.reInit({
+      loop: mappedUnits.length > 4,
+      align: "start",
+      dragFree: true,
+      direction: isRtl ? "rtl" : "ltr",
+    });
+  }, [emblaApi, isRtl, mappedUnits.length, isPending]);
 
   return (
     <section className="relative z-30 w-full overflow-hidden bg-white px-6 py-24 md:px-12 lg:px-20">
@@ -72,23 +120,35 @@ export function AgentsSection() {
 
         <div className="overflow-hidden" ref={emblaRef}>
           <div className="flex -ms-6 py-4">
-            {allUnits.map((unit) => {
-              const property = unit.propertyId ? getPropertyById(unit.propertyId) : undefined;
-              return (
+            {isPending ? (
+              <>
+                <CardSkeleton />
+                <CardSkeleton />
+                <CardSkeleton />
+                <CardSkeleton />
+              </>
+            ) : unitsFailed || mappedUnits.length === 0 ? (
+              <div className="flex w-full items-center justify-center py-16 ps-6">
+                <p className="text-sm font-medium text-[#8c8c8c]">
+                  {isRtl ? "لا توجد وحدات متاحة حالياً" : "No units to show yet"}
+                </p>
+              </div>
+            ) : (
+              mappedUnits.map(({ listing, projectName }) => (
                 <div
-                  key={unit.id}
+                  key={listing.pathId || listing.id}
                   className="min-w-0 flex-[0_0_100%] ps-6 sm:flex-[0_0_50%] lg:flex-[0_0_25%]"
                 >
                   <div className="h-full">
-                    <UnitCard 
-                      unit={unit} 
-                      isRtl={isRtl} 
-                      projectName={property ? (isRtl ? property.titleAr : property.title) : undefined} 
+                    <UnitCard
+                      unit={listing}
+                      isRtl={isRtl}
+                      projectName={projectName || undefined}
                     />
                   </div>
                 </div>
-              );
-            })}
+              ))
+            )}
           </div>
         </div>
 

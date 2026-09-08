@@ -1,4 +1,4 @@
-import { collection, doc, getDoc, getDocs, orderBy, query, limit } from "firebase/firestore";
+import { collection, deleteField, doc, getDoc, getDocs, limit, orderBy, query, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebase";
 
 export interface OfferServiceItem {
@@ -25,10 +25,18 @@ export interface OfferData {
   financialAmount?: string | number;
   technicalDetails?: string;
   status: "creating" | "pending" | "viewed" | "accepted" | "rejected";
+  paymentStatus?: "unpaid" | "received";
+  paymentId?: string;
+  paymentReceivedAt?: number;
   secretCode?: string;
   createdAt?: any;
   viewedAt?: any;
   respondedAt?: any;
+}
+
+export function offerAmount(offer: Pick<OfferData, "total" | "financialAmount">) {
+  const value = Number(offer.total || offer.financialAmount || 0);
+  return Number.isFinite(value) ? value : 0;
 }
 
 class OffersService {
@@ -105,9 +113,33 @@ class OffersService {
       total: number;
     }
   ): Promise<void> {
-    const { doc, updateDoc } = await import("firebase/firestore");
     const docRef = doc(db, this.collectionName, id);
     await updateDoc(docRef, { ...data });
+  }
+
+  async setPaymentReceived(offer: OfferData): Promise<void> {
+    if (offer.paymentStatus === "received") return;
+    if (offer.status !== "accepted") {
+      throw new Error("Payment can only be marked received after the offer is accepted");
+    }
+    const docRef = doc(db, this.collectionName, offer.id);
+    await updateDoc(docRef, {
+      paymentStatus: "received",
+      paymentReceivedAt: Date.now(),
+    });
+  }
+
+  async setPaymentUnpaid(offer: OfferData): Promise<void> {
+    if (offer.paymentStatus !== "received") return;
+    if (offer.status !== "accepted") {
+      throw new Error("Payment can only be changed after the offer is accepted");
+    }
+    const docRef = doc(db, this.collectionName, offer.id);
+    await updateDoc(docRef, {
+      paymentStatus: "unpaid",
+      paymentId: deleteField(),
+      paymentReceivedAt: deleteField(),
+    });
   }
 }
 

@@ -68,6 +68,7 @@ export const ADMIN_PATH_PERMISSIONS: {
   action: PermissionAction;
 }[] = [
   { prefix: "/admin/offers/create", module: "offers", action: "create" },
+  { prefix: "/admin/payments", module: "offers", action: "read" },
   { prefix: "/admin/offers", module: "offers", action: "read" },
   { prefix: "/admin/cities", module: "cities", action: "read" },
   { prefix: "/admin/projects", module: "projects", action: "read" },

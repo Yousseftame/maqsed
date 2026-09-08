@@ -103,6 +103,26 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
     const instance = lenisRef.current;
     if (!instance) return;
 
+    const hash = window.location.hash.replace(/^#/, "");
+    const scrollToHash = () => {
+      if (!hash) return false;
+      const target = document.getElementById(hash);
+      if (!target) return false;
+      instance.resize();
+      instance.scrollTo(target, { immediate: true, offset: -8 });
+      return true;
+    };
+
+    if (hash) {
+      if (scrollToHash()) return;
+      const frame = requestAnimationFrame(scrollToHash);
+      const timeout = window.setTimeout(scrollToHash, 400);
+      return () => {
+        cancelAnimationFrame(frame);
+        window.clearTimeout(timeout);
+      };
+    }
+
     syncLenisToPage(instance, { toTop: true });
 
     const frame = requestAnimationFrame(() => {

@@ -1,7 +1,7 @@
 "use client";
 
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import { PropertySearchBar } from "@/features/home/components/PropertySearchBar";
+import { UnitSearchBar } from "@/features/units/components/UnitSearchBar";
 import { useLocale } from "@/components/providers/LocaleProvider";
 
 export function UnitsHero() {
@@ -47,7 +47,7 @@ export function UnitsHero() {
             {t("agents.description")}
           </p>
 
-          <PropertySearchBar />
+          <UnitSearchBar />
         </div>
       </div>
     </section>

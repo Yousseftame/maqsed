@@ -7,6 +7,9 @@ import { useForm } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { propertiesService, type Property, type PropertyModel } from "@/features/admin/projects/properties.service";
 import toast from "react-hot-toast";
+import { FeatureCheckboxGroup } from "@/features/admin/menus/FeatureCheckboxGroup";
+import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
+import { normalizeMenuValues } from "@/features/admin/menus/menu-options.service";
 
 type ManageModelsModalProps = {
   isOpen: boolean;
@@ -16,7 +19,8 @@ type ManageModelsModalProps = {
 
 export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsModalProps) {
   const queryClient = useQueryClient();
-  const { register, handleSubmit, reset, watch } = useForm({
+  const { of, items } = useMenuOptions();
+  const { register, handleSubmit, reset, watch, setValue } = useForm({
     defaultValues: {
       name: "",
       propertyType: "",
@@ -25,9 +29,9 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
       externalArea: "",
       roomsCount: 1,
       bathroomsCount: 1,
-      additionalComponents: [],
-      features: [],
-      facade: [],
+      additionalComponents: [] as string[],
+      features: [] as string[],
+      facade: [] as string[],
     },
   });
 
@@ -79,9 +83,9 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
         totalArea: (Number(data.internalArea) || 0) + (Number(data.externalArea) || 0),
         roomsCount: Number(data.roomsCount),
         bathroomsCount: Number(data.bathroomsCount),
-        additionalComponents: data.additionalComponents || [],
-        features: data.features || [],
-        facade: data.facade || [],
+        additionalComponents: normalizeMenuValues(data.additionalComponents, items),
+        features: normalizeMenuValues(data.features, items),
+        facade: normalizeMenuValues(data.facade, items),
         blueprintImage,
       };
 
@@ -265,38 +269,35 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
                   
                   <div className="mb-6">
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">المكونات الإضافية</h4>
-                    <div className="flex flex-wrap gap-4">
-                      {["مطبخ", "مجلس", "صالة واسعة", "مستودع", "غرفة غسيل", "غرفة سائق"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("additionalComponents")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" disabled={isMaxReached} />
-                        </label>
-                      ))}
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("unit", "unitComponents")}
+                      values={watch("additionalComponents")}
+                      onChange={(next) => setValue("additionalComponents", next, { shouldDirty: true })}
+                      variant="unit"
+                      disabled={isMaxReached}
+                    />
                   </div>
 
                   <div className="mb-6">
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">مميزات الوحدة والمواقف</h4>
-                    <div className="flex flex-wrap gap-4">
-                      {["بلكونة", "تكييف مركزي", "مكيف راكب", "دخول ذكي", "موقف خاص", "موقف داخلي", "موقف خارجي"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[140px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("features")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" disabled={isMaxReached} />
-                        </label>
-                      ))}
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("unit", "unitFeatures")}
+                      values={watch("features")}
+                      onChange={(next) => setValue("features", next, { shouldDirty: true })}
+                      variant="unit"
+                      disabled={isMaxReached}
+                    />
                   </div>
 
                   <div>
                     <h4 className="mb-4 text-sm font-bold text-[#8c8c8c]">واجهة الوحدة</h4>
-                    <div className="flex flex-wrap gap-4">
-                      {["أمامية", "جانبية", "خلفية"].map((item) => (
-                        <label key={item} className="flex cursor-pointer items-center justify-between gap-3 min-w-[120px] rounded-[12px] bg-white border border-[#0a0f1d]/10 px-4 py-3 transition-colors hover:bg-[#F4F4F4]">
-                          <span className="text-sm font-medium text-[#0a0f1d]">{item}</span>
-                          <input type="checkbox" value={item} {...register("facade")} className="h-4 w-4 rounded-[4px] accent-[#0a0f1d]" disabled={isMaxReached} />
-                        </label>
-                      ))}
-                    </div>
+                    <FeatureCheckboxGroup
+                      items={of("unit", "unitFacade")}
+                      values={watch("facade")}
+                      onChange={(next) => setValue("facade", next, { shouldDirty: true })}
+                      variant="unit"
+                      disabled={isMaxReached}
+                    />
                   </div>
                 </div>
 

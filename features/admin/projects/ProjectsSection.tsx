@@ -126,6 +126,7 @@ export function ProjectsSection() {
   }, [localized, query]);
 
   const totalUnits = localized.reduce((sum, row) => sum + row.computedUnitsCount, 0);
+  const totalViews = properties.reduce((sum, row) => sum + (Number(row.views) || 0), 0);
   const activeCount = properties.filter((row) => row.status === "active").length;
   const cityCount = new Set(properties.map((row) => row.cityId)).size;
 
@@ -217,7 +218,7 @@ export function ProjectsSection() {
 
   return (
     <div className="flex flex-col gap-3">
-      <StatGrid>
+      <StatGrid className="xl:grid-cols-5">
         <StatCard
           icon={Folder}
           label={t("admin.projects.total")}
@@ -237,6 +238,11 @@ export function ProjectsSection() {
           icon={Map}
           label={t("admin.projects.cities")}
           value={cityCount}
+        />
+        <StatCard
+          icon={Eye}
+          label={t("admin.projects.views")}
+          value={totalViews}
         />
       </StatGrid>
 
