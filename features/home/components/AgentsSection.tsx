@@ -12,6 +12,7 @@ import { UnitCard } from "@/features/units/components/UnitCard";
 import { unitsService, type Unit } from "@/features/admin/units/units.service";
 import { propertiesService, type Property } from "@/features/admin/projects/properties.service";
 import { citiesService } from "@/features/admin/cities/cities.service";
+import type { City } from "@/features/admin/cities/data";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
 import { mapPublicUnits } from "@/features/units/mapPublicUnits";
 
