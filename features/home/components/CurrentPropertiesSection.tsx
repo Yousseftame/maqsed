@@ -13,6 +13,7 @@ import { asStringArray } from "@/features/admin/menus/menu-options.service";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
 import type { City } from "@/features/admin/cities/data";
 import type { Locale } from "@/lib/i18n/types";
+import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
 import useEmblaCarousel from "embla-carousel-react";
 
 const CATEGORY_LABELS: Record<string, { ar: string; en: string }> = {
@@ -164,6 +165,7 @@ export function CurrentPropertiesSection() {
             .slice(0, 4),
           unitsCount: unitsCountForProject(property, units),
           projectType: property.projectType?.trim() || "",
+          views: Number(property.views) || 0,
         };
       })
       .slice(0, 6);
@@ -239,12 +241,15 @@ export function CurrentPropertiesSection() {
                         <div className="pointer-events-none absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover/link:opacity-0" />
                         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[60%] bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 
-                        {project.category ? (
-                          <div className="absolute top-4 start-4 z-10 flex flex-row-reverse items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-sm font-bold text-[#3E1854] shadow-sm backdrop-blur-md">
-                            <Layers className="h-4 w-4" />
-                            <span>{project.category}</span>
-                          </div>
-                        ) : null}
+                        <div className="absolute top-4 start-4 z-10 flex flex-col items-start gap-2">
+                          {project.category ? (
+                            <div className="flex flex-row-reverse items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-sm font-bold text-[#3E1854] shadow-sm backdrop-blur-md">
+                              <Layers className="h-4 w-4" />
+                              <span>{project.category}</span>
+                            </div>
+                          ) : null}
+                          <MostViewedBadge views={project.views} />
+                        </div>
 
                         <div className="absolute bottom-5 start-5 z-10 flex flex-col items-start text-start text-white">
                           <h3 className="text-3xl font-bold tracking-tight">

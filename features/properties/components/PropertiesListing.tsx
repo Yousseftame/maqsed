@@ -21,6 +21,7 @@ import {
   readPropertySearch,
 } from "@/features/properties/property-search";
 import { formatProjectPriceRange, projectPriceRangeFromUnits } from "@/features/properties/project-price";
+import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
 
 const ALL = ALL_SEARCH;
 const PAGE_SIZE = 8;
@@ -50,6 +51,7 @@ type ListedProject = {
   priceLabel: string;
   unitsCount: number;
   features: string[];
+  views: number;
 };
 
 function named(city: City | undefined, locale: Locale) {
@@ -242,6 +244,7 @@ function PropertiesListingInner() {
             .map((value) => label(value))
             .filter(Boolean)
             .slice(0, 4),
+          views: Number(property.views) || 0,
         },
       ];
     });
@@ -404,12 +407,15 @@ function PropertiesListingInner() {
                 <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200">
                   <ProjectCover src={prop.image} alt={prop.name} />
 
-                  {prop.category ? (
-                    <div className="absolute top-4 start-4 z-10 flex flex-row-reverse items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-sm font-bold text-[#3E1854] shadow-sm backdrop-blur-md">
-                      <Layers className="h-4 w-4" />
-                      <span>{prop.category}</span>
-                    </div>
-                  ) : null}
+                  <div className="absolute top-4 start-4 z-10 flex flex-col items-start gap-2">
+                    {prop.category ? (
+                      <div className="flex flex-row-reverse items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-sm font-bold text-[#3E1854] shadow-sm backdrop-blur-md">
+                        <Layers className="h-4 w-4" />
+                        <span>{prop.category}</span>
+                      </div>
+                    ) : null}
+                    <MostViewedBadge views={prop.views} />
+                  </div>
 
                   {prop.status === "soon" ? (
                     <div className="absolute top-4 end-4 z-10 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-4 py-1.5 text-sm font-medium text-white shadow-sm backdrop-blur-md">

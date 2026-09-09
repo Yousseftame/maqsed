@@ -32,6 +32,10 @@ import { citiesService } from "@/features/admin/cities/cities.service";
 import { unitsService, unitPublicPath, type Unit } from "@/features/admin/units/units.service";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
 import { useRecordPublicView } from "@/features/analytics/useRecordPublicView";
+import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
+import { getActiveUnitDiscount } from "@/features/units/unit-discount";
+import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
+import { useNow } from "@/features/units/useNow";
 import type { City } from "@/features/admin/cities/data";
 import type { Locale } from "@/lib/i18n/types";
 
@@ -94,11 +98,6 @@ function unitAreas(unit: Unit, property: Property | null) {
 function formatArea(value: number, isRtl: boolean) {
   const amount = value.toLocaleString(undefined, { maximumFractionDigits: 1 });
   return isRtl ? `${amount} م²` : `${amount} m²`;
-}
-
-function formatMoney(value: number, isRtl: boolean) {
-  const amount = value.toLocaleString(undefined, { maximumFractionDigits: 0 });
-  return isRtl ? `${amount} ر.س` : `${amount} SAR`;
 }
 
 function hasOwnValue(value: unknown) {
@@ -196,6 +195,7 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [galleryDirection, setGalleryDirection] = useState(1);
   const [isSalesModalOpen, setIsSalesModalOpen] = useState(false);
+  const now = useNow();
 
   useEffect(() => {
     setCurrentImageIdx(0);
@@ -243,9 +243,9 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
   const isSold = unit?.status !== "available";
   const statusLabel = isSold ? (isRtl ? "مباع" : "Sold") : isRtl ? "متاح" : "Available";
   const price = Number(unit?.price) || 0;
-  const discountPercent = unit?.discountActive ? Number(unit.discountPercentage) || 0 : 0;
-  const hasDiscount = Boolean(unit?.discountActive && discountPercent > 0 && price > 0);
-  const discountedPrice = hasDiscount ? Math.round(price * (1 - discountPercent / 100)) : price;
+  const discount = getActiveUnitDiscount(unit, now);
+  const hasDiscount = Boolean(discount);
+  const discountedPrice = discount ? discount.salePrice : price;
   const condition = independent ? conditionLabel(unit?.condition) : "";
   const age = independent ? ageLabel(unit?.age, isRtl) : "";
   const title = `${typeLabel || (isRtl ? "وحدة" : "Unit")} ${displayNumber}`.trim();
@@ -364,32 +364,36 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
               )
             ) : null}
             {price > 0 ? (
-              <div className="mt-1">
-                <span className="text-xs font-bold text-gray-400">{isRtl ? "السعر" : "Price"}</span>
-                {hasDiscount ? (
-                  <div className="mt-1 flex flex-wrap items-end gap-3">
-                    <div>
-                      <p className="text-sm font-bold text-gray-400 line-through decoration-gray-400">
-                        {formatMoney(price, isRtl)}
+              <div className="mt-8">
+                <p className="text-[15px] font-medium text-[#65676B]">{isRtl ? "السعر" : "Price"}</p>
+                <div className="mt-1 flex flex-wrap items-end gap-3">
+                  <div>
+                    {hasDiscount && discount ? (
+                      <p className="mb-1 text-sm font-medium text-[#65676B] line-through decoration-[#65676B]">
+                        <span dir="ltr" className="tabular-nums">
+                          {price.toLocaleString(undefined, { maximumFractionDigits: 0 })}
+                        </span>{" "}
+                        {isRtl ? "ر.س" : "SAR"}
                       </p>
-                      <p className="text-2xl sm:text-3xl font-black text-[#6A2B92] leading-tight">
-                        {formatMoney(discountedPrice, isRtl)}
-                      </p>
-                    </div>
-                    <span className="mb-1 rounded-full bg-green-100 px-3 py-1 text-xs font-bold text-green-700">
-                      {isRtl ? `خصم ${discountPercent}%` : `${discountPercent}% off`}
-                      {unit.discountDays
-                        ? isRtl
-                          ? ` · ${unit.discountDays} يوم`
-                          : ` · ${unit.discountDays} days`
-                        : ""}
-                    </span>
+                    ) : null}
+                    <p className="flex flex-wrap items-baseline gap-x-2 text-[40px] font-semibold leading-none tracking-tight text-[#1C1E21]">
+                      <span dir="ltr" className="tabular-nums">
+                        {(hasDiscount && discount ? discountedPrice : price).toLocaleString(undefined, {
+                          maximumFractionDigits: 0,
+                        })}
+                      </span>
+                      <span className="text-[17px] font-medium text-[#65676B]">{isRtl ? "ر.س" : "SAR"}</span>
+                    </p>
                   </div>
-                ) : (
-                  <p className="mt-1 text-2xl sm:text-3xl font-black text-[#6A2B92] leading-tight">
-                    {formatMoney(price, isRtl)}
-                  </p>
-                )}
+                  {hasDiscount && discount ? (
+                    <UnitDiscountBadge
+                      percent={discount.percent}
+                      daysLeft={discount.daysLeft}
+                      isRtl={isRtl}
+                      className="mb-1"
+                    />
+                  ) : null}
+                </div>
               </div>
             ) : null}
           </div>
@@ -432,6 +436,7 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
               )}>
                 {statusLabel}
               </span>
+              <MostViewedBadge views={unit.views} />
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
@@ -491,6 +496,7 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
                 />
               </motion.div>
             </AnimatePresence>
+            <MostViewedBadge views={unit.views} className="pointer-events-none absolute top-5 start-5 z-20" />
             {gallery.length > 1 ? (
               <>
                 <button

@@ -14,6 +14,7 @@ import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } 
 import { FeatureCheckboxGroup } from "@/features/admin/menus/FeatureCheckboxGroup";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
 import { normalizeMenuValues } from "@/features/admin/menus/menu-options.service";
+import { serverTimestamp } from "firebase/firestore";
 
 interface AddUnitModalProps {
   isOpen: boolean;
@@ -249,6 +250,7 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
       if (data.discountActive) {
         unitData.discountPercentage = Number(data.discountPercentage) || 0;
         unitData.discountDays = Number(data.discountDays) || 0;
+        unitData.discountStartedAt = serverTimestamp();
       }
 
       await unitsService.addUnit(unitData);

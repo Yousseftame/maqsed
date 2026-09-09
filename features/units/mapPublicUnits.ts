@@ -79,7 +79,8 @@ export function mapPublicUnits(
     const typeLabel = label(unit.unitType) || unit.unitType?.trim() || "";
     const number = displayUnitNumber(unit, property);
     const image = unitImage(unit);
-    const price = Number(unit.price) > 0 ? Number(unit.price).toLocaleString("en-US", { maximumFractionDigits: 0 }) : "";
+    const originalPrice = Number(unit.price) || 0;
+    const price = originalPrice > 0 ? originalPrice.toLocaleString("en-US", { maximumFractionDigits: 0 }) : "";
     const model = unit.modelId ? property?.models?.find((item) => item.id === unit.modelId) : undefined;
     const internalArea = Number(unit.internalArea ?? model?.internalArea) || 0;
     const externalArea = Number(unit.externalArea ?? model?.externalArea) || 0;
@@ -108,6 +109,12 @@ export function mapPublicUnits(
       relation: independent ? "Standalone" : "Property",
       affiliationAr: independent ? "وحدة مستقلة" : projectName ? `تابعة لمشروع ${projectName}` : "",
       affiliationEn: independent ? "Independent unit" : projectName ? `Part of ${projectName}` : "",
+      views: Number(unit.views) || 0,
+      priceValue: originalPrice,
+      discountActive: Boolean(unit.discountActive),
+      discountPercentage: Number(unit.discountPercentage) || 0,
+      discountDays: Number(unit.discountDays) || 0,
+      discountStartedAt: unit.discountStartedAt,
     };
 
     return [{ listing, projectName, cityId, neighborhoodId, unitType: unit.unitType?.trim() || typeLabel }];

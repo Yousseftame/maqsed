@@ -1,4 +1,5 @@
 import type { Unit } from "@/features/admin/units/units.service";
+import { unitSellingPrice } from "@/features/units/unit-discount";
 
 export type ProjectPriceRange = {
   min: number;
@@ -8,10 +9,7 @@ export type ProjectPriceRange = {
 function sellingPrice(unit: Unit) {
   const price = Number(unit.price);
   if (!Number.isFinite(price) || price <= 0) return 0;
-  if (!unit.discountActive) return price;
-  const percent = Number(unit.discountPercentage) || 0;
-  if (percent <= 0 || percent >= 100) return price;
-  return Math.round(price * (1 - percent / 100));
+  return unitSellingPrice(unit);
 }
 
 export function projectPriceRangeFromUnits(propertyId: string, units: Unit[]): ProjectPriceRange | null {

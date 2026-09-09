@@ -28,6 +28,10 @@ import type { City } from "@/features/admin/cities/data";
 import type { Locale } from "@/lib/i18n/types";
 import { formatProjectPriceRange, projectPriceRangeFromUnits } from "@/features/properties/project-price";
 import { useRecordPublicView } from "@/features/analytics/useRecordPublicView";
+import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
+import { getActiveUnitDiscount } from "@/features/units/unit-discount";
+import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
+import { useNow } from "@/features/units/useNow";
 
 type PropertyDetailProps = {
   propertyId: string;
@@ -221,6 +225,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const [currentImageIdx, setCurrentImageIdx] = useState(0);
   const [galleryDirection, setGalleryDirection] = useState(1);
   const [unitFilter, setUnitFilter] = useState<UnitFilter>("All");
+  const now = useNow();
 
   useEffect(() => {
     setCurrentImageIdx(0);
@@ -269,6 +274,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
       projectUnits.map((unit) => {
         const status = unitPublicStatus(unit.status);
         const areas = unitAreas(unit, property);
+        const discount = getActiveUnitDiscount(unit, now);
         return {
           id: unit.id,
           slug: unit.slug,
@@ -277,11 +283,14 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
           internalArea: areas.internal,
           externalArea: areas.external,
           price: Number(unit.price) || 0,
+          salePrice: discount ? discount.salePrice : Number(unit.price) || 0,
+          discount,
           status,
           statusLabel: status === "Available" ? (isRtl ? "متاحة" : "Available") : isRtl ? "مباعة" : "Sold",
+          views: Number(unit.views) || 0,
         };
       }),
-    [projectUnits, property, isRtl]
+    [projectUnits, property, isRtl, now]
   );
 
   const filteredUnits = mappedUnits.filter((unit) => {
@@ -375,6 +384,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               <span className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold ${sellingBadge.className}`}>
                 {sellingBadge.label}
               </span>
+              <MostViewedBadge views={property.views} />
               {category ? (
                 <span className="flex items-center gap-1.5 rounded-full border border-gray-200 bg-white px-3 py-1.5 text-xs font-bold text-gray-600">
                   {category}
@@ -436,6 +446,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 />
               </motion.div>
             </AnimatePresence>
+            <MostViewedBadge views={property.views} className="pointer-events-none absolute top-5 start-5 z-20" />
             {gallery.length > 1 ? (
               <>
                 <button
@@ -664,9 +675,12 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                     {filteredUnits.map((unit) => (
                       <tr key={unit.id} className="transition-colors hover:bg-gray-50">
                         <td className="py-4 px-4 whitespace-nowrap text-start">
-                          <span dir="ltr" className="tabular-nums font-black tracking-wide text-[#2e2e2e]">
-                            {unit.number}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span dir="ltr" className="tabular-nums font-black tracking-wide text-[#2e2e2e]">
+                              {unit.number}
+                            </span>
+                            <MostViewedBadge views={unit.views} size="sm" />
+                          </div>
                         </td>
                         <td className="py-4 px-4 text-start">
                           <span
@@ -681,7 +695,25 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                           </span>
                         </td>
                         <td className="py-4 px-4 whitespace-nowrap text-start">
-                          {unit.price > 0 ? formatMoney(unit.price, isRtl) : "—"}
+                          {unit.price > 0 ? (
+                            unit.discount ? (
+                              <div className="flex flex-col items-start gap-1">
+                                <span className="text-xs font-semibold text-gray-400 line-through decoration-gray-400">
+                                  {formatMoney(unit.price, isRtl)}
+                                </span>
+                                <span>{formatMoney(unit.salePrice, isRtl)}</span>
+                                <UnitDiscountBadge
+                                  percent={unit.discount.percent}
+                                  daysLeft={unit.discount.daysLeft}
+                                  isRtl={isRtl}
+                                />
+                              </div>
+                            ) : (
+                              formatMoney(unit.price, isRtl)
+                            )
+                          ) : (
+                            "—"
+                          )}
                         </td>
                         <td className="py-4 px-4 text-start">
                           {unit.area > 0 ? (

@@ -50,6 +50,7 @@ export type Unit = {
   discountActive: boolean;
   discountPercentage?: number;
   discountDays?: number;
+  discountStartedAt?: Timestamp | any;
 
   // Section 4: Technical Details (التفاصيل الفنية)
   additionalComponents: string[]; // e.g., ['kitchen', 'maid_room']

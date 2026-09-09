@@ -23,6 +23,12 @@ export type UnitListing = {
   externalArea?: number;
   affiliationAr?: string;
   affiliationEn?: string;
+  views?: number;
+  discountActive?: boolean;
+  discountPercentage?: number;
+  discountDays?: number;
+  discountStartedAt?: unknown;
+  priceValue?: number;
 };
 
 export const allUnits: UnitListing[] = [

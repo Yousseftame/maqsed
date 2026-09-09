@@ -108,6 +108,7 @@ export interface Dictionary {
     };
     forSale: string;
     forRent: string;
+    mostViewed: string;
     page: {
       pill: string;
       titleLine1: string;
@@ -1074,6 +1075,7 @@ export const en: Dictionary = {
     },
     forSale: "FOR SALE",
     forRent: "FOR RENT",
+    mostViewed: "Most viewed",
     page: {
       pill: "Explore Properties",
       titleLine1: "Perfect Family Homes for",

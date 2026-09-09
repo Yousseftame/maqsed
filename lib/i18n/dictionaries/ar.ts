@@ -143,6 +143,7 @@ export const ar: Dictionary = {
     },
     forSale: "للبيع",
     forRent: "للإيجار",
+    mostViewed: "الأكثر مشاهدة",
     page: {
       pill: "استكشف العقارات",
       titleLine1: "منازل عائلية مثالية",

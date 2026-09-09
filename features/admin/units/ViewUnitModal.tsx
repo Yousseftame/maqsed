@@ -6,6 +6,9 @@ import { X, MapPin, Building2, Bed, Bath, Expand, Tag, Info, Eye } from "lucide-
 import type { Unit } from "@/features/admin/units/units.service";
 import { StatusBadge } from "@/features/admin/ui/StatusBadge";
 import { MenuValuePills } from "@/features/admin/menus/MenuValuePills";
+import { getActiveUnitDiscount } from "@/features/units/unit-discount";
+import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
+import { useNow } from "@/features/units/useNow";
 
 interface ViewUnitModalProps {
   isOpen: boolean;
@@ -15,6 +18,8 @@ interface ViewUnitModalProps {
 
 export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
   const [activeImage, setActiveImage] = useState(0);
+  const now = useNow();
+  const discount = getActiveUnitDiscount(unit, now);
 
   useEffect(() => {
     if (isOpen) setActiveImage(0);
@@ -67,7 +72,19 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                     <Tag className="w-4 h-4" />
                     <span className="text-sm font-medium">السعر</span>
                   </div>
-                  <div className="text-xl font-bold text-[#0a0f1d]">{unit.price.toLocaleString()} ر.س</div>
+                  <div className="text-xl font-bold text-[#0a0f1d]">
+                    {discount ? (
+                      <div className="flex flex-col items-start gap-1">
+                        <span className="text-sm font-semibold text-[#8c8c8c] line-through decoration-[#8c8c8c]">
+                          {Number(unit.price || 0).toLocaleString()} ر.س
+                        </span>
+                        <span>{discount.salePrice.toLocaleString()} ر.س</span>
+                        <UnitDiscountBadge percent={discount.percent} daysLeft={discount.daysLeft} isRtl />
+                      </div>
+                    ) : (
+                      <>{Number(unit.price || 0).toLocaleString()} ر.س</>
+                    )}
+                  </div>
                 </div>
                 <div className="rounded-[16px] bg-white p-4 shadow-sm border border-[#0a0f1d]/5">
                   <div className="flex items-center gap-2 text-[#8c8c8c] mb-2">
@@ -130,15 +147,14 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                       <span className="text-sm text-[#8c8c8c]">العملية</span>
                       <span className="text-sm font-semibold">{unit.operationType}</span>
                     </div>
-                    {unit.discountActive && (
-                      <div className="flex justify-between py-3 px-4 bg-green-50">
-                        <span className="text-sm text-green-700 font-bold">نسبة الخصم</span>
-                        <span className="text-sm font-bold text-green-700">
-                          {unit.discountPercentage}% 
-                          {unit.discountDays ? ` (لمدة ${unit.discountDays} يوم)` : ""}
+                    {discount ? (
+                      <div className="flex justify-between py-3 px-4 bg-[#6A2B92]/5">
+                        <span className="text-sm text-[#6A2B92] font-bold">نسبة الخصم</span>
+                        <span className="text-sm font-bold text-[#6A2B92]">
+                          {discount.percent}% (متبقي {discount.daysLeft} يوم)
                         </span>
                       </div>
-                    )}
+                    ) : null}
                   </div>
                 </div>
 
