@@ -39,7 +39,7 @@ const admin = __importStar(require("firebase-admin"));
 if (admin.apps.length === 0) {
     admin.initializeApp();
 }
-exports.recordPublicView = (0, https_1.onRequest)({ cors: true, invoker: "public" }, async (request, response) => {
+exports.recordPublicView = (0, https_1.onRequest)({ cors: true }, async (request, response) => {
     if (request.method === "OPTIONS") {
         response.status(204).send("");
         return;

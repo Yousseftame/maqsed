@@ -41,24 +41,49 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
     setError(null);
     try {
       const offerRef = doc(db, "offers", offerId);
-      const offerSnap = await getDoc(offerRef);
-      if (!offerSnap.exists()) {
-        setError(t("offerPage.offerNotFound") || "Offer not found or no longer available.");
-        setIsVerifying(false);
+      try {
+        const offerSnap = await getDoc(offerRef);
+        if (!offerSnap.exists()) {
+          setError(t("offerPage.offerNotFound") || "Offer not found or no longer available.");
+          return;
+        }
+        const data = offerSnap.data();
+        if (data.secretCode !== otp) {
+          setError(t("offerPage.invalidCode") || "Invalid secure code. Please try again.");
+          return;
+        }
+        setOfferData({ id: offerSnap.id, ...data });
+        if (data.status === "pending") {
+          await updateDoc(offerRef, { status: "viewed", viewedAt: serverTimestamp() });
+        } else if (!data.viewedAt) {
+          await updateDoc(offerRef, { viewedAt: serverTimestamp() });
+        }
+        return;
+      } catch (firestoreError: any) {
+        const denied =
+          String(firestoreError?.code || "").includes("permission-denied") ||
+          String(firestoreError?.message || "").toLowerCase().includes("permission");
+        if (!denied) throw firestoreError;
+      }
+
+      const response = await fetch("/api/offers/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ offerId, otp }),
+      });
+      const payload = await response.json().catch(() => null);
+      if (!response.ok || !payload?.offer) {
+        const code = String(payload?.code || "");
+        if (response.status === 404 || code.includes("not-found")) {
+          setError(t("offerPage.offerNotFound") || "Offer not found or no longer available.");
+        } else if (response.status === 403 || code.includes("permission-denied")) {
+          setError(t("offerPage.invalidCode") || "Invalid secure code. Please try again.");
+        } else {
+          setError(t("offerPage.failedVerify") || "Failed to verify the secure code.");
+        }
         return;
       }
-      const data = offerSnap.data();
-      if (data.secretCode !== otp) {
-        setError(t("offerPage.invalidCode") || "Invalid secure code. Please try again.");
-        setIsVerifying(false);
-        return;
-      }
-      setOfferData({ id: offerSnap.id, ...data });
-      if (data.status === "pending") {
-        await updateDoc(offerRef, { status: "viewed", viewedAt: serverTimestamp() });
-      } else if (!data.viewedAt) {
-        await updateDoc(offerRef, { viewedAt: serverTimestamp() });
-      }
+      setOfferData(payload.offer);
     } catch (err: any) {
       console.error("Verification error:", err);
       setError(t("offerPage.failedVerify") || "Failed to verify the secure code.");
@@ -70,8 +95,23 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
   const handleResponse = async (status: "accepted" | "rejected") => {
     setIsResponding(true);
     try {
-      const offerRef = doc(db, "offers", offerId);
-      await updateDoc(offerRef, { status, respondedAt: serverTimestamp() });
+      try {
+        await updateDoc(doc(db, "offers", offerId), { status, respondedAt: serverTimestamp() });
+        setResponseStatus(status);
+        return;
+      } catch (firestoreError: any) {
+        const denied =
+          String(firestoreError?.code || "").includes("permission-denied") ||
+          String(firestoreError?.message || "").toLowerCase().includes("permission");
+        if (!denied) throw firestoreError;
+      }
+
+      const response = await fetch("/api/offers/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ offerId, otp, status }),
+      });
+      if (!response.ok) throw new Error("Failed to respond");
       setResponseStatus(status);
     } catch (err) {
       console.error("Error updating response:", err);

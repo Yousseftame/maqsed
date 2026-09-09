@@ -34,59 +34,87 @@ var __importStar = (this && this.__importStar) || (function () {
 })();
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyOfferOtp = void 0;
-const https_1 = require("firebase-functions/v2/https");
+const functions = __importStar(require("firebase-functions/v1"));
 const admin = __importStar(require("firebase-admin"));
-// Initialize admin app if not already initialized
 if (admin.apps.length === 0) {
     admin.initializeApp();
 }
+function serializeOffer(id, data) {
+    const offer = { id, ...data };
+    delete offer.secretCode;
+    for (const [key, value] of Object.entries(offer)) {
+        if (value && typeof value === "object" && "toDate" in value && typeof value.toDate === "function") {
+            offer[key] = value.toDate().toISOString();
+        }
+    }
+    return offer;
+}
+function applyCors(res) {
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type");
+}
 /**
- * Callable function for developers to verify their OTP.
- * If successful, returns the full offer details.
+ * 1st-gen HTTP function so guests can verify without Cloud Run IAM/CORS issues.
  */
-exports.verifyOfferOtp = (0, https_1.onCall)(async (request) => {
-    const { offerId, otp } = request.data;
+exports.verifyOfferOtp = functions.region("us-central1").https.onRequest(async (req, res) => {
+    applyCors(res);
+    if (req.method === "OPTIONS") {
+        res.status(204).send("");
+        return;
+    }
+    if (req.method !== "POST") {
+        res.status(405).json({ error: "Method not allowed", code: "invalid" });
+        return;
+    }
+    const { offerId, otp, status } = req.body || {};
     if (!offerId || !otp) {
-        throw new https_1.HttpsError("invalid-argument", "offerId and otp are required.");
+        res.status(400).json({ error: "offerId and otp are required.", code: "invalid" });
+        return;
+    }
+    if (status != null && status !== "accepted" && status !== "rejected") {
+        res.status(400).json({ error: "status must be accepted or rejected.", code: "invalid" });
+        return;
     }
     try {
-        const offerRef = admin.firestore().collection("offers").doc(offerId);
+        const offerRef = admin.firestore().collection("offers").doc(String(offerId));
         const offerSnap = await offerRef.get();
         if (!offerSnap.exists) {
-            throw new https_1.HttpsError("not-found", "Offer not found.");
+            res.status(404).json({ error: "Offer not found.", code: "not-found" });
+            return;
         }
-        const offerData = offerSnap.data();
-        if (offerData?.secretCode !== otp) {
-            throw new https_1.HttpsError("permission-denied", "Invalid OTP.");
+        const offerData = offerSnap.data() || {};
+        if (offerData.secretCode !== String(otp)) {
+            res.status(403).json({ error: "Invalid OTP.", code: "permission-denied" });
+            return;
         }
-        // Optional: Mark the offer as 'viewed' if it was 'pending'
-        if (offerData?.status === "pending") {
+        if (status === "accepted" || status === "rejected") {
+            await offerRef.update({
+                status,
+                respondedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+            offerData.status = status;
+        }
+        else if (offerData.status === "pending") {
             await offerRef.update({
                 status: "viewed",
                 viewedAt: admin.firestore.FieldValue.serverTimestamp(),
             });
+            offerData.status = "viewed";
         }
-        // Return the offer details securely to the frontend
-        return {
+        else if (!offerData.viewedAt) {
+            await offerRef.update({
+                viewedAt: admin.firestore.FieldValue.serverTimestamp(),
+            });
+        }
+        res.status(200).json({
             success: true,
-            offer: {
-                id: offerSnap.id,
-                title: offerData?.title,
-                projectName: offerData?.projectName,
-                technicalDetails: offerData?.technicalDetails,
-                financialAmount: offerData?.financialAmount,
-                developerName: offerData?.developerName,
-                status: offerData?.status === "pending" ? "viewed" : offerData?.status,
-                createdAt: offerData?.createdAt,
-            },
-        };
+            offer: serializeOffer(offerSnap.id, offerData),
+        });
     }
     catch (error) {
         console.error("Error verifying OTP:", error);
-        if (error instanceof https_1.HttpsError) {
-            throw error;
-        }
-        throw new https_1.HttpsError("internal", "An error occurred while verifying the OTP.");
+        res.status(500).json({ error: "An error occurred while verifying the OTP.", code: "internal" });
     }
 });
 //# sourceMappingURL=verifyOfferOtp.js.map

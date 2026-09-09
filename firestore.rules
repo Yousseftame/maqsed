@@ -125,10 +125,13 @@ match /menuOptions/{id} {
     // ==========================================
     
     match /offers/{offerId} {
-      // Admins can do anything
       allow create, delete: if isAdmin();
-      // Developers can only read/update the offer if their UID is explicitly attached to it by the Cloud Function
-      allow read, update: if isAdmin() || (isAuthenticated() && resource.data.developerUid == request.auth.uid);
+      allow list: if isAdmin() || (isAuthenticated() && resource.data.developerUid == request.auth.uid);
+      // Public offer page: guests need a single-doc get to enter the OTP. Do not allow list.
+      allow get: if true;
+      allow update: if isAdmin()
+        || (isAuthenticated() && resource.data.developerUid == request.auth.uid)
+        || request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'viewedAt', 'respondedAt']);
     }
 
     match /contracts/{contractId} {

@@ -5,7 +5,7 @@ if (admin.apps.length === 0) {
   admin.initializeApp();
 }
 
-export const recordPublicView = onRequest({ cors: true, invoker: "public" }, async (request, response) => {
+export const recordPublicView = onRequest({ cors: true }, async (request, response) => {
   if (request.method === "OPTIONS") {
     response.status(204).send("");
     return;
