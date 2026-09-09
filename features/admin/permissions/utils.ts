@@ -12,6 +12,8 @@ import {
   PERMISSION_ACTIONS,
   PERMISSION_MODULES,
 } from "./constants";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "@/lib/firebase/firebase";
 
 export function emptyModulePermission(): ModulePermission {
   return { create: false, read: false, edit: false, delete: false };
@@ -67,6 +69,12 @@ export function sanitizePermissions(input: unknown): AdminPermissions {
   }
 
   return applyReadConsistency(next);
+}
+
+export async function persistAdminPermissions(uid: string, permissions: AdminPermissions) {
+  await updateDoc(doc(db, "users", uid), {
+    permissions: sanitizePermissions(permissions),
+  });
 }
 
 export function fullPermissions(): AdminPermissions {

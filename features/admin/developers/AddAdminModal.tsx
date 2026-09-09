@@ -12,7 +12,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getApp } from "firebase/app";
 import { ModulePermissionsEditor } from "@/features/admin/permissions/ModulePermissionsEditor";
-import { emptyPermissions, sanitizePermissions } from "@/features/admin/permissions/utils";
+import { emptyPermissions, persistAdminPermissions, sanitizePermissions } from "@/features/admin/permissions/utils";
 import type { AdminPermissions } from "@/types/user";
 
 type AddAdminModalProps = {
@@ -83,16 +83,21 @@ export function AddAdminModal({ isOpen, onClose }: AddAdminModalProps) {
       const functions = getFunctions(getApp());
       const createAdminAccount = httpsCallable(functions, "createAdminAccount");
       
+      const savedPermissions = sanitizePermissions(permissions);
       const result = await createAdminAccount({
         firstName: data.firstName,
         lastName: data.lastName,
         email: data.email,
         phone: data.phone,
         password: data.password,
-        permissions: sanitizePermissions(permissions),
+        permissions: savedPermissions,
       });
       
       if ((result.data as any).success) {
+        const uid = (result.data as any).uid as string | undefined;
+        if (uid) {
+          await persistAdminPermissions(uid, savedPermissions);
+        }
         queryClient.invalidateQueries({ queryKey: ["developers"] });
         queryClient.invalidateQueries({ queryKey: ["users"] });
         toast.success(t("admin.developers.createForm.success") || "Admin account created successfully!");

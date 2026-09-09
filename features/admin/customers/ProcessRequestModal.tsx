@@ -17,7 +17,7 @@ export function ProcessRequestModal({
   type: "contact" | "sell" | "sales" | null;
   currentStatus: RequestStatus | null;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess: (status: RequestStatus) => void;
 }) {
   const { t } = useLocale();
   const cancelRef = useRef<HTMLButtonElement>(null);
@@ -60,7 +60,7 @@ export function ProcessRequestModal({
         await requestsService.updateSalesRequestStatus(id, status);
       }
       toast.success(t("admin.ui.success") || "Updated successfully");
-      onSuccess();
+      onSuccess(status);
     } catch (error) {
       console.error(error);
       toast.error(t("admin.ui.error") || "Error updating status");
@@ -69,7 +69,10 @@ export function ProcessRequestModal({
     }
   };
 
-  const statuses: RequestStatus[] = ["new", "contacted", "completed", "cancelled"];
+  const statuses: RequestStatus[] =
+    type === "sales"
+      ? ["new", "sent", "contacted", "completed", "cancelled"]
+      : ["new", "contacted", "completed", "cancelled"];
 
   return (
     <AnimatePresence>

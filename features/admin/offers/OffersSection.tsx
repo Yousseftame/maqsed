@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
-import { FileSignature, Search, Plus, FileText, CheckCircle, Clock, XCircle, RefreshCw, Eye, Download, Pencil, ChevronDown } from "lucide-react";
+import { FileSignature, Search, Plus, FileText, CheckCircle, Clock, XCircle, RefreshCw, Eye, Download, Pencil, ChevronDown, Send, Trash2 } from "lucide-react";
 import { createPortal } from "react-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
@@ -12,8 +12,10 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { offersService, type OfferData } from "./offers.service";
 import { OfferDetailModal } from "./OfferDetailModal";
 import { EditOfferModal } from "./EditOfferModal";
+import { OfferShareModal } from "./OfferShareModal";
 import { downloadOfferPDF } from "./offer-pdf";
 import { usePermissions } from "@/features/admin/permissions/usePermissions";
+import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import toast from "react-hot-toast";
 import { cn } from "@/lib/utils";
 
@@ -22,11 +24,14 @@ export function OffersSection() {
   const router = useRouter();
   const queryClient = useQueryClient();
   const { can } = usePermissions();
+  const confirm = useConfirm();
   const canCreate = can("offers", "create");
   const canEditOffer = can("offers", "edit");
+  const canDeleteOffer = can("offers", "delete");
   const [queryStr, setQueryStr] = useState("");
   const [selectedOffer, setSelectedOffer] = useState<OfferData | null>(null);
   const [editingOffer, setEditingOffer] = useState<OfferData | null>(null);
+  const [sharingOffer, setSharingOffer] = useState<OfferData | null>(null);
 
   const { data: offers = [], refetch, isRefetching } = useQuery({
     queryKey: ["offers"],
@@ -54,6 +59,35 @@ export function OffersSection() {
       toast.error(t("admin.ui.error"));
     },
   });
+
+  const deleteMutation = useMutation({
+    mutationFn: (row: OfferData) => offersService.deleteOffer(row.id),
+    onSuccess: (_data, row) => {
+      if (selectedOffer?.id === row.id) setSelectedOffer(null);
+      if (editingOffer?.id === row.id) setEditingOffer(null);
+      if (sharingOffer?.id === row.id) setSharingOffer(null);
+      queryClient.invalidateQueries({ queryKey: ["offers"] });
+      toast.success(isRtl ? "تم حذف العرض بنجاح" : "Offer deleted successfully");
+    },
+    onError: (error) => {
+      console.error("Failed to delete offer", error);
+      toast.error(t("admin.ui.error") || (isRtl ? "تعذر حذف العرض" : "Failed to delete the offer"));
+    },
+  });
+
+  async function handleDelete(row: OfferData) {
+    const ok = await confirm({
+      title: isRtl ? "حذف العرض" : "Delete Offer",
+      description: isRtl
+        ? `هل أنت متأكد من حذف العرض ${row.offerNumber || ""}؟ سيتم حذف كل بياناته ولا يمكن التراجع.`
+        : `Are you sure you want to delete offer ${row.offerNumber || ""}? This cannot be undone.`,
+      confirmLabel: t("admin.ui.delete") || (isRtl ? "حذف" : "Delete"),
+      cancelLabel: t("admin.cancel") || (isRtl ? "إلغاء" : "Cancel"),
+      tone: "danger",
+    });
+    if (!ok) return;
+    deleteMutation.mutate(row);
+  }
 
   const filtered = useMemo(() => {
     const q = queryStr.trim().toLowerCase();
@@ -269,6 +303,13 @@ export function OffersSection() {
                 <Pencil className="h-4 w-4" />
               </button>
               ) : null}
+              <button
+                onClick={() => setSharingOffer(row)}
+                title={isRtl ? "إرسال واتساب أو ايميل" : "Send WhatsApp or Email"}
+                className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d] transition-colors"
+              >
+                <Send className={`h-4 w-4 ${isRtl ? "scale-x-[-1]" : ""}`} />
+              </button>
               {/* Details */}
               <button
                 onClick={() => setSelectedOffer(row)}
@@ -293,6 +334,17 @@ export function OffersSection() {
               >
                 <FileText className="h-4 w-4" />
               </button>
+              {canDeleteOffer ? (
+                <button
+                  type="button"
+                  onClick={() => handleDelete(row)}
+                  disabled={deleteMutation.isPending}
+                  title={isRtl ? "حذف العرض" : "Delete Offer"}
+                  className="flex h-8 w-8 items-center justify-center rounded-lg text-[#8c8c8c] transition-colors hover:bg-red-50 hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              ) : null}
             </div>
           );
         }}
@@ -300,6 +352,7 @@ export function OffersSection() {
 
       <OfferDetailModal offer={selectedOffer} onClose={() => setSelectedOffer(null)} />
       <EditOfferModal offer={editingOffer} onClose={() => setEditingOffer(null)} />
+      <OfferShareModal offer={sharingOffer} onClose={() => setSharingOffer(null)} />
     </div>
   );
 }

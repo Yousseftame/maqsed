@@ -79,7 +79,7 @@ function toDate(value: unknown): Date | null {
 
 function mapRequestStatus(status: RequestStatus): OverviewInquiry["status"] {
   if (status === "new") return "new";
-  if (status === "contacted") return "pending";
+  if (status === "contacted" || status === "sent") return "pending";
   return "closed";
 }
 

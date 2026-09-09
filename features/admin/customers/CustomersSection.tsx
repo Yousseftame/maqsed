@@ -11,11 +11,13 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { requestsService, type ContactRequest, type SellRequest, type SalesRequest, type RequestStatus } from "./requests.service";
 import { ViewRequestModal } from "./ViewRequestModal";
 import { ProcessRequestModal } from "./ProcessRequestModal";
+import { InterestShareModal } from "./InterestShareModal";
 import toast from "react-hot-toast";
 import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 const REQUEST_STATUS_TONE: Record<RequestStatus, "default" | "success" | "warning" | "danger" | "muted" | "navy"> = {
   new: "warning",
+  sent: "navy",
   contacted: "navy",
   completed: "success",
   cancelled: "danger",
@@ -34,6 +36,7 @@ export function CustomersSection() {
   const [statusFilter, setStatusFilter] = useState<RequestStatus | "all">("all");
   const [viewRequest, setViewRequest] = useState<ContactRequest | SellRequest | SalesRequest | null>(null);
   const [processState, setProcessState] = useState<{ id: string; type: "contact" | "sell" | "sales"; status: RequestStatus } | null>(null);
+  const [shareRequest, setShareRequest] = useState<SalesRequest | null>(null);
 
   const { data: contactRequests = [], isFetching: isFetchingContact } = useQuery({
     queryKey: ["contactRequests"],
@@ -345,14 +348,20 @@ export function CustomersSection() {
         {/* Type Tabs */}
         <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 gap-2 sm:gap-4 items-center [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <button 
-            onClick={() => setActiveTab("contact")}
+            onClick={() => {
+              setActiveTab("contact");
+              if (statusFilter === "sent") setStatusFilter("all");
+            }}
             className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-colors ${activeTab === "contact" ? "bg-[#0a0f1d] text-white" : "bg-white text-[#6B7280] hover:bg-gray-50"}`}
           >
             {t("contactPage.form.title") || "Contact"}
             <span className={`flex items-center justify-center h-5 min-w-[20px] px-1.5 rounded-full text-[11px] font-black ${activeTab === "contact" ? "bg-white/20" : "bg-gray-100"}`}>{contactRequests.length}</span>
           </button>
           <button 
-            onClick={() => setActiveTab("sell")}
+            onClick={() => {
+              setActiveTab("sell");
+              if (statusFilter === "sent") setStatusFilter("all");
+            }}
             className={`shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-full text-sm font-bold transition-colors ${activeTab === "sell" ? "bg-[#0a0f1d] text-white" : "bg-white text-[#6B7280] hover:bg-gray-50"}`}
           >
             {t("sellPage.form.title") || "Sell Units"}
@@ -372,7 +381,11 @@ export function CustomersSection() {
           <div className="flex flex-col sm:flex-row sm:items-center gap-3">
             <span className="text-sm font-semibold text-gray-500 whitespace-nowrap">{t("admin.customers.status") || "Status"}:</span>
             <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-              {(["all", "new", "contacted", "completed", "cancelled"] as const).map((status) => (
+              {(
+                (activeTab === "sales"
+                  ? ["all", "new", "sent", "contacted", "completed", "cancelled"]
+                  : ["all", "new", "contacted", "completed", "cancelled"]) as const
+              ).map((status) => (
                 <button
                   key={status}
                   onClick={() => setStatusFilter(status)}
@@ -426,6 +439,12 @@ export function CustomersSection() {
                 onClick={() => setProcessState({ id: row.id, type: activeTab, status: row.status })}
               />
               ) : null}
+              {canEdit && activeTab === "sales" ? (
+              <TableAction
+                label={t("admin.customers.actions.send") || "Send"}
+                onClick={() => setShareRequest(row)}
+              />
+              ) : null}
               <TableAction 
                 label={t("admin.ui.view") || "View"} 
                 onClick={() => setViewRequest(row)}
@@ -455,16 +474,29 @@ export function CustomersSection() {
           type={processState.type}
           currentStatus={processState.status}
           onClose={() => setProcessState(null)}
-          onSuccess={() => {
+          onSuccess={(savedStatus) => {
+            const type = processState.type;
+            const id = processState.id;
             setProcessState(null);
-            if (processState.type === "contact") {
+            if (type === "contact") {
               queryClient.invalidateQueries({ queryKey: ["contactRequests"] });
-            } else if (processState.type === "sell") {
+            } else if (type === "sell") {
               queryClient.invalidateQueries({ queryKey: ["sellRequests"] });
-            } else if (processState.type === "sales") {
+            } else if (type === "sales") {
               queryClient.invalidateQueries({ queryKey: ["salesRequests"] });
+              if (savedStatus === "sent") {
+                const row = salesRequests.find((request) => request.id === id);
+                if (row) setShareRequest({ ...row, status: "sent" });
+              }
             }
           }}
+        />
+      )}
+
+      {shareRequest && (
+        <InterestShareModal
+          request={shareRequest}
+          onClose={() => setShareRequest(null)}
         />
       )}
     </div>

@@ -13,7 +13,7 @@ import {
   getCountFromServer,
 } from "firebase/firestore";
 
-export type RequestStatus = "new" | "contacted" | "completed" | "cancelled";
+export type RequestStatus = "new" | "sent" | "contacted" | "completed" | "cancelled";
 
 export interface ContactRequest {
   id: string;

@@ -4,8 +4,11 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { db } from "@/lib/firebase/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
-import { Lock, CheckCircle, XCircle, Loader2 } from "lucide-react";
+import { Lock, CheckCircle, XCircle, Loader2, Download } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { downloadOfferPDF } from "@/features/admin/offers/offer-pdf";
+import type { OfferData } from "@/features/admin/offers/offers.service";
+import toast from "react-hot-toast";
 
 interface PublicOfferSectionProps {
   offerId: string;
@@ -25,6 +28,7 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
   const [error, setError] = useState<string | null>(null);
   const [offerData, setOfferData] = useState<any>(null);
   const [isResponding, setIsResponding] = useState(false);
+  const [isDownloadingPdf, setIsDownloadingPdf] = useState(false);
   const [responseStatus, setResponseStatus] = useState<"accepted" | "rejected" | null>(null);
 
   const handleVerify = async (e: React.FormEvent) => {
@@ -73,6 +77,19 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
       console.error("Error updating response:", err);
     } finally {
       setIsResponding(false);
+    }
+  };
+
+  const handleDownloadPdf = async () => {
+    if (!offerData || isDownloadingPdf) return;
+    setIsDownloadingPdf(true);
+    try {
+      await downloadOfferPDF(offerData as OfferData);
+    } catch (error) {
+      console.error("Error downloading offer PDF:", error);
+      toast.error(t("offerPage.failedPdf") || "Could not download the PDF. Please try again.");
+    } finally {
+      setIsDownloadingPdf(false);
     }
   };
 
@@ -189,6 +206,15 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
                     <p className="text-gray-500 text-sm max-w-sm mx-auto">
                       {t("offerPage.offerAcceptedDesc") || "شكراً لك. سيتم التواصل معك لإتمام الإجراءات اللازمة."}
                     </p>
+                    <button
+                      type="button"
+                      onClick={handleDownloadPdf}
+                      disabled={isDownloadingPdf}
+                      className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      {isDownloadingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                      {t("offerPage.downloadPdf") || "تحميل العرض PDF"}
+                    </button>
                   </>
                 ) : (
                   <>
@@ -201,6 +227,15 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
                     <p className="text-gray-500 text-sm max-w-sm mx-auto">
                       {t("offerPage.offerDeclinedDesc") || "تم إبلاغ الإدارة. شكراً لوقتك."}
                     </p>
+                    <button
+                      type="button"
+                      onClick={handleDownloadPdf}
+                      disabled={isDownloadingPdf}
+                      className="mt-8 inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white px-5 py-3 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-50 disabled:opacity-50"
+                    >
+                      {isDownloadingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                      {t("offerPage.downloadPdf") || "تحميل العرض PDF"}
+                    </button>
                   </>
                 )}
               </div>
@@ -331,20 +366,31 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
                 </div>
 
                 {/* Action Footer */}
-                <div className="px-8 py-5 bg-gray-50 border-t border-gray-100 flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col gap-3 border-t border-gray-100 bg-gray-50 px-8 py-5">
+                  <div className="flex flex-col gap-3 sm:flex-row">
+                    <button
+                      onClick={() => handleResponse("accepted")}
+                      disabled={isResponding || isDownloadingPdf}
+                      className="flex-1 rounded-xl bg-gray-900 py-3 text-sm font-semibold text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                    >
+                      {t("offerPage.acceptOffer") || "قبول العرض"}
+                    </button>
+                    <button
+                      onClick={() => handleResponse("rejected")}
+                      disabled={isResponding || isDownloadingPdf}
+                      className="flex-1 rounded-xl border border-red-200 bg-white py-3 text-sm font-semibold text-red-600 transition-colors hover:bg-red-50 disabled:opacity-50"
+                    >
+                      {t("offerPage.declineOffer") || "رفض العرض"}
+                    </button>
+                  </div>
                   <button
-                    onClick={() => handleResponse("accepted")}
-                    disabled={isResponding}
-                    className="flex-1 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-xl font-semibold text-sm transition-colors disabled:opacity-50"
+                    type="button"
+                    onClick={handleDownloadPdf}
+                    disabled={isDownloadingPdf || isResponding}
+                    className="flex w-full items-center justify-center gap-2 rounded-xl border border-gray-200 bg-white py-3 text-sm font-semibold text-gray-900 transition-colors hover:bg-gray-50 disabled:opacity-50"
                   >
-                    {t("offerPage.acceptOffer") || "قبول العرض"}
-                  </button>
-                  <button
-                    onClick={() => handleResponse("rejected")}
-                    disabled={isResponding}
-                    className="flex-1 bg-white hover:bg-red-50 border border-red-200 text-red-600 py-3 rounded-xl font-semibold text-sm transition-colors disabled:opacity-50"
-                  >
-                    {t("offerPage.declineOffer") || "رفض العرض"}
+                    {isDownloadingPdf ? <Loader2 className="h-4 w-4 animate-spin" /> : <Download className="h-4 w-4" />}
+                    {t("offerPage.downloadPdf") || "تحميل العرض PDF"}
                   </button>
                 </div>
               </div>

@@ -531,12 +531,14 @@ export const ar: Dictionary = {
       filterAll: "الكل",
       statuses: {
         new: "جديد",
+        sent: "ارسال",
         contacted: "تم التواصل",
         completed: "مكتمل",
         cancelled: "ملغي",
       },
       actions: {
         process: "معالجة",
+        send: "إرسال",
       },
     },
     menus: {
@@ -990,6 +992,8 @@ export const ar: Dictionary = {
     techScope: "النطاق التقني والمتطلبات",
     acceptOffer: "قبول العرض",
     declineOffer: "رفض العرض",
+    downloadPdf: "تحميل العرض PDF",
     failedSubmit: "فشل إرسال ردك. يرجى المحاولة مرة أخرى.",
+    failedPdf: "تعذر تحميل ملف PDF. يرجى المحاولة مرة أخرى.",
   },
 };

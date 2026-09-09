@@ -468,12 +468,14 @@ export interface Dictionary {
       filterAll: string;
       statuses: {
         new: string;
+        sent: string;
         contacted: string;
         completed: string;
         cancelled: string;
       };
       actions: {
         process: string;
+        send: string;
       };
     };
     menus: {
@@ -927,7 +929,9 @@ export interface Dictionary {
     techScope: string;
     acceptOffer: string;
     declineOffer: string;
+    downloadPdf: string;
     failedSubmit: string;
+    failedPdf: string;
   };
 }
 
@@ -1463,12 +1467,14 @@ export const en: Dictionary = {
       filterAll: "All",
       statuses: {
         new: "New",
+        sent: "Sent",
         contacted: "Contacted",
         completed: "Completed",
         cancelled: "Cancelled",
       },
       actions: {
         process: "Process",
+        send: "Send",
       },
     },
     menus: {
@@ -1922,7 +1928,9 @@ export const en: Dictionary = {
     techScope: "Technical Scope & Requirements",
     acceptOffer: "Accept Offer",
     declineOffer: "Decline Offer",
+    downloadPdf: "Download Offer PDF",
     failedSubmit: "Failed to submit your response. Please try again.",
+    failedPdf: "Could not download the PDF. Please try again.",
   },
 };
 

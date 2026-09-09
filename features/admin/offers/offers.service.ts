@@ -1,4 +1,4 @@
-import { collection, deleteField, doc, getDoc, getDocs, limit, orderBy, query, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, limit, orderBy, query, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebase";
 
 export interface OfferServiceItem {
@@ -97,6 +97,11 @@ class OffersService {
       return `M-${Math.floor(1000 + Math.random() * 9000)}`;
     }
   }
+
+  async deleteOffer(id: string): Promise<void> {
+    await deleteDoc(doc(db, this.collectionName, id));
+  }
+
   async updateOffer(
     id: string,
     data: {

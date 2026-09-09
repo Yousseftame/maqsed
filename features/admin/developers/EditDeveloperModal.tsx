@@ -13,7 +13,7 @@ import { getFunctions, httpsCallable } from "firebase/functions";
 import { getApp } from "firebase/app";
 import { usersService } from "@/features/auth/users.service";
 import { ModulePermissionsEditor } from "@/features/admin/permissions/ModulePermissionsEditor";
-import { emptyPermissions, getEditorPermissions, sanitizePermissions } from "@/features/admin/permissions/utils";
+import { emptyPermissions, getEditorPermissions, persistAdminPermissions, sanitizePermissions } from "@/features/admin/permissions/utils";
 import type { AdminPermissions, UserData } from "@/types/user";
 
 type EditDeveloperModalProps = {
@@ -120,13 +120,17 @@ export function EditDeveloperModal({ isOpen, onClose, developer }: EditDeveloper
       if (isPrivilegedAccount) {
         const functions = getFunctions(getApp());
         const updateAdminAccount = httpsCallable(functions, "updateAdminAccount");
+        const savedPermissions = isAdminAccount ? sanitizePermissions(permissions) : undefined;
         await updateAdminAccount({
           uid: currentUser.uid,
           firstName: data.firstName,
           lastName: data.lastName || "",
           phone: data.phone || "",
-          permissions: isAdminAccount ? sanitizePermissions(permissions) : undefined,
+          permissions: savedPermissions,
         });
+        if (savedPermissions) {
+          await persistAdminPermissions(currentUser.uid, savedPermissions);
+        }
       } else {
         await usersService.updateUserData(developer.uid, {
           displayName: data.firstName,
