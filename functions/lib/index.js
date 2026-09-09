@@ -22,7 +22,7 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.toggleDeveloperStatus = exports.deleteDeveloperAccount = exports.updateAdminAccount = exports.createAdminAccount = exports.createDeveloperAccount = void 0;
+exports.recordPublicView = exports.toggleDeveloperStatus = exports.deleteDeveloperAccount = exports.updateAdminAccount = exports.createAdminAccount = exports.createDeveloperAccount = void 0;
 const v2_1 = require("firebase-functions/v2");
 // Set global options for all functions
 (0, v2_1.setGlobalOptions)({ maxInstances: 10, region: "us-central1" });
@@ -41,4 +41,6 @@ var deleteDeveloperAccount_1 = require("./users/deleteDeveloperAccount");
 Object.defineProperty(exports, "deleteDeveloperAccount", { enumerable: true, get: function () { return deleteDeveloperAccount_1.deleteDeveloperAccount; } });
 var toggleDeveloperStatus_1 = require("./users/toggleDeveloperStatus");
 Object.defineProperty(exports, "toggleDeveloperStatus", { enumerable: true, get: function () { return toggleDeveloperStatus_1.toggleDeveloperStatus; } });
+var recordPublicView_1 = require("./analytics/recordPublicView");
+Object.defineProperty(exports, "recordPublicView", { enumerable: true, get: function () { return recordPublicView_1.recordPublicView; } });
 //# sourceMappingURL=index.js.map

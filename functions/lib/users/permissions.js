@@ -9,7 +9,7 @@ exports.MODULE_AVAILABLE_ACTIONS = {
     cities: ["create", "read", "delete"],
     projects: ["create", "read", "edit", "delete"],
     units: ["create", "read", "edit", "delete"],
-    offers: ["create", "read", "edit"],
+    offers: ["create", "read", "edit", "delete"],
     customers: ["read", "edit", "delete"],
 };
 function emptyModulePermission() {
