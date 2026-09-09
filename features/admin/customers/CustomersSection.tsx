@@ -382,9 +382,9 @@ export function CustomersSection() {
             <span className="text-sm font-semibold text-gray-500 whitespace-nowrap">{t("admin.customers.status") || "Status"}:</span>
             <div className="flex overflow-x-auto pb-2 -mx-4 px-4 sm:mx-0 sm:px-0 sm:pb-0 gap-2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
               {(
-                (activeTab === "sales"
-                  ? ["all", "new", "sent", "contacted", "completed", "cancelled"]
-                  : ["all", "new", "contacted", "completed", "cancelled"]) as const
+                activeTab === "sales"
+                  ? (["all", "new", "sent", "contacted", "completed", "cancelled"] as const)
+                  : (["all", "new", "contacted", "completed", "cancelled"] as const)
               ).map((status) => (
                 <button
                   key={status}
