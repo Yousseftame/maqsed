@@ -10,6 +10,7 @@ import { StatusBadge } from "@/features/admin/ui/StatusBadge";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { unitsService, type Unit } from "@/features/admin/units/units.service";
+import { unitSellingPrice } from "@/features/units/unit-discount";
 import { propertiesService } from "@/features/admin/projects/properties.service";
 import { citiesService } from "@/features/admin/cities/cities.service";
 import { AddUnitModal } from "./AddUnitModal";
@@ -195,7 +196,7 @@ export function UnitsSection() {
     {
       id: "price",
       header: t("admin.units.price") || "السعر",
-      cell: (row) => <span className="tabular-nums font-semibold">{row.price.toLocaleString()} ر.س</span>,
+      cell: (row) => <span className="tabular-nums font-semibold">{unitSellingPrice(row).toLocaleString()} ر.س</span>,
     },
     {
       id: "views",

@@ -906,7 +906,7 @@ export interface Dictionary {
       units: string;
 
       tasks: string;
-      notifications: string;
+      users: string;
       files: string;
       invoices: string;
     };
@@ -1905,7 +1905,7 @@ export const en: Dictionary = {
       units: "My Units",
 
       tasks: "Tasks",
-      notifications: "Notifications",
+      users: "Users",
       files: "Files",
       invoices: "Invoices",
     },

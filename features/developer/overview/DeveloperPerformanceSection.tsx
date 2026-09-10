@@ -62,11 +62,6 @@ export function DeveloperPerformanceSection() {
       {/* Outer Panel — matches "بوابة المطور" above */}
       <Panel
         title="الأداء والإحصائيات"
-        action={
-          <span className="text-sm font-medium text-[#8c8c8c]">
-            بيانات مشاريع الشركة
-          </span>
-        }
       >
         {/* Gray inner container — matches the StatCards section */}
         <div className="rounded-[24px] bg-[#F4F4F4] p-4 sm:p-5 mt-2">
@@ -74,13 +69,10 @@ export function DeveloperPerformanceSection() {
 
             {/* Chart 1: زيارات الروابط */}
             <div className="flex flex-col rounded-[20px] bg-white p-5 sm:p-6 shadow-sm ring-1 ring-black/[0.04]">
-              <div className="mb-4 flex items-start justify-between gap-3">
+              <div className="mb-4">
                 <h3 className="text-base font-bold text-[#0a0f1d]">
                   زيارات الروابط
                 </h3>
-                <span className="text-xs font-medium text-[#8c8c8c] text-left">
-                  عدد الزيارات الشهرية خلال آخر 12 شهر
-                </span>
               </div>
               <div className="h-64 w-full" dir="ltr">
                 <ResponsiveContainer width="100%" height="100%">
@@ -122,13 +114,10 @@ export function DeveloperPerformanceSection() {
 
             {/* Chart 2: المبيعات حسب المشروع */}
             <div className="flex flex-col rounded-[20px] bg-white p-5 sm:p-6 shadow-sm ring-1 ring-black/[0.04]">
-              <div className="mb-4 flex items-start justify-between gap-3">
+              <div className="mb-4">
                 <h3 className="text-base font-bold text-[#0a0f1d]">
                   المبيعات حسب المشروع
                 </h3>
-                <span className="text-xs font-medium text-[#8c8c8c] text-left">
-                  إجمالي قيمة المبيعات لكل مشروع
-                </span>
               </div>
               <div className="flex flex-1 items-center">
                 <div className="h-40 w-full" dir="ltr">

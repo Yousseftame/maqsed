@@ -969,7 +969,7 @@ export const ar: Dictionary = {
       units: "الوحدات الخاصة بي",
 
       tasks: "المهام",
-      notifications: "الإشعارات",
+      users: "المستخدمون",
       files: "الملفات",
       invoices: "الفواتير",
     },

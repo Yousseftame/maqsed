@@ -173,7 +173,11 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
       if (model) {
         setValue("roomsCount", model.roomsCount.toString());
         setValue("bathroomsCount", model.bathroomsCount.toString());
-        setValue("price", model.defaultPrice.toString());
+        const isHydratingExistingModel =
+          lastFilledModelId.current === null && !!unit?.modelId && unit.modelId === selectedModelId;
+        if (!isHydratingExistingModel && lastFilledModelId.current !== selectedModelId) {
+          setValue("price", model.defaultPrice.toString());
+        }
         setValue("unitType", model.propertyType || "");
         setValue("totalArea", (model.totalArea || 0).toString());
         if (lastFilledModelId.current !== selectedModelId) {
