@@ -35,6 +35,17 @@ class UsersService {
     return querySnapshot.docs.map(doc => doc.data() as UserData);
   }
 
+  async getEmployeesByDeveloper(developerUid: string): Promise<UserData[]> {
+    const { collection, query, where, getDocs } = await import("firebase/firestore");
+    const usersRef = collection(db, this.collectionName);
+    const q = query(usersRef, where("developerUid", "==", developerUid));
+    const querySnapshot = await getDocs(q);
+
+    return querySnapshot.docs
+      .map((docSnap) => docSnap.data() as UserData)
+      .filter((user) => user.role === "employee");
+  }
+
   async createUserProfile(uid: string, email: string, role: UserRole, extraData: Partial<UserData> = {}): Promise<UserData> {
     const userDocRef = doc(db, this.collectionName, uid);
     

@@ -8,6 +8,7 @@ import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useAdminSignOut } from "@/features/admin/hooks/useAdminSignOut";
+import { isDeveloperPanelRole } from "@/lib/auth/constants";
 import { ChangePasswordModal } from "./ChangePasswordModal";
 
 export function UserAvatarDropdown() {
@@ -27,12 +28,15 @@ export function UserAvatarDropdown() {
     defaultRoleName = t("admin.ui.admin");
   } else if (userData?.role === "developer") {
     defaultRoleName = t("admin.ui.developer");
+  } else if (userData?.role === "employee") {
+    defaultRoleName = t("admin.ui.employee");
   }
 
   const getRoleColor = () => {
     switch (userData?.role) {
       case "superAdmin": return "text-[#FFB020] bg-[#FFB020]/10";
-      case "developer": return "text-[#3B82F6] bg-[#3B82F6]/10";
+      case "developer":
+      case "employee": return "text-[#3B82F6] bg-[#3B82F6]/10";
       default: return "text-[#17C3B3] bg-[#17C3B3]/10";
     }
   };
@@ -85,7 +89,7 @@ export function UserAvatarDropdown() {
           
           <div className="flex flex-col gap-1 p-2">
             <Link
-              href={userData?.role === "developer" ? "/developer/settings" : "/admin/settings"}
+              href={isDeveloperPanelRole(userData?.role) ? "/developer/settings" : "/admin/settings"}
               onClick={() => setIsOpen(false)}
               className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-semibold text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4]"
             >

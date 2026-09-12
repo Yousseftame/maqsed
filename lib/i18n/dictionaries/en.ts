@@ -356,6 +356,7 @@ export interface Dictionary {
       admin: string;
       superAdmin: string;
       developer: string;
+      employee: string;
       settings: string;
       changePassword: string;
       currentPassword: string;
@@ -633,6 +634,16 @@ export interface Dictionary {
         logout: string;
         empty: string;
       };
+      employees: {
+        title: string;
+        empty: string;
+        name: string;
+        email: string;
+        phone: string;
+        status: string;
+        active: string;
+        disabled: string;
+      };
     };
     permissions: {
       title: string;
@@ -909,6 +920,39 @@ export interface Dictionary {
       users: string;
       files: string;
       invoices: string;
+    };
+    users: {
+      name: string;
+      phone: string;
+      joined: string;
+      search: string;
+      total: string;
+      active: string;
+      seats: string;
+      create: string;
+      empty: string;
+      atLimit: string;
+      deleteTitle: string;
+      deleteDesc: string;
+      disable: string;
+      enable: string;
+      disableTitle: string;
+      disableDesc: string;
+      enableTitle: string;
+      enableDesc: string;
+      createForm: {
+        title: string;
+        firstName: string;
+        lastName: string;
+        email: string;
+        phone: string;
+        password: string;
+        confirmPassword: string;
+        submit: string;
+        success: string;
+        personalInfo: string;
+        accountInfo: string;
+      };
     };
   };
   offerPage: {
@@ -1355,6 +1399,7 @@ export const en: Dictionary = {
       admin: "Admin",
       superAdmin: "Super Admin",
       developer: "Developer",
+      employee: "Employee",
       settings: "Settings",
       changePassword: "Change Password",
       currentPassword: "Current Password",
@@ -1632,6 +1677,16 @@ export const en: Dictionary = {
         logout: "Logout",
         empty: "No audit logs available for this user",
       },
+      employees: {
+        title: "Employee Accounts",
+        empty: "No employee accounts for this developer",
+        name: "Name",
+        email: "Email",
+        phone: "Phone",
+        status: "Status",
+        active: "Active",
+        disabled: "Disabled",
+      },
     },
     permissions: {
       title: "Module Permissions",
@@ -1908,6 +1963,39 @@ export const en: Dictionary = {
       users: "Users",
       files: "Files",
       invoices: "Invoices",
+    },
+    users: {
+      name: "Employee Name",
+      phone: "Phone",
+      joined: "Joined Date",
+      search: "Search employees...",
+      total: "Total Employees",
+      active: "Active Accounts",
+      seats: "Used seats",
+      create: "Create Account",
+      empty: "No employees found",
+      atLimit: "You have reached the maximum number of employees for this account.",
+      deleteTitle: "Delete Account",
+      deleteDesc: "Are you sure you want to delete this employee? This will permanently remove them from the system and Authentication.",
+      disable: "Disable Account",
+      enable: "Enable Account",
+      disableTitle: "Disable Account",
+      disableDesc: "Are you sure you want to disable this account? They will no longer be able to log in to the system.",
+      enableTitle: "Enable Account",
+      enableDesc: "Are you sure you want to enable this account? They will regain access to log in to the system.",
+      createForm: {
+        title: "Create Employee Account",
+        firstName: "First Name",
+        lastName: "Last Name",
+        email: "Email Address",
+        phone: "Phone Number",
+        password: "Password",
+        confirmPassword: "Confirm Password",
+        submit: "Create Account",
+        success: "Employee account created successfully!",
+        personalInfo: "Personal Information",
+        accountInfo: "Account & Security",
+      },
     },
   },
   offerPage: {

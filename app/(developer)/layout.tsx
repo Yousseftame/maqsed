@@ -9,7 +9,7 @@ export default function DeveloperLayout({
   children: React.ReactNode;
 }) {
   return (
-    <RequireAuth allowedRoles={["developer"]}>
+    <RequireAuth allowedRoles={["developer", "employee"]}>
       <DeveloperShell>{children}</DeveloperShell>
     </RequireAuth>
   );

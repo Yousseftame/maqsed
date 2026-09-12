@@ -44,8 +44,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (nextUser) {
         try {
           const profile = await usersService.getUserProfile(nextUser.uid);
-          // If no profile found, we might treat them as a regular user or admin depending on logic.
-          // For now, if no profile, we can just leave userData as null or create a default.
           setUserData(profile);
         } catch (error) {
           console.error("Failed to fetch user profile:", error);

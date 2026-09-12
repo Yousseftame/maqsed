@@ -41,15 +41,15 @@ if (admin.apps.length === 0) {
     admin.initializeApp();
 }
 exports.toggleDeveloperStatus = (0, https_1.onCall)(async (request) => {
-    // Ensure the caller is authenticated
     if (!request.auth) {
         throw new https_1.HttpsError("unauthenticated", "You must be logged in to toggle developer status.");
     }
-    // Check if caller is admin
     const callerUid = request.auth.uid;
     const callerDoc = await admin.firestore().collection("users").doc(callerUid).get();
     const callerRole = callerDoc.data()?.role;
-    if (!callerDoc.exists || (callerRole !== "admin" && callerRole !== "superAdmin")) {
+    const isAdminCaller = callerRole === "admin" || callerRole === "superAdmin";
+    const isDeveloperCaller = callerRole === "developer";
+    if (!callerDoc.exists || (!isAdminCaller && !isDeveloperCaller)) {
         throw new https_1.HttpsError("permission-denied", "Only administrators can toggle developer status.");
     }
     const { targetUid, status } = request.data;
@@ -63,28 +63,31 @@ exports.toggleDeveloperStatus = (0, https_1.onCall)(async (request) => {
         throw new https_1.HttpsError("failed-precondition", "You cannot change your own account status.");
     }
     const targetDoc = await admin.firestore().collection("users").doc(targetUid).get();
-    const targetRole = targetDoc.data()?.role;
-    if (targetRole === "admin" || targetRole === "superAdmin") {
+    const target = targetDoc.data();
+    const targetRole = target?.role;
+    if (isDeveloperCaller) {
+        if (!targetDoc.exists || targetRole !== "employee" || target?.developerUid !== callerUid) {
+            throw new https_1.HttpsError("permission-denied", "You can only change employees that belong to your account.");
+        }
+    }
+    else if (targetRole === "admin" || targetRole === "superAdmin") {
         if (callerRole !== "superAdmin") {
             throw new https_1.HttpsError("permission-denied", "Only super administrators can change admin account status.");
         }
     }
     try {
-        logger.info(`Toggling developer status for ${targetUid} to ${status}`);
-        // 1. Update Firebase Auth user
-        const isDisabled = status === "disabled";
+        logger.info(`Toggling account status for ${targetUid} to ${status}`);
         await admin.auth().updateUser(targetUid, {
-            disabled: isDisabled,
+            disabled: status === "disabled",
         });
-        // 2. Update the Firestore document
         await admin.firestore().collection("users").doc(targetUid).update({
             status: status,
         });
-        logger.info(`✅ Successfully toggled developer status: ${targetUid} -> ${status}`);
+        logger.info(`Successfully toggled account status: ${targetUid} -> ${status}`);
         return {
             success: true,
             uid: targetUid,
-            status
+            status,
         };
     }
     catch (error) {

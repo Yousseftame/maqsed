@@ -23,6 +23,14 @@ service cloud.firestore {
       return isAuthenticated() && getUserData().role == 'developer';
     }
 
+    function isEmployee() {
+      return isAuthenticated() && getUserData().role == 'employee';
+    }
+
+    function isDeveloperPanel() {
+      return isDeveloper() || isEmployee();
+    }
+
     function isViewIncrement() {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
         && request.resource.data.views is number
@@ -34,11 +42,17 @@ service cloud.firestore {
     // ==========================================
 
     match /users/{userId} {
-      allow read, write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow read: if isAdmin()
+        || (isAuthenticated() && request.auth.uid == userId)
+        || (isDeveloper() && resource.data.developerUid == request.auth.uid);
+      allow write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
       
-      // Allow users to log their own actions, and Admins to read them
+      // Allow users to log their own actions, and Admins/parent developers to read them
       match /auditLogs/{logId} {
-        allow read, write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+        allow read: if isAdmin()
+          || (isAuthenticated() && request.auth.uid == userId)
+          || (isDeveloper() && get(/databases/$(database)/documents/users/$(userId)).data.developerUid == request.auth.uid);
+        allow write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
       }
     }
 
@@ -49,13 +63,13 @@ service cloud.firestore {
     
     match /properties/{propertyId} {
       allow read: if true; 
-      allow write: if isAdmin() || isDeveloper();
+      allow write: if isAdmin() || isDeveloperPanel();
       allow update: if isViewIncrement();
     }
     
     match /units/{unitId} {
       allow read: if true;
-      allow write: if isAdmin() || isDeveloper();
+      allow write: if isAdmin() || isDeveloperPanel();
       allow update: if isViewIncrement();
     }
 

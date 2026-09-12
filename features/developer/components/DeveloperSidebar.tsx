@@ -7,6 +7,7 @@ import { ChevronsLeft, LogOut } from "lucide-react";
 import { DEVELOPER_NAV, type DeveloperNavLink } from "@/features/developer/data/nav";
 import { useAdminSignOut } from "@/features/admin/hooks/useAdminSignOut";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { useAuth } from "@/features/auth/AuthProvider";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
@@ -25,6 +26,11 @@ export function DeveloperSidebar({
   const pathname = usePathname();
   const handleSignOut = useAdminSignOut();
   const { locale, t } = useLocale();
+  const { userData } = useAuth();
+  const navItems = DEVELOPER_NAV.filter((entry) => {
+    if (entry.href === "/developer/users" && userData?.role !== "developer") return false;
+    return true;
+  });
 
   return (
     <>
@@ -91,7 +97,7 @@ export function DeveloperSidebar({
         </div>
 
         <nav className="flex flex-1 flex-col gap-1">
-          {DEVELOPER_NAV.map((entry, index) => {
+          {navItems.map((entry, index) => {
             if (entry.type === "link") {
               return (
                 <NavLink

@@ -95,12 +95,15 @@ export function SettingsSection() {
     ? (t("admin.ui.admin") || "Admin") 
     : userData?.role === "developer" 
     ? (t("admin.ui.developer") || "Developer") 
+    : userData?.role === "employee"
+    ? (t("admin.ui.employee") || "Employee")
     : (t("admin.ui.user") || "User");
 
   const getRoleColor = () => {
     switch (userData?.role) {
       case "superAdmin": return "text-[#FFB020] bg-[#FFB020]/10";
-      case "developer": return "text-[#3B82F6] bg-[#3B82F6]/10";
+      case "developer":
+      case "employee": return "text-[#3B82F6] bg-[#3B82F6]/10";
       default: return "text-[#17C3B3] bg-[#17C3B3]/10";
     }
   };

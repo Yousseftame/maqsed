@@ -2,8 +2,12 @@ export const SESSION_COOKIE = "maqsed_session";
 
 import type { UserRole } from "@/types/user";
 
+export function isDeveloperPanelRole(role?: UserRole | null): boolean {
+  return role === "developer" || role === "employee";
+}
+
 export function getDefaultRedirectPath(role?: UserRole | null): string {
-  if (role === "developer") return "/developer/dashboard";
+  if (isDeveloperPanelRole(role)) return "/developer/dashboard";
   // Default to admin for now, or you could do "/login" if no role
   return "/admin/dashboard";
 }

@@ -1,4 +1,4 @@
-export type UserRole = "superAdmin" | "admin" | "developer" | "user";
+export type UserRole = "superAdmin" | "admin" | "developer" | "employee" | "user";
 
 export type PermissionModule = "cities" | "projects" | "units" | "offers" | "customers";
 export type PermissionAction = "create" | "read" | "edit" | "delete";
@@ -28,6 +28,7 @@ export interface UserData {
   phoneNumber?: string;
   companyName?: string;
   usersPerDeveloper?: number;
+  developerUid?: string;
   photoURL?: string;
   status?: "active" | "disabled";
   developerStats?: DeveloperStats;

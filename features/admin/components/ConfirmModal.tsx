@@ -102,7 +102,7 @@ function ConfirmModal({
   return (
     <AnimatePresence>
       {options ? (
-        <div className="fixed inset-0 z-[80] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[120] flex items-center justify-center p-4">
           <motion.button
             type="button"
             aria-label={t("admin.closeDialog")}
