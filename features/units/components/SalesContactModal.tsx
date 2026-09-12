@@ -36,13 +36,26 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
     };
   }, [isOpen]);
 
-  const salesContactSchema = z.object({
-    fullName: z.string().min(2, isRtl ? "الاسم مطلوب" : "Name is required"),
-    email: z.string().email(isRtl ? "بريد إلكتروني غير صالح" : "Invalid email address").optional().or(z.literal("")),
-    phone: z.string().min(8, isRtl ? "رقم الهاتف مطلوب" : "Phone number is required"),
-    paymentCash: z.boolean().optional(),
-    paymentFinance: z.boolean().optional(),
-  });
+  const salesContactSchema = z
+    .object({
+      fullName: z.string().min(2, isRtl ? "الاسم مطلوب" : "Name is required"),
+      email: z.string().email(isRtl ? "بريد إلكتروني غير صالح" : "Invalid email address").optional().or(z.literal("")),
+      phone: z
+        .string()
+        .min(8, isRtl ? "رقم الهاتف مطلوب" : "Phone number is required")
+        .refine((value) => /^\+?[\d\s-]+$/.test(value.trim()), {
+          message: isRtl ? "رقم الجوال يجب أن يحتوي على أرقام فقط" : "Phone number must contain numbers only",
+        })
+        .refine((value) => value.replace(/\D/g, "").length >= 8, {
+          message: isRtl ? "رقم الهاتف مطلوب" : "Phone number is required",
+        }),
+      paymentCash: z.boolean().optional(),
+      paymentFinance: z.boolean().optional(),
+    })
+    .refine((data) => Boolean(data.paymentCash || data.paymentFinance), {
+      message: isRtl ? "يرجى اختيار طريقة الدفع" : "Please select a payment method",
+      path: ["paymentCash"],
+    });
 
   type SalesContactForm = z.infer<typeof salesContactSchema>;
 
@@ -194,7 +207,11 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
                   <input
                     type="tel"
                     disabled={isSubmitting}
-                    {...register("phone")}
+                    {...register("phone", {
+                      onChange: (event) => {
+                        event.target.value = event.target.value.replace(/[^\d+\s-]/g, "");
+                      },
+                    })}
                     className={cn(inputClass, "text-start")}
                     dir="ltr"
                     placeholder="+966 5X XXX XXXX"
@@ -255,6 +272,9 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
                       {isRtl ? "تمويل" : "Finance"}
                     </label>
                   </div>
+                  {errors.paymentCash && (
+                    <p className="mt-2 text-xs font-semibold text-red-500">{errors.paymentCash.message}</p>
+                  )}
                 </div>
               </form>
             </div>
