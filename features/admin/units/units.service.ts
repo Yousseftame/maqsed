@@ -2,6 +2,7 @@ import { db } from "@/lib/firebase/firebase";
 import {
   collection,
   doc,
+  getDoc,
   getDocs,
   setDoc,
   deleteDoc,
@@ -70,6 +71,7 @@ export type Unit = {
 
   createdAt?: Timestamp | any;
   updatedAt?: Timestamp | any;
+  developerUid?: string;
 };
 
 function normalizeUnit(raw: Record<string, unknown> & { id?: string }): Unit {
@@ -92,6 +94,28 @@ export const unitsService = {
     const q = query(collection(db, "units"), orderBy("createdAt", "desc"));
     const snapshot = await getDocs(q);
     return snapshot.docs.map((item) => normalizeUnit({ id: item.id, ...item.data() }));
+  },
+
+  getUnitById: async (id: string): Promise<Unit | null> => {
+    const value = String(id || "").trim();
+    if (!value) return null;
+    const snap = await getDoc(doc(db, "units", value));
+    if (!snap.exists()) return null;
+    return normalizeUnit({ id: snap.id, ...snap.data() });
+  },
+
+  getUnitsByDeveloper: async (developerUid: string): Promise<Unit[]> => {
+    const uid = String(developerUid || "").trim();
+    if (!uid) return [];
+    const q = query(collection(db, "units"), where("developerUid", "==", uid));
+    const snapshot = await getDocs(q);
+    return snapshot.docs
+      .map((item) => normalizeUnit({ id: item.id, ...item.data() }))
+      .sort((a, b) => {
+        const aTime = typeof a.createdAt?.toMillis === "function" ? a.createdAt.toMillis() : Number(a.createdAt) || 0;
+        const bTime = typeof b.createdAt?.toMillis === "function" ? b.createdAt.toMillis() : Number(b.createdAt) || 0;
+        return bTime - aTime;
+      });
   },
 
   addUnit: async (unit: Unit) => {

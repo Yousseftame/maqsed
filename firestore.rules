@@ -2,10 +2,6 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     
-    // ==========================================
-    // HELPER FUNCTIONS
-    // ==========================================
-    
     function isAuthenticated() {
       return request.auth != null;
     }
@@ -15,7 +11,6 @@ service cloud.firestore {
     }
     
     function isAdmin() {
-      // [FIXED] Now allows both admin and superAdmin!
       return isAuthenticated() && (getUserData().role == 'admin' || getUserData().role == 'superAdmin');
     }
 
@@ -31,23 +26,38 @@ service cloud.firestore {
       return isDeveloper() || isEmployee();
     }
 
+    function ownsAssignedOffer() {
+      return isAuthenticated()
+        && resource.data.assignedDeveloperUid is string
+        && (
+          resource.data.assignedDeveloperUid == request.auth.uid
+          || (isEmployee() && getUserData().developerUid == resource.data.assignedDeveloperUid)
+        );
+    }
+
     function isViewIncrement() {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly(['views'])
         && request.resource.data.views is number
         && request.resource.data.views == resource.data.get('views', 0) + 1;
     }
 
-    // ==========================================
-    // COLLECTIONS
-    // ==========================================
-
     match /users/{userId} {
       allow read: if isAdmin()
         || (isAuthenticated() && request.auth.uid == userId)
         || (isDeveloper() && resource.data.developerUid == request.auth.uid);
-      allow write: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow create: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
+      allow update: if isAdmin()
+        || (isAuthenticated() && request.auth.uid == userId)
+        || (isDeveloper()
+          && resource.data.role == 'employee'
+          && resource.data.developerUid == request.auth.uid
+          && request.resource.data.role == 'employee'
+          && request.resource.data.developerUid == request.auth.uid
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']));
+      allow delete: if isAdmin()
+        || (isAuthenticated() && request.auth.uid == userId)
+        || (isDeveloper() && resource.data.role == 'employee' && resource.data.developerUid == request.auth.uid);
       
-      // Allow users to log their own actions, and Admins/parent developers to read them
       match /auditLogs/{logId} {
         allow read: if isAdmin()
           || (isAuthenticated() && request.auth.uid == userId)
@@ -109,14 +119,14 @@ service cloud.firestore {
     }
 
     match /faqs/{id} {
-  allow read: if true;
-  allow write: if isAdmin();
-}
+      allow read: if true;
+      allow write: if isAdmin();
+    }
 
-match /menuOptions/{id} {
-  allow read: if true;
-  allow write: if isAdmin();
-}
+    match /menuOptions/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
 
     match /contact_requests/{requestId} {
       allow create: if true;
@@ -128,20 +138,16 @@ match /menuOptions/{id} {
       allow read, update, delete: if isAdmin();
     }
 
-    // Sales Communication Requests
     match /sales_requests/{requestId} {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }
-
-    // ==========================================
-    // OFFERS & CONTRACTS
-    // ==========================================
     
     match /offers/{offerId} {
       allow create, delete: if isAdmin();
-      allow list: if isAdmin() || (isAuthenticated() && resource.data.developerUid == request.auth.uid);
-      // Public offer page: guests need a single-doc get to enter the OTP. Do not allow list.
+      allow list: if isAdmin()
+        || (isAuthenticated() && resource.data.developerUid == request.auth.uid)
+        || ownsAssignedOffer();
       allow get: if true;
       allow update: if isAdmin()
         || (isAuthenticated() && resource.data.developerUid == request.auth.uid)
@@ -149,12 +155,10 @@ match /menuOptions/{id} {
     }
 
     match /contracts/{contractId} {
-      // Admins can do anything, Developers can read their own contracts
       allow read: if isAdmin() || (isAuthenticated() && resource.data.developerUid == request.auth.uid);
       allow write: if isAdmin();
     }
     
-    // Lockdown everything else by default
     match /{document=**} {
       allow read, write: if false; 
     }

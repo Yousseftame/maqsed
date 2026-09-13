@@ -1,11 +1,5 @@
-import { DeveloperOverviewSection } from "@/features/developer/overview/DeveloperOverviewSection";
-import { DeveloperPerformanceSection } from "@/features/developer/overview/DeveloperPerformanceSection";
+import { DeveloperDashboard } from "@/features/developer/overview/DeveloperDashboard";
 
 export default function DeveloperDashboardPage() {
-  return (
-    <div className="flex flex-col gap-8 pb-12">
-      <DeveloperOverviewSection />
-      <DeveloperPerformanceSection />
-    </div>
-  );
+  return <DeveloperDashboard />;
 }

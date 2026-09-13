@@ -1,165 +1,238 @@
 "use client";
 
-import { Panel } from "@/features/admin/ui/Panel";
+import { motion } from "motion/react";
 import {
-  BarChart,
   Bar,
+  BarChart,
+  Cell,
+  LabelList,
+  Pie,
+  PieChart,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  ReferenceLine,
 } from "recharts";
+import { Panel } from "@/features/admin/ui/Panel";
+import type { DeveloperDashboardStats } from "./useDeveloperDashboard";
 
-const visitsData = [
-  { month: "نوفمبر 25", visits: 50 },
-  { month: "ديسمبر 25", visits: 1350 },
-  { month: "يناير 26", visits: 1050 },
-  { month: "فبراير 26", visits: 1400 },
-  { month: "مارس 26", visits: 950 },
-  { month: "أبريل 26", visits: 2500 },
-  { month: "مايو 26", visits: 1300 },
-  { month: "يونيو 26", visits: 2400 },
-  { month: "يوليو 26", visits: 750 },
-  { month: "أغسطس 26", visits: 50 },
-];
+const EASE = [0.22, 1, 0.36, 1] as const;
 
-const salesData = [
-  { project: "راس الحكمه", sales: 1500000 },
-  { project: "إشراقة 20", sales: 3200000 },
-];
+function formatMoney(value: number) {
+  return `${(Math.round(value * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })} ر.س`;
+}
 
-const formatYAxisVisits = (value: number) => {
-  if (value === 0) return "0";
-  if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
-  return value.toString();
+function formatCount(value: number) {
+  return value.toLocaleString();
+}
+
+function ChartTooltip({
+  active,
+  payload,
+  label,
+  money,
+}: {
+  active?: boolean;
+  payload?: { value?: number }[];
+  label?: string;
+  money?: boolean;
+}) {
+  if (!active || !payload?.length) return null;
+  const value = Number(payload[0]?.value || 0);
+  return (
+    <div className="rounded-[16px] border border-[#0a0f1d]/8 bg-white px-3 py-2 text-sm font-semibold text-[#0a0f1d] shadow-[0_8px_24px_rgba(10,15,29,0.08)]">
+      {label ? <p className="mb-0.5 text-xs font-medium text-[#8c8c8c]">{label}</p> : null}
+      {money ? formatMoney(value) : formatCount(value)}
+    </div>
+  );
+}
+
+type DonutSlice = {
+  id: string;
+  color: string;
+  label: string;
+  value: number;
 };
 
-const formatXAxisSales = (value: number) => {
-  if (value === 0) return "0";
-  if (value >= 1000000) return `${(value / 1000000).toFixed(0)}M`;
-  return value.toString();
-};
+function DonutPanel({
+  title,
+  slices,
+  total,
+  totalLabel,
+  formatValue = formatCount,
+  compactTotal,
+}: {
+  title: string;
+  slices: DonutSlice[];
+  total: number;
+  totalLabel: string;
+  formatValue?: (value: number) => string;
+  compactTotal?: boolean;
+}) {
+  const visible = slices.filter((item) => item.value > 0);
+  const chartData = visible.length > 0 ? visible : [{ id: "empty", color: "#F4F4F4", label: "", value: 1 }];
 
-const CustomTooltip = ({ active, payload, label }: any) => {
-  if (active && payload && payload.length) {
-    return (
-      <div className="rounded-xl border border-black/5 bg-white p-3 shadow-lg">
-        <p className="mb-1 text-xs font-semibold text-[#8c8c8c]">{label}</p>
-        <p className="text-sm font-bold text-[#0a0f1d]">
-          {payload[0].value.toLocaleString()}
-        </p>
+  return (
+    <Panel title={title}>
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col gap-5 sm:gap-6">
+        <div className="flex min-w-0 flex-1 flex-col items-center justify-center gap-5 lg:flex-row lg:items-center lg:justify-evenly lg:gap-8">
+          <div className="relative h-40 w-40 shrink-0 sm:h-52 sm:w-52">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={chartData}
+                  dataKey="value"
+                  innerRadius="60%"
+                  outerRadius="84%"
+                  paddingAngle={visible.length > 1 ? 3 : 0}
+                  stroke="none"
+                  animationDuration={800}
+                >
+                  {chartData.map((item) => (
+                    <Cell key={item.id} fill={item.color} />
+                  ))}
+                </Pie>
+              </PieChart>
+            </ResponsiveContainer>
+            <div className="pointer-events-none absolute inset-[18%] flex flex-col items-center justify-center px-1 text-center">
+              <span
+                className={
+                  compactTotal
+                    ? "text-[11px] leading-tight font-bold tracking-tight text-[#0a0f1d] sm:text-[13px]"
+                    : "text-2xl font-bold tracking-tight text-[#0a0f1d] sm:text-3xl"
+                }
+              >
+                {formatValue(total)}
+              </span>
+              <span className="text-[10px] font-medium text-[#8c8c8c] sm:text-[11px]">{totalLabel}</span>
+            </div>
+          </div>
+          <ul className="flex w-full min-w-0 flex-col gap-2.5 sm:max-w-xs lg:max-w-[14rem]">
+            {slices.map((item) => (
+              <li key={item.id} className="flex min-w-0 items-center justify-between gap-3">
+                <span className="flex min-w-0 items-center gap-2 text-sm font-semibold text-[#0a0f1d]">
+                  <span className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: item.color }} />
+                  <span className="truncate">{item.label}</span>
+                </span>
+                <span className="shrink-0 text-sm font-bold tabular-nums text-[#0a0f1d]">{formatValue(item.value)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+        <div className="flex h-3 w-full overflow-hidden rounded-full bg-[#F4F4F4]">
+          {total > 0
+            ? slices.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  className="h-full first:rounded-s-full last:rounded-e-full"
+                  initial={{ flexGrow: 0 }}
+                  animate={{ flexGrow: item.value }}
+                  transition={{ duration: 0.7, delay: 0.2 + index * 0.08, ease: EASE }}
+                  style={{ background: item.color }}
+                />
+              ))
+            : null}
+        </div>
       </div>
+    </Panel>
+  );
+}
+
+function DistributionBarChart({
+  data,
+  emptyLabel,
+  money,
+}: {
+  data: { name: string; value: number }[];
+  emptyLabel: string;
+  money?: boolean;
+}) {
+  if (data.length === 0) {
+    return (
+      <p className="flex h-64 items-center justify-center text-sm font-medium text-[#8c8c8c]">
+        {emptyLabel}
+      </p>
     );
   }
-  return null;
-};
 
-export function DeveloperPerformanceSection() {
+  const height = Math.max(256, data.length * 48);
+  const formatLabel = money ? formatMoney : formatCount;
+
   return (
-    <div className="flex w-full flex-col gap-6">
-      {/* Outer Panel — matches "بوابة المطور" above */}
-      <Panel
-        title="الأداء والإحصائيات"
-      >
-        {/* Gray inner container — matches the StatCards section */}
-        <div className="rounded-[24px] bg-[#F4F4F4] p-4 sm:p-5 mt-2">
-          <div className="grid items-stretch gap-4 lg:grid-cols-2">
+    <div className="w-full" style={{ height }} dir="ltr">
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart data={data} layout="vertical" margin={{ top: 4, right: money ? 88 : 28, left: 8, bottom: 0 }}>
+          <XAxis type="number" hide allowDecimals={false} />
+          <YAxis
+            type="category"
+            dataKey="name"
+            axisLine={false}
+            tickLine={false}
+            width={88}
+            interval={0}
+            tick={{ fill: "#0a0f1d", fontSize: 13, fontWeight: 600 }}
+          />
+          <Tooltip content={<ChartTooltip money={money} />} cursor={{ fill: "rgba(10,15,29,0.04)" }} />
+          <Bar
+            dataKey="value"
+            fill="#0a0f1d"
+            radius={[999, 999, 999, 999]}
+            barSize={14}
+            animationDuration={900}
+          >
+            <LabelList
+              dataKey="value"
+              position="right"
+              fill="#0a0f1d"
+              fontSize={12}
+              fontWeight={700}
+              offset={8}
+              formatter={(value) => formatLabel(Number(value ?? 0))}
+            />
+          </Bar>
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
+  );
+}
 
-            {/* Chart 1: زيارات الروابط */}
-            <div className="flex flex-col rounded-[20px] bg-white p-5 sm:p-6 shadow-sm ring-1 ring-black/[0.04]">
-              <div className="mb-4">
-                <h3 className="text-base font-bold text-[#0a0f1d]">
-                  زيارات الروابط
-                </h3>
-              </div>
-              <div className="h-64 w-full" dir="ltr">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart
-                    data={visitsData}
-                    margin={{ top: 10, right: 4, left: -16, bottom: 28 }}
-                  >
-                    <CartesianGrid vertical={false} stroke="rgba(10,15,29,0.06)" />
-                    <XAxis
-                      dataKey="month"
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: "#8c8c8c", fontSize: 10, fontWeight: 500 }}
-                      angle={-40}
-                      textAnchor="end"
-                      dy={6}
-                      interval={0}
-                    />
-                    <YAxis
-                      axisLine={false}
-                      tickLine={false}
-                      tick={{ fill: "#8c8c8c", fontSize: 12, fontWeight: 600 }}
-                      tickFormatter={formatYAxisVisits}
-                      domain={[0, 3000]}
-                      ticks={[0, 500, 1000, 1500, 2000, 2500]}
-                    />
-                    <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(10,15,29,0.04)" }} />
-                    <ReferenceLine y={1000} stroke="#aaa" strokeDasharray="5 4" />
-                    <Bar
-                      dataKey="visits"
-                      fill="#0a0f1d"
-                      radius={[6, 6, 4, 4]}
-                      barSize={18}
-                    />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
+export function DeveloperPerformanceSection({
+  isRtl,
+  stats,
+}: {
+  isRtl: boolean;
+  stats: DeveloperDashboardStats;
+}) {
+  const emptyLabel = isRtl ? "لا توجد بيانات بعد" : "No data yet";
+  const viewsData = stats.viewsByProject.filter((item) => item.value > 0);
+  const invoiceData = stats.invoicesByProject.filter((item) => item.value > 0);
 
-            {/* Chart 2: المبيعات حسب المشروع */}
-            <div className="flex flex-col rounded-[20px] bg-white p-5 sm:p-6 shadow-sm ring-1 ring-black/[0.04]">
-              <div className="mb-4">
-                <h3 className="text-base font-bold text-[#0a0f1d]">
-                  المبيعات حسب المشروع
-                </h3>
-              </div>
-              <div className="flex flex-1 items-center">
-                <div className="h-40 w-full" dir="ltr">
-                  <ResponsiveContainer width="100%" height="100%">
-                    <BarChart
-                      data={salesData}
-                      layout="vertical"
-                      margin={{ top: 4, right: 16, left: 0, bottom: 4 }}
-                    >
-                      <XAxis
-                        type="number"
-                        axisLine={false}
-                        tickLine={false}
-                        tick={{ fill: "#8c8c8c", fontSize: 12, fontWeight: 600 }}
-                        tickFormatter={formatXAxisSales}
-                        domain={[0, 4000000]}
-                        ticks={[0, 1000000, 2000000, 3000000, 4000000]}
-                      />
-                      <YAxis
-                        type="category"
-                        dataKey="project"
-                        axisLine={false}
-                        tickLine={false}
-                        width={90}
-                        tick={{ fill: "#0a0f1d", fontSize: 13, fontWeight: 700 }}
-                      />
-                      <Tooltip content={<CustomTooltip />} cursor={{ fill: "rgba(10,15,29,0.04)" }} />
-                      <Bar
-                        dataKey="sales"
-                        fill="#0a0f1d"
-                        radius={[4, 4, 4, 4]}
-                        barSize={36}
-                      />
-                    </BarChart>
-                  </ResponsiveContainer>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-      </Panel>
+  return (
+    <div className="flex w-full flex-col gap-3">
+      <div className="grid min-w-0 items-stretch gap-3 sm:grid-cols-2">
+        <DonutPanel
+          title={isRtl ? "حالة الوحدات" : "Units status"}
+          slices={stats.unitStatus}
+          total={stats.unitCount}
+          totalLabel={isRtl ? "وحدة" : "units"}
+        />
+        <DonutPanel
+          title={isRtl ? "حالة الفواتير" : "Invoices status"}
+          slices={stats.invoiceStatus}
+          total={stats.invoiceTotal}
+          totalLabel={isRtl ? "الإجمالي" : "total"}
+          formatValue={formatMoney}
+          compactTotal
+        />
+      </div>
+      <div className="grid min-w-0 items-stretch gap-3 lg:grid-cols-2">
+        <Panel title={isRtl ? "مشاهدات الوحدات حسب المشروع" : "Unit views by project"} className="shadow-sm ring-1 ring-[#0a0f1d]/5">
+          <DistributionBarChart data={viewsData} emptyLabel={emptyLabel} />
+        </Panel>
+        <Panel title={isRtl ? "الفواتير حسب المشروع" : "Invoices by project"} className="shadow-sm ring-1 ring-[#0a0f1d]/5">
+          <DistributionBarChart data={invoiceData} emptyLabel={emptyLabel} money />
+        </Panel>
+      </div>
     </div>
   );
 }

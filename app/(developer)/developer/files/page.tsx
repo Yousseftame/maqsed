@@ -1,8 +1,7 @@
-export default function DeveloperfilesPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold">Developer files</h1>
-    </div>
-  );
-}
+"use client";
 
+import { DeveloperFilesSection } from "@/features/developer/files/DeveloperFilesSection";
+
+export default function DeveloperFilesPage() {
+  return <DeveloperFilesSection />;
+}

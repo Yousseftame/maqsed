@@ -1,8 +1,7 @@
-export default function DeveloperprojectsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold">Developer projects</h1>
-    </div>
-  );
-}
+"use client";
 
+import { DeveloperProjectsSection } from "@/features/developer/projects/DeveloperProjectsSection";
+
+export default function DeveloperProjectsPage() {
+  return <DeveloperProjectsSection />;
+}

@@ -29,6 +29,7 @@ const AGREEMENT_LABELS: Record<string, string> = {
 type Props = {
   offer: OfferData | null;
   onClose: () => void;
+  onAssignToDashboard?: (offer: OfferData) => void;
 };
 
 function StatusBadge({ status }: { status: OfferData["status"] }) {
@@ -79,7 +80,7 @@ function SectionTitle({ children }: { children: React.ReactNode }) {
   );
 }
 
-export function OfferDetailModal({ offer, onClose }: Props) {
+export function OfferDetailModal({ offer, onClose, onAssignToDashboard }: Props) {
   const { t, isRtl } = useLocale();
 
   const formatDate = (ts: any) => {
@@ -159,6 +160,13 @@ export function OfferDetailModal({ offer, onClose }: Props) {
                   <SectionTitle>{isRtl ? "بيانات المطور" : "Developer Info"}</SectionTitle>
                   <div className="rounded-[14px] border border-[#F0F0F0] bg-white px-3">
                     <InfoRow icon={User} label={isRtl ? "اسم المطور" : "Developer"} value={offer.developerName} />
+                    {offer.assignedDeveloperUid ? (
+                      <InfoRow
+                        icon={User}
+                        label={isRtl ? "لوحة المطور" : "Dashboard"}
+                        value={offer.assignedDeveloperName}
+                      />
+                    ) : null}
                     <InfoRow icon={Building2} label={isRtl ? "المشروع" : "Project"} value={offer.projectName} />
                     <InfoRow icon={Hash} label={isRtl ? "الوحدة" : "Unit"} value={offer.unitNumber} />
                     <InfoRow icon={Mail} label={isRtl ? "البريد الإلكتروني" : "Email"} value={offer.developerEmail} />
@@ -276,6 +284,17 @@ export function OfferDetailModal({ offer, onClose }: Props) {
                 {isRtl ? "إغلاق" : "Close"}
               </button>
               <div className="flex gap-2">
+                {offer.status === "accepted" && onAssignToDashboard ? (
+                  <button
+                    type="button"
+                    onClick={() => onAssignToDashboard(offer)}
+                    className="flex h-10 items-center gap-2 rounded-[12px] bg-[#0a0f1d] px-5 text-sm font-bold text-white hover:bg-[#161c2d] transition-colors"
+                  >
+                    {offer.assignedDeveloperUid
+                      ? (isRtl ? "عرض الإضافة للوحة" : "Dashboard assignment")
+                      : (isRtl ? "إضافة للوحة" : "Add to dashboard")}
+                  </button>
+                ) : null}
                 <button
                   onClick={() => downloadOfferPDF(offer)}
                   className="flex h-10 items-center gap-2 rounded-[12px] bg-[#F4F4F4] px-5 text-sm font-bold text-[#0a0f1d] hover:bg-[#E5E5E5] transition-colors"

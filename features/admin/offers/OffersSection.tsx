@@ -13,6 +13,7 @@ import { offersService, type OfferData } from "./offers.service";
 import { OfferDetailModal } from "./OfferDetailModal";
 import { EditOfferModal } from "./EditOfferModal";
 import { OfferShareModal } from "./OfferShareModal";
+import { AssignOfferDashboardModal } from "./AssignOfferDashboardModal";
 import { downloadOfferPDF } from "./offer-pdf";
 import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
@@ -32,6 +33,7 @@ export function OffersSection() {
   const [selectedOffer, setSelectedOffer] = useState<OfferData | null>(null);
   const [editingOffer, setEditingOffer] = useState<OfferData | null>(null);
   const [sharingOffer, setSharingOffer] = useState<OfferData | null>(null);
+  const [assigningOffer, setAssigningOffer] = useState<OfferData | null>(null);
 
   const { data: offers = [], refetch, isRefetching } = useQuery({
     queryKey: ["offers"],
@@ -40,6 +42,10 @@ export function OffersSection() {
 
   useEffect(() => {
     setSelectedOffer((current) => {
+      if (!current) return current;
+      return offers.find((item) => item.id === current.id) ?? current;
+    });
+    setAssigningOffer((current) => {
       if (!current) return current;
       return offers.find((item) => item.id === current.id) ?? current;
     });
@@ -66,6 +72,7 @@ export function OffersSection() {
       if (selectedOffer?.id === row.id) setSelectedOffer(null);
       if (editingOffer?.id === row.id) setEditingOffer(null);
       if (sharingOffer?.id === row.id) setSharingOffer(null);
+      if (assigningOffer?.id === row.id) setAssigningOffer(null);
       queryClient.invalidateQueries({ queryKey: ["offers"] });
       toast.success(isRtl ? "تم حذف العرض بنجاح" : "Offer deleted successfully");
     },
@@ -214,6 +221,42 @@ export function OffersSection() {
       },
     },
     {
+      id: "dashboard",
+      header: isRtl ? "اللوحة" : "Dashboard",
+      cell: (row) => {
+        if (row.status !== "accepted" || !canEditOffer) {
+          return <span className="text-[#8c8c8c]">—</span>;
+        }
+        if (row.assignedDeveloperUid) {
+          return (
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedOffer(null);
+                setAssigningOffer(row);
+              }}
+              title={row.assignedDeveloperName || undefined}
+              className="inline-flex h-8 items-center rounded-full bg-[#E8F8EF] px-3 text-xs font-bold text-[#2f9e44] hover:bg-[#d7f3e3]"
+            >
+              {isRtl ? "تمت الإضافة" : "Added"}
+            </button>
+          );
+        }
+        return (
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedOffer(null);
+              setAssigningOffer(row);
+            }}
+            className="inline-flex h-8 items-center rounded-full bg-[#0a0f1d] px-3 text-xs font-bold text-white hover:bg-[#161c2d]"
+          >
+            {isRtl ? "إضافة للوحة" : "Add to dashboard"}
+          </button>
+        );
+      },
+    },
+    {
       id: "date",
       header: t("admin.offers.date") || "Date",
       cell: (row) => {
@@ -356,9 +399,21 @@ export function OffersSection() {
         }}
       />
 
-      <OfferDetailModal offer={selectedOffer} onClose={() => setSelectedOffer(null)} />
+      <OfferDetailModal
+        offer={selectedOffer}
+        onClose={() => setSelectedOffer(null)}
+        onAssignToDashboard={
+          canEditOffer
+            ? (row) => {
+                setSelectedOffer(null);
+                setAssigningOffer(row);
+              }
+            : undefined
+        }
+      />
       <EditOfferModal offer={editingOffer} onClose={() => setEditingOffer(null)} />
       <OfferShareModal offer={sharingOffer} onClose={() => setSharingOffer(null)} />
+      <AssignOfferDashboardModal offer={assigningOffer} onClose={() => setAssigningOffer(null)} />
     </div>
   );
 }

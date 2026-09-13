@@ -85,6 +85,7 @@ export type Property = {
   contractorLogo?: string;
 
   views?: number;
+  developerUid?: string;
 
   createdAt?: Timestamp | any;
   updatedAt?: Timestamp | any;
@@ -149,6 +150,19 @@ export const propertiesService = {
     const snap = await getDoc(doc(db, PROPERTIES_COLLECTION, id));
     if (!snap.exists()) return null;
     return normalizeProperty({ id: snap.id, ...snap.data() });
+  },
+
+  async getPropertiesByDeveloper(developerUid: string): Promise<Property[]> {
+    const uid = String(developerUid || "").trim();
+    if (!uid) return [];
+    const snap = await getDocs(query(collection(db, PROPERTIES_COLLECTION), where("developerUid", "==", uid)));
+    return snap.docs
+      .map((item) => normalizeProperty({ id: item.id, ...item.data() }))
+      .sort((a, b) => {
+        const aTime = typeof a.createdAt?.toMillis === "function" ? a.createdAt.toMillis() : Number(a.createdAt) || 0;
+        const bTime = typeof b.createdAt?.toMillis === "function" ? b.createdAt.toMillis() : Number(b.createdAt) || 0;
+        return bTime - aTime;
+      });
   },
 
   async getPropertyBySlugOrId(key: string): Promise<Property | null> {

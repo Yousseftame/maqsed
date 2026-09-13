@@ -1,8 +1,7 @@
-export default function DeveloperunitsPage() {
-  return (
-    <div>
-      <h1 className="text-2xl font-bold">Developer units</h1>
-    </div>
-  );
-}
+"use client";
 
+import { DeveloperUnitsSection } from "@/features/developer/units/DeveloperUnitsSection";
+
+export default function DeveloperUnitsPage() {
+  return <DeveloperUnitsSection />;
+}

@@ -1,152 +1,253 @@
 "use client";
 
-import { useState } from "react";
+import { useRef } from "react";
+import Link from "next/link";
+import { Banknote, Building2, CircleCheck, Clock, FileText, Folder, Percent, ReceiptText, RefreshCw, Users, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatGrid, StatCard } from "@/features/admin/ui/StatCard";
 import { Panel } from "@/features/admin/ui/Panel";
-import { 
-  Banknote, 
-  Percent, 
-  ShoppingCart, 
-  Handshake, 
-  Building2,
-  Users
-} from "lucide-react";
+import type { DeveloperDashboardStats } from "./useDeveloperDashboard";
 
-export function DeveloperOverviewSection() {
-  const [activeTab, setActiveTab] = useState<"all" | "project1" | "project2">("all");
+function formatMoney(value: number) {
+  return `${(Math.round(value * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })} ر.س`;
+}
 
-  const actionToggle = (
-    <div className="flex flex-wrap items-center gap-1 rounded-[20px] sm:rounded-full bg-white p-1 shadow-sm ring-1 ring-[#0a0f1d]/10 w-full lg:w-auto">
-      <button
-        onClick={() => setActiveTab("project2")}
-        className={cn(
-          "flex-1 sm:flex-none rounded-full px-3 sm:px-5 py-2 text-xs sm:text-sm font-bold transition-all",
-          activeTab === "project2"
-            ? "bg-[#0a0f1d] text-white shadow-md"
-            : "text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d]"
-        )}
-      >
-        راس الحكمه
-      </button>
-      <button
-        onClick={() => setActiveTab("project1")}
-        className={cn(
-          "flex-1 sm:flex-none rounded-full px-3 sm:px-5 py-2 text-xs sm:text-sm font-bold transition-all",
-          activeTab === "project1"
-            ? "bg-[#0a0f1d] text-white shadow-md"
-            : "text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d]"
-        )}
-      >
-        إشراقة 20
-      </button>
-      <button
-        onClick={() => setActiveTab("all")}
-        className={cn(
-          "flex-1 sm:flex-none rounded-full px-3 sm:px-5 py-2 text-xs sm:text-sm font-bold transition-all",
-          activeTab === "all"
-            ? "bg-[#0a0f1d] text-white shadow-md"
-            : "text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d]"
-        )}
-      >
-        كل المشاريع
-      </button>
-    </div>
-  );
+const moneyValueClass = "[&_p]:whitespace-nowrap [&_p]:tabular-nums [&_p]:text-[1.65rem] sm:[&_p]:text-[1.9rem]";
+
+function FilterScroller({
+  filters,
+  filter,
+  onFilter,
+}: {
+  filters: { id: string; label: string }[];
+  filter: string;
+  onFilter: (id: string) => void;
+}) {
+  const scrollerRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef({
+    active: false,
+    dragging: false,
+    startX: 0,
+    scrollLeft: 0,
+    pointerId: 0,
+  });
+
+  function onPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    const el = scrollerRef.current;
+    if (!el || event.pointerType !== "mouse" || event.button !== 0) return;
+    dragRef.current = {
+      active: true,
+      dragging: false,
+      startX: event.clientX,
+      scrollLeft: el.scrollLeft,
+      pointerId: event.pointerId,
+    };
+  }
+
+  function onPointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    const el = scrollerRef.current;
+    const drag = dragRef.current;
+    if (!el || !drag.active || event.pointerId !== drag.pointerId) return;
+    const dx = event.clientX - drag.startX;
+    if (!drag.dragging) {
+      if (Math.abs(dx) < 10) return;
+      drag.dragging = true;
+      el.setPointerCapture(event.pointerId);
+    }
+    el.scrollLeft = drag.scrollLeft - dx;
+  }
+
+  function stopDrag(event: React.PointerEvent<HTMLDivElement>) {
+    const el = scrollerRef.current;
+    const drag = dragRef.current;
+    if (!drag.active || event.pointerId !== drag.pointerId) return;
+    if (el && drag.dragging) {
+      try {
+        el.releasePointerCapture(event.pointerId);
+      } catch {
+        // already released
+      }
+    }
+    drag.active = false;
+    if (drag.dragging) {
+      requestAnimationFrame(() => {
+        drag.dragging = false;
+      });
+    }
+  }
 
   return (
-    <div className="flex w-full flex-col gap-6">
-      <Panel title="بوابة المطور" action={actionToggle}>
-        <div className="rounded-[24px] bg-[#F4F4F4] p-4 sm:p-5 mt-2">
-          {/* Top Grid: 2 Large Cards */}
-          <StatGrid className="xl:grid-cols-2">
-            <StatCard
-              label="قيمة المبيعات"
-              value="3,248,000"
-              icon={Banknote}
-            />
-
-            <StatCard
-              label="نسبة المبيعات"
-              value="3.70%"
-              icon={Percent}
-            />
-          </StatGrid>
-        </div>
-      </Panel>
-
-      {/* Bottom Grid: 4 Secondary Cards */}
-      <StatGrid>
-        <StatCard
-          label="عدد المبيعات"
-          value="3"
-          icon={ShoppingCart}
-        />
-
-        <StatCard
-          label="عدد التفاوضات"
-          value="1"
-          icon={Handshake}
-        />
-
-        <StatCard
-          label="الوحدات المتاحة"
-          value="73"
-          icon={Building2}
-        />
-
-        <StatCard
-          label="الموظفين"
-          value="12"
-          icon={Users}
-        />
-      </StatGrid>
-
-      {/* Results Analysis Funnel */}
-      <Panel 
-        title="تحليل النتائج" 
-      >
-        <div className="rounded-[24px] bg-[#F4F4F4] p-4 sm:p-5 mt-2 flex flex-col gap-4">
-          <StatGrid className="xl:grid-cols-4 lg:grid-cols-4 sm:grid-cols-2">
-            <FunnelStatCard
-              label="المشاهدات"
-              value="2,166,997"
-            />
-            
-            <FunnelStatCard
-              label="القوالب المرسلة"
-              value="33,843"
-            />
-
-            <FunnelStatCard
-              label="العملاء المحتملون"
-              value="908"
-            />
-
-            <FunnelStatCard
-              label="المبيعات"
-              value="3"
-            />
-          </StatGrid>
-        </div>
-      </Panel>
+    <div
+      ref={scrollerRef}
+      onPointerDown={onPointerDown}
+      onPointerMove={onPointerMove}
+      onPointerUp={stopDrag}
+      onPointerCancel={stopDrag}
+      className="w-full min-w-0 cursor-grab select-none overflow-x-auto no-scrollbar active:cursor-grabbing"
+      style={{ touchAction: "pan-x" }}
+    >
+      <div className="flex w-max min-w-full items-center gap-1 rounded-full bg-[#F4F4F4] p-1">
+        {filters.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => {
+              if (dragRef.current.dragging) return;
+              onFilter(item.id);
+            }}
+            className={cn(
+              "shrink-0 rounded-full px-3.5 py-2 text-xs font-bold whitespace-nowrap transition-colors sm:px-5 sm:text-sm",
+              filter === item.id
+                ? "bg-[#0a0f1d] text-white shadow-md"
+                : "text-[#8c8c8c] hover:bg-white hover:text-[#0a0f1d]"
+            )}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
 
-function FunnelStatCard({
-  label,
-  value,
+export function DeveloperOverviewSection({
+  filter,
+  filters,
+  onFilter,
+  isDeveloper,
+  isRtl,
+  stats,
+  isRefetching,
+  onRefresh,
+  canRefresh,
 }: {
-  label: string;
-  value: string;
+  filter: string;
+  filters: { id: string; label: string }[];
+  onFilter: (id: string) => void;
+  isDeveloper: boolean;
+  isRtl: boolean;
+  stats: DeveloperDashboardStats;
+  isRefetching: boolean;
+  onRefresh: () => void;
+  canRefresh: boolean;
 }) {
+  const pageCards = [
+    {
+      href: "/developer/projects",
+      icon: Folder,
+      label: isRtl ? "المشاريع" : "Projects",
+      value: stats.projectCount,
+    },
+    {
+      href: "/developer/units",
+      icon: Building2,
+      label: isRtl ? "الوحدات" : "Units",
+      value: stats.unitCount,
+      hint: isRtl ? `${stats.availableUnits} متاحة` : `${stats.availableUnits} available`,
+    },
+    {
+      href: "/developer/invoices",
+      icon: ReceiptText,
+      label: isRtl ? "الفواتير" : "Invoices",
+      value: stats.invoiceCount,
+    },
+    {
+      href: "/developer/files",
+      icon: FileText,
+      label: isRtl ? "الملفات" : "Files",
+      value: stats.fileCount,
+    },
+    ...(isDeveloper
+      ? [
+          {
+            href: "/developer/users",
+            icon: Users,
+            label: isRtl ? "المستخدمين" : "Users",
+            value: stats.userCount,
+          },
+        ]
+      : []),
+  ];
+
   return (
-    <article className="flex min-h-[140px] flex-col justify-between rounded-[24px] bg-white p-5 sm:p-6 shadow-sm ring-1 ring-black/5">
-      <span className="text-sm font-semibold text-[#0a0f1d]">{label}</span>
-      <p className="mt-4 text-[2rem] leading-none font-bold tracking-tight text-[#0a0f1d] sm:text-[2.35rem]">
-        {value}
-      </p>
-    </article>
+    <div className="flex w-full flex-col gap-6">
+      <Panel
+        title={isRtl ? "بوابة المطور" : "Developer portal"}
+        action={
+          <button
+            type="button"
+            onClick={onRefresh}
+            disabled={isRefetching || !canRefresh}
+            className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-[#0a0f1d] transition-colors hover:bg-[#E5E5E5] disabled:opacity-50"
+            title={isRtl ? "تحديث" : "Refresh"}
+          >
+            <RefreshCw className={`h-5 w-5 ${isRefetching ? "animate-spin" : ""}`} />
+          </button>
+        }
+      >
+        <div className="flex flex-col gap-4">
+          <FilterScroller filters={filters} filter={filter} onFilter={onFilter} />
+          <div className="rounded-[24px] bg-[#F4F4F4] p-4 sm:p-5">
+            <StatGrid className="sm:grid-cols-2 xl:grid-cols-2">
+              <StatCard
+                label={isRtl ? "إجمالي الفواتير" : "Invoice total"}
+                value={formatMoney(stats.invoiceTotal)}
+                icon={Banknote}
+              />
+              <StatCard
+                label={isRtl ? "نسبة التحصيل" : "Collection rate"}
+                value={`${stats.collectionRate.toFixed(1)}%`}
+                icon={Percent}
+                hint={isRtl ? `${formatMoney(stats.paidTotal)} مدفوع` : `${formatMoney(stats.paidTotal)} paid`}
+              />
+            </StatGrid>
+          </div>
+        </div>
+      </Panel>
+
+      <Panel title={isRtl ? "ملخص الفواتير" : "Invoice summary"}>
+        <div className="flex flex-col gap-3 rounded-[24px] bg-[#F4F4F4] p-4 sm:p-5">
+          <StatGrid className="sm:grid-cols-3 xl:grid-cols-3">
+            <StatCard icon={ReceiptText} label={isRtl ? "عدد الفواتير" : "Invoices"} value={stats.invoiceCount} />
+            <StatCard
+              icon={Banknote}
+              label={isRtl ? "قبل الضريبة" : "Before tax"}
+              value={formatMoney(stats.invoiceSubtotal)}
+              className={moneyValueClass}
+            />
+            <StatCard
+              icon={Banknote}
+              label={isRtl ? "الضريبة (15%)" : "VAT (15%)"}
+              value={formatMoney(stats.invoiceVat)}
+              className={moneyValueClass}
+            />
+          </StatGrid>
+          <StatGrid>
+            <StatCard icon={CircleCheck} label={isRtl ? "الفواتير المدفوعة" : "Paid invoices"} value={stats.paidCount} />
+            <StatCard
+              icon={Wallet}
+              label={isRtl ? "إجمالي المدفوع" : "Paid amount"}
+              value={formatMoney(stats.paidTotal)}
+              className={moneyValueClass}
+            />
+            <StatCard icon={Clock} label={isRtl ? "الفواتير غير المدفوعة" : "Unpaid invoices"} value={stats.unpaidCount} />
+            <StatCard
+              icon={Banknote}
+              label={isRtl ? "إجمالي غير المدفوع" : "Unpaid amount"}
+              value={formatMoney(stats.unpaidTotal)}
+              className={moneyValueClass}
+            />
+          </StatGrid>
+        </div>
+      </Panel>
+
+      <StatGrid className={pageCards.length > 4 ? "xl:grid-cols-5" : undefined}>
+        {pageCards.map((card) => (
+          <Link key={card.href} href={card.href} className="block transition-transform hover:-translate-y-0.5">
+            <StatCard icon={card.icon} label={card.label} value={card.value} hint={card.hint} />
+          </Link>
+        ))}
+      </StatGrid>
+    </div>
   );
 }
