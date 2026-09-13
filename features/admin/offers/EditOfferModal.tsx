@@ -3,9 +3,13 @@
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { X, Loader2, Plus, Trash2, Save } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { useQueryClient } from "@tanstack/react-query";
 import { offersService, type OfferData } from "./offers.service";
+import { propertiesService } from "@/features/admin/projects/properties.service";
+import { unitsService } from "@/features/admin/units/units.service";
+import { OfferAffiliationFields } from "./OfferAffiliationFields";
+import { resolveProjectId, resolveUnitId } from "./offer-affiliation";
 import toast from "react-hot-toast";
 
 const AGREEMENT_OPTIONS = [
@@ -28,21 +32,36 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
     title: "",
     description: "",
     developerName: "",
+    projectId: "",
     projectName: "",
+    unitId: "",
+    unitNumber: "",
     developerEmail: "",
     developerPhone: "",
   });
   const [agreementTypes, setAgreementTypes] = useState<string[]>([]);
   const [services, setServices] = useState([{ description: "", price: 0 }]);
 
-  // Populate form when offer changes
+  const { data: properties = [] } = useQuery({
+    queryKey: ["properties"],
+    queryFn: () => propertiesService.getProperties(),
+  });
+
+  const { data: units = [] } = useQuery({
+    queryKey: ["units"],
+    queryFn: () => unitsService.getUnits(),
+  });
+
   useEffect(() => {
     if (!offer) return;
     setFormData({
       title: offer.title || "",
       description: offer.description || "",
       developerName: offer.developerName || "",
+      projectId: offer.projectId || "",
       projectName: offer.projectName || "",
+      unitId: offer.unitId || "",
+      unitNumber: offer.unitNumber || "",
       developerEmail: offer.developerEmail || "",
       developerPhone: offer.developerPhone || "",
     });
@@ -53,6 +72,16 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
         : [{ description: "", price: 0 }]
     );
   }, [offer]);
+
+  useEffect(() => {
+    if (!offer) return;
+    setFormData((prev) => {
+      const projectId = prev.projectId || resolveProjectId(offer, properties, isRtl);
+      const unitId = prev.unitId || resolveUnitId({ ...offer, projectId }, units, properties, isRtl);
+      if (projectId === prev.projectId && unitId === prev.unitId) return prev;
+      return { ...prev, projectId, unitId };
+    });
+  }, [offer, properties, units, isRtl]);
 
   const subtotal = services.reduce((acc, s) => acc + (Number(s.price) || 0), 0);
   const vat = subtotal * 0.15;
@@ -88,6 +117,10 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
 
     if (agreementTypes.length === 0) {
       toast.error(isRtl ? "الرجاء اختيار نوع اتفاقية واحد على الأقل." : "Please select at least one agreement type.");
+      return;
+    }
+    if (!formData.projectId || !formData.unitId) {
+      toast.error(isRtl ? "الرجاء اختيار المشروع والوحدة." : "Please select a project and a unit.");
       return;
     }
 
@@ -173,10 +206,18 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
                       <label className={labelClass}>{isRtl ? "عنوان العرض" : "Offer Title"}</label>
                       <input name="title" value={formData.title} onChange={handleChange} required className={inputClass} placeholder={isRtl ? "عنوان العرض..." : "Offer title..."} />
                     </div>
-                    <div>
-                      <label className={labelClass}>{isRtl ? "اسم المشروع" : "Project Name"}</label>
-                      <input name="projectName" value={formData.projectName} onChange={handleChange} required className={inputClass} placeholder={isRtl ? "اسم المشروع..." : "Project name..."} />
-                    </div>
+                    <OfferAffiliationFields
+                      value={{
+                        projectId: formData.projectId,
+                        projectName: formData.projectName,
+                        unitId: formData.unitId,
+                        unitNumber: formData.unitNumber,
+                      }}
+                      onChange={(next) => setFormData((prev) => ({ ...prev, ...next }))}
+                      inputClass={inputClass}
+                      labelClass={labelClass}
+                      isRtl={isRtl}
+                    />
                     <div className="sm:col-span-2">
                       <label className={labelClass}>{isRtl ? "وصف العرض" : "Description"}</label>
                       <textarea

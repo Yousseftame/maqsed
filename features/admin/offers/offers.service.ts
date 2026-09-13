@@ -12,6 +12,9 @@ export interface OfferData {
   title: string;
   description?: string;
   projectName: string;
+  projectId?: string;
+  unitId?: string;
+  unitNumber?: string;
   developerName: string;
   developerEmail: string;
   developerPhone: string;
@@ -108,6 +111,9 @@ class OffersService {
       title: string;
       description?: string;
       projectName: string;
+      projectId: string;
+      unitId: string;
+      unitNumber: string;
       developerName: string;
       developerEmail: string;
       developerPhone: string;

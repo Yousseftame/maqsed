@@ -6,6 +6,7 @@ export type PaymentRecord = {
   offerNumber: string;
   title: string;
   projectName: string;
+  unitNumber?: string;
   developerName: string;
   amount: number;
   createdAt: number;
@@ -20,6 +21,7 @@ export function paymentsFromOffers(offers: OfferData[]): PaymentRecord[] {
       offerNumber: offer.offerNumber || "",
       title: offer.title || "",
       projectName: offer.projectName || "",
+      unitNumber: offer.unitNumber || "",
       developerName: offer.developerName || "",
       amount: offerAmount(offer),
       createdAt: Number(offer.paymentReceivedAt) || 0,

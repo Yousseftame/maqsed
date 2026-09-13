@@ -673,6 +673,7 @@ export interface Dictionary {
       techScope: string;
       techDescPlaceholder: string;
       project: string;
+      unit: string;
       amount: string;
       developer: string;
       status: string;
@@ -969,6 +970,7 @@ export interface Dictionary {
     offerDeclined: string;
     offerDeclinedDesc: string;
     project: string;
+    unit: string;
     financialAmount: string;
     techScope: string;
     acceptOffer: string;
@@ -1716,6 +1718,7 @@ export const en: Dictionary = {
       techScope: "Technical Details & Scope",
       techDescPlaceholder: "Describe the technical requirements, scope of work, timeline...",
       project: "Project",
+      unit: "Unit",
       amount: "Amount",
       developer: "Developer",
       status: "Status",
@@ -2012,6 +2015,7 @@ export const en: Dictionary = {
     offerDeclined: "Offer Declined",
     offerDeclinedDesc: "We have notified the administration. Thank you for your time.",
     project: "Project:",
+    unit: "Unit:",
     financialAmount: "Financial Amount",
     techScope: "Technical Scope & Requirements",
     acceptOffer: "Accept Offer",

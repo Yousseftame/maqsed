@@ -50,6 +50,7 @@ function parsePayload(body: unknown, origin: string): OfferEmailPayload | null {
 
   const title = asString(data.title, 200);
   const projectName = asString(data.projectName, 200);
+  const unitNumber = asString(data.unitNumber, 80);
   const offerNumber = asString(data.offerNumber, 32);
   if (!title || !projectName || !offerNumber) return null;
 
@@ -59,6 +60,7 @@ function parsePayload(body: unknown, origin: string): OfferEmailPayload | null {
     title,
     description: asString(data.description, 4000),
     projectName,
+    unitNumber,
     developerName: asString(data.developerName, 120),
     developerEmail,
     developerPhone: asString(data.developerPhone, 40),

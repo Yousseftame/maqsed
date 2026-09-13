@@ -10,6 +10,7 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { offersService } from "./offers.service";
 import toast from "react-hot-toast";
 import { OfferShareModal } from "./OfferShareModal";
+import { OfferAffiliationFields } from "./OfferAffiliationFields";
 
 const AGREEMENT_OPTIONS = [
   { id: "exclusive", label: "حصري" },
@@ -28,7 +29,10 @@ export function CreateOfferSection() {
     title: "",
     description: "",
     developerName: "",
+    projectId: "",
     projectName: "",
+    unitId: "",
+    unitNumber: "",
     developerEmail: "",
     developerPhone: "",
   });
@@ -73,6 +77,10 @@ export function CreateOfferSection() {
     e.preventDefault();
     if (agreementTypes.length === 0) {
       toast.error(isRtl ? "الرجاء اختيار نوع اتفاقية واحد على الأقل." : "Please select at least one agreement type.");
+      return;
+    }
+    if (!formData.projectId || !formData.unitId) {
+      toast.error(isRtl ? "الرجاء اختيار المشروع والوحدة." : "Please select a project and a unit.");
       return;
     }
 
@@ -155,33 +163,33 @@ export function CreateOfferSection() {
             />
           </div>
 
+          <div className="mb-5">
+            <label className={labelClass}>{isRtl ? "اسم المطور" : "Developer Name"}</label>
+            <input
+              required
+              type="text"
+              name="developerName"
+              dir="auto"
+              value={formData.developerName}
+              onChange={handleChange}
+              placeholder={isRtl ? "اسم المطور" : "Developer Name"}
+              className={inputClass}
+            />
+          </div>
+
           <div className="grid gap-5 sm:grid-cols-2 mb-5">
-            <div>
-              <label className={labelClass}>{isRtl ? "اسم المطور" : "Developer Name"}</label>
-              <input
-                required
-                type="text"
-                name="developerName"
-                dir="auto"
-                value={formData.developerName}
-                onChange={handleChange}
-                placeholder={isRtl ? "اسم المطور" : "Developer Name"}
-                className={inputClass}
-              />
-            </div>
-            <div>
-              <label className={labelClass}>{isRtl ? "المشروع" : "Project Name"}</label>
-              <input
-                required
-                type="text"
-                name="projectName"
-                dir="auto"
-                value={formData.projectName}
-                onChange={handleChange}
-                placeholder={isRtl ? "اسم المشروع" : "Project Name"}
-                className={inputClass}
-              />
-            </div>
+            <OfferAffiliationFields
+              value={{
+                projectId: formData.projectId,
+                projectName: formData.projectName,
+                unitId: formData.unitId,
+                unitNumber: formData.unitNumber,
+              }}
+              onChange={(next) => setFormData((prev) => ({ ...prev, ...next }))}
+              inputClass={inputClass}
+              labelClass={labelClass}
+              isRtl={isRtl}
+            />
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 mb-5">
@@ -371,7 +379,10 @@ export function CreateOfferSection() {
                 offerNumber: successData.offerNumber,
                 title: formData.title,
                 description: formData.description.trim(),
+                projectId: formData.projectId,
                 projectName: formData.projectName,
+                unitId: formData.unitId,
+                unitNumber: formData.unitNumber,
                 developerName: formData.developerName,
                 developerEmail: formData.developerEmail,
                 developerPhone: formData.developerPhone,

@@ -93,6 +93,11 @@ export async function downloadOfferPDF(offer: OfferData) {
           <div>
             <div style="font-size: 19px; font-weight: 700; color: #0a0f1d; ${AR}">${offer.title || "—"}</div>
             <div style="font-size: 14px; color: #6b7280; margin-top: 5px; ${AR}">المشروع: <span style="color: #0a0f1d; font-weight: 600;">${offer.projectName || "—"}</span></div>
+            ${
+              (offer.unitNumber || "").trim()
+                ? `<div style="font-size: 14px; color: #6b7280; margin-top: 4px; ${AR}">الوحدة: <span style="color: #0a0f1d; font-weight: 600;">${escapeHtml(offer.unitNumber!.trim())}</span></div>`
+                : ""
+            }
           </div>
           <div style="text-align: right; min-width: 170px; background: #f0fdfa; border-right: 3px solid #0d9488; padding: 12px 16px 14px; border-radius: 4px;">
             <div style="font-size: 11px; color: #0d9488; font-weight: 700; line-height: 2; ${AR}">تاريخ الإصدار</div>

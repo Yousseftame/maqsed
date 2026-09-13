@@ -55,6 +55,7 @@ export function PaymentsSection() {
         (row.offerNumber || "").toLowerCase().includes(q) ||
         (row.title || "").toLowerCase().includes(q) ||
         (row.projectName || "").toLowerCase().includes(q) ||
+        (row.unitNumber || "").toLowerCase().includes(q) ||
         (row.developerName || "").toLowerCase().includes(q) ||
         (row.developerEmail || "").toLowerCase().includes(q)
     );
@@ -96,7 +97,14 @@ export function PaymentsSection() {
     {
       id: "projectName",
       header: t("admin.payments.project"),
-      cell: (row) => <span className="font-medium text-[#0a0f1d]">{row.projectName || "—"}</span>,
+      cell: (row) => (
+        <div className="flex min-w-0 flex-col">
+          <span className="font-medium text-[#0a0f1d]">{row.projectName || "—"}</span>
+          {row.unitNumber ? (
+            <span className="text-xs font-medium text-[#8c8c8c]">{row.unitNumber}</span>
+          ) : null}
+        </div>
+      ),
     },
     {
       id: "date",

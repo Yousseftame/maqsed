@@ -160,6 +160,7 @@ export function OfferDetailModal({ offer, onClose }: Props) {
                   <div className="rounded-[14px] border border-[#F0F0F0] bg-white px-3">
                     <InfoRow icon={User} label={isRtl ? "اسم المطور" : "Developer"} value={offer.developerName} />
                     <InfoRow icon={Building2} label={isRtl ? "المشروع" : "Project"} value={offer.projectName} />
+                    <InfoRow icon={Hash} label={isRtl ? "الوحدة" : "Unit"} value={offer.unitNumber} />
                     <InfoRow icon={Mail} label={isRtl ? "البريد الإلكتروني" : "Email"} value={offer.developerEmail} />
                     <InfoRow icon={Phone} label={isRtl ? "الجوال" : "Phone"} value={offer.developerPhone} />
                   </div>

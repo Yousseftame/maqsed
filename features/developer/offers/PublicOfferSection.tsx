@@ -306,6 +306,12 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
                         {isRtl ? "المشروع:" : "Project:"}{" "}
                         <span className="text-gray-800 font-medium">{offerData.projectName}</span>
                       </p>
+                      {(offerData.unitNumber || "").trim() ? (
+                        <p className="text-sm text-gray-500 mt-1">
+                          {t("offerPage.unit") || (isRtl ? "الوحدة:" : "Unit:")}{" "}
+                          <span className="text-gray-800 font-medium">{offerData.unitNumber}</span>
+                        </p>
+                      ) : null}
                     </div>
                     <div className="text-right shrink-0">
                       <p className="text-xs text-gray-400 font-medium mb-0.5">

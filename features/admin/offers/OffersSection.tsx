@@ -96,6 +96,7 @@ export function OffersSection() {
       (row) =>
         (row.title || "").toLowerCase().includes(q) ||
         (row.projectName || "").toLowerCase().includes(q) ||
+        (row.unitNumber || "").toLowerCase().includes(q) ||
         (row.developerName || "").toLowerCase().includes(q) ||
         (row.offerNumber || "").toLowerCase().includes(q)
     );
@@ -129,7 +130,12 @@ export function OffersSection() {
       id: "projectName",
       header: isRtl ? "المشروع" : "Project",
       cell: (row) => (
-        <span className="text-[#0a0f1d] font-medium">{row.projectName || "-"}</span>
+        <div className="flex flex-col">
+          <span className="text-[#0a0f1d] font-medium">{row.projectName || "-"}</span>
+          {row.unitNumber ? (
+            <span className="text-xs text-[#6B7280]">{isRtl ? `الوحدة: ${row.unitNumber}` : `Unit: ${row.unitNumber}`}</span>
+          ) : null}
+        </div>
       ),
     },
     {

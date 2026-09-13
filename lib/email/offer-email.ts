@@ -15,6 +15,7 @@ export type OfferEmailPayload = {
   title: string;
   description?: string;
   projectName: string;
+  unitNumber?: string;
   developerName: string;
   developerEmail: string;
   developerPhone?: string;
@@ -136,6 +137,11 @@ export function buildOfferEmail(payload: OfferEmailPayload) {
             <td style="padding:28px 32px 8px;">
               <h1 style="margin:0 0 8px;color:${INK};font-size:22px;line-height:1.45;font-weight:800;">${escapeHtml(payload.title)}</h1>
               <p style="margin:0;color:${MUTED};font-size:14px;">المشروع: <span style="color:${INK};font-weight:700;">${escapeHtml(payload.projectName)}</span></p>
+              ${
+                payload.unitNumber?.trim()
+                  ? `<p style="margin:6px 0 0;color:${MUTED};font-size:14px;">الوحدة: <span style="color:${INK};font-weight:700;">${escapeHtml(payload.unitNumber.trim())}</span></p>`
+                  : ""
+              }
             </td>
           </tr>
 
@@ -243,7 +249,7 @@ export function buildOfferEmail(payload: OfferEmailPayload) {
   const text = [
     `مرحباً ${greetingName}،`,
     "",
-    `نرفق لكم العرض الفني رقم ${payload.offerNumber} لمشروع ${payload.projectName}.`,
+    `نرفق لكم العرض الفني رقم ${payload.offerNumber} لمشروع ${payload.projectName}${payload.unitNumber?.trim() ? ` — الوحدة ${payload.unitNumber.trim()}` : ""}.`,
     `العنوان: ${payload.title}`,
     agreementLabels.length ? `نوع الاتفاقية: ${agreementLabels.join("، ")}` : "",
     description ? `الوصف:\n${description}` : "",

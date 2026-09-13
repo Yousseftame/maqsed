@@ -19,6 +19,7 @@ function buildOfferMessage(offer: OfferData, offerUrl: string) {
   const offerNumber = offer.offerNumber ? `#${String(offer.offerNumber).replace(/^#/, "")}` : "—";
   const title = (offer.title || "").trim() || "—";
   const project = (offer.projectName || "").trim() || "—";
+  const unit = (offer.unitNumber || "").trim();
   const description = (offer.description || "").trim();
   const otp = (offer.secretCode || "").trim();
 
@@ -33,6 +34,10 @@ function buildOfferMessage(offer: OfferData, offerUrl: string) {
     `العنوان: *${title}*`,
     `المشروع: *${project}*`,
   ];
+
+  if (unit) {
+    lines.push(`الوحدة: *${unit}*`);
+  }
 
   if (description) {
     lines.push("", "*وصف العرض*", description);
@@ -106,6 +111,7 @@ export function OfferShareModal({ offer, created = false, onClose }: Props) {
           title: offer.title,
           description: (offer.description || "").trim(),
           projectName: offer.projectName,
+          unitNumber: offer.unitNumber || "",
           developerName: offer.developerName,
           developerEmail,
           developerPhone: offer.developerPhone,
