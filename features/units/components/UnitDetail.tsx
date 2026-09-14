@@ -36,6 +36,7 @@ import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
 import { getActiveUnitDiscount } from "@/features/units/unit-discount";
 import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
 import { useNow } from "@/features/units/useNow";
+import { AdvertisementInfoCard } from "@/features/admin/shared/AdvertisementInfoView";
 import type { City } from "@/features/admin/cities/data";
 import type { Locale } from "@/lib/i18n/types";
 
@@ -235,7 +236,6 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
     .filter(Boolean)
     .join(isRtl ? "، " : ", ");
   const typeLabel = label(unit?.unitType || "") || unit?.unitType?.trim() || "";
-  const operationLabel = label(unit?.operationType || "") || unit?.operationType?.trim() || "";
   const projectName = property?.name?.trim() || "";
   const projectHref = property ? propertyPublicPath(property) : "";
   const floor = floorLabel(unit?.floor, isRtl);
@@ -263,7 +263,7 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
 
   const stats = [
     affiliationLabel ? { label: isRtl ? "التبعية" : "Affiliation", value: independent ? (isRtl ? "وحدة مستقلة" : "Independent") : projectName } : null,
-    areas.total ? { label: isRtl ? "المساحة الإجمالية" : "Total Area", value: formatArea(areas.total, isRtl) } : null,
+    areas.total ? { label: isRtl ? "المساحة الإجمالية" : "Total Area", value: formatArea(areas.total, isRtl), accent: true } : null,
     areas.internal ? { label: isRtl ? "المساحة الداخلية" : "Internal Area", value: formatArea(areas.internal, isRtl) } : null,
     areas.external ? { label: isRtl ? "المساحة الخارجية" : "External Area", value: formatArea(areas.external, isRtl) } : null,
     rooms ? { label: isRtl ? "غرف النوم" : "Bedrooms", value: String(rooms) } : null,
@@ -272,14 +272,13 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
     buildingCode ? { label: isRtl ? "المبنى" : "Building", value: buildingCode } : null,
     model?.name?.trim() ? { label: isRtl ? "النموذج" : "Model", value: model.name.trim() } : null,
     typeLabel ? { label: isRtl ? "نوع الوحدة" : "Unit type", value: typeLabel } : null,
-    operationLabel ? { label: isRtl ? "نوع العملية" : "Listing type", value: operationLabel } : null,
     facades.length ? { label: isRtl ? "الواجهة" : "Facing", value: facades.join(isRtl ? "، " : ", ") } : null,
     condition ? { label: isRtl ? "أهلية الوحدة" : "Unit condition", value: label(condition) || condition } : null,
     age ? { label: isRtl ? "عمر الوحدة" : "Unit age", value: age } : null,
     independent && unit?.commissionOption
       ? { label: isRtl ? "السعي" : "Commission", value: label(unit.commissionOption) || unit.commissionOption }
       : null,
-  ].filter(Boolean) as { label: string; value: string }[];
+  ].filter(Boolean) as { label: string; value: string; accent?: boolean }[];
 
   const featureTiles = [...components, ...features]
     .filter((item, index, list) => list.indexOf(item) === index)
@@ -559,9 +558,21 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
 
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {stats.map((stat) => (
-                    <div key={stat.label} className="flex flex-col items-center justify-center gap-2 rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-colors hover:bg-[#6A2B92]/5 hover:border-[#6A2B92]/20">
-                      <span className="text-xs font-bold text-gray-400">{stat.label}</span>
-                      <span className="text-lg font-black text-[#2e2e2e] text-center">{stat.value}</span>
+                    <div
+                      key={stat.label}
+                      className={cn(
+                        "flex flex-col items-center justify-center gap-2 rounded-2xl border p-6 shadow-sm transition-colors",
+                        stat.accent
+                          ? "border-[#17C3B3]/30 bg-[#17C3B3]/10 hover:bg-[#17C3B3]/15"
+                          : "border-gray-100 bg-white hover:border-[#6A2B92]/20 hover:bg-[#6A2B92]/5"
+                      )}
+                    >
+                      <span className={cn("text-xs font-bold", stat.accent ? "text-[#17C3B3]" : "text-gray-400")}>
+                        {stat.label}
+                      </span>
+                      <span className={cn("text-lg font-black text-center", stat.accent ? "text-[#0f766e]" : "text-[#2e2e2e]")}>
+                        {stat.value}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -588,6 +599,13 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
                   ))}
                 </div>
               </div>
+            ) : null}
+
+            {(unit.adInfo || []).some((item) => item.trim()) ? (
+              <AdvertisementInfoCard
+                items={unit.adInfo}
+                title={isRtl ? "معلومات الاعلان" : "Advertisement info"}
+              />
             ) : null}
 
           </div>

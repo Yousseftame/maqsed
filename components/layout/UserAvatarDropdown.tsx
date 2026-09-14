@@ -47,6 +47,8 @@ export function UserAvatarDropdown() {
 
   const name = fullName;
   const email = user?.email || "";
+  const canChangePassword =
+    userData?.role === "admin" || userData?.role === "superAdmin";
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -97,16 +99,18 @@ export function UserAvatarDropdown() {
               {t("admin.ui.settings") || "Settings"}
             </Link>
 
-            <button
-              onClick={() => {
-                setIsOpen(false);
-                setIsChangePasswordOpen(true);
-              }}
-              className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-semibold text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4]"
-            >
-              <Key className="h-4 w-4 text-[#8c8c8c]" />
-              {t("admin.ui.changePassword") || "Change Password"}
-            </button>
+            {canChangePassword && (
+              <button
+                onClick={() => {
+                  setIsOpen(false);
+                  setIsChangePasswordOpen(true);
+                }}
+                className="flex w-full items-center gap-3 rounded-[12px] px-3 py-2.5 text-sm font-semibold text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4]"
+              >
+                <Key className="h-4 w-4 text-[#8c8c8c]" />
+                {t("admin.ui.changePassword") || "Change Password"}
+              </button>
+            )}
 
             <div className="my-1 h-px w-full bg-[#0a0f1d]/5" />
 
@@ -124,10 +128,12 @@ export function UserAvatarDropdown() {
         </div>
       )}
 
-      <ChangePasswordModal 
-        isOpen={isChangePasswordOpen} 
-        onClose={() => setIsChangePasswordOpen(false)} 
-      />
+      {canChangePassword && (
+        <ChangePasswordModal 
+          isOpen={isChangePasswordOpen} 
+          onClose={() => setIsChangePasswordOpen(false)} 
+        />
+      )}
     </div>
   );
 }

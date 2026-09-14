@@ -161,14 +161,14 @@ function DistributionBarChart({
   return (
     <div className="w-full" style={{ height }} dir="ltr">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} layout="vertical" margin={{ top: 4, right: money ? 88 : 28, left: 8, bottom: 0 }}>
+        <BarChart data={data} layout="vertical" margin={{ top: 4, right: money ? 120 : 28, left: 8, bottom: 0 }}>
           <XAxis type="number" hide allowDecimals={false} />
           <YAxis
             type="category"
             dataKey="name"
             axisLine={false}
             tickLine={false}
-            width={88}
+            width={96}
             interval={0}
             tick={{ fill: "#0a0f1d", fontSize: 13, fontWeight: 600 }}
           />
@@ -204,17 +204,17 @@ export function DeveloperPerformanceSection({
   stats: DeveloperDashboardStats;
 }) {
   const emptyLabel = isRtl ? "لا توجد بيانات بعد" : "No data yet";
-  const viewsData = stats.viewsByProject.filter((item) => item.value > 0);
-  const invoiceData = stats.invoicesByProject.filter((item) => item.value > 0);
+  const invoiceData = stats.invoicesByOffer.filter((item) => item.value > 0);
+  const showOfferChart = invoiceData.length > 1;
 
   return (
     <div className="flex w-full flex-col gap-3">
       <div className="grid min-w-0 items-stretch gap-3 sm:grid-cols-2">
         <DonutPanel
-          title={isRtl ? "حالة الوحدات" : "Units status"}
-          slices={stats.unitStatus}
-          total={stats.unitCount}
-          totalLabel={isRtl ? "وحدة" : "units"}
+          title={isRtl ? "حالة الدفع" : "Payment status"}
+          slices={stats.paymentStatus}
+          total={stats.offerCount}
+          totalLabel={isRtl ? "عرض" : "offers"}
         />
         <DonutPanel
           title={isRtl ? "حالة الفواتير" : "Invoices status"}
@@ -225,14 +225,11 @@ export function DeveloperPerformanceSection({
           compactTotal
         />
       </div>
-      <div className="grid min-w-0 items-stretch gap-3 lg:grid-cols-2">
-        <Panel title={isRtl ? "مشاهدات الوحدات حسب المشروع" : "Unit views by project"} className="shadow-sm ring-1 ring-[#0a0f1d]/5">
-          <DistributionBarChart data={viewsData} emptyLabel={emptyLabel} />
-        </Panel>
-        <Panel title={isRtl ? "الفواتير حسب المشروع" : "Invoices by project"} className="shadow-sm ring-1 ring-[#0a0f1d]/5">
+      {showOfferChart ? (
+        <Panel title={isRtl ? "الفواتير حسب رقم العرض" : "Invoices by offer number"} className="shadow-sm ring-1 ring-[#0a0f1d]/5">
           <DistributionBarChart data={invoiceData} emptyLabel={emptyLabel} money />
         </Panel>
-      </div>
+      ) : null}
     </div>
   );
 }

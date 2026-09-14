@@ -1,7 +1,5 @@
-"use client";
-
-import { DeveloperUnitsSection } from "@/features/developer/units/DeveloperUnitsSection";
+import { redirect } from "next/navigation";
 
 export default function DeveloperUnitsPage() {
-  return <DeveloperUnitsSection />;
+  redirect("/developer/offers");
 }

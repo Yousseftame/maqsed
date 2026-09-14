@@ -1,10 +1,13 @@
 "use client";
 
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import { MapPin, Mail, Phone } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { BrandLogo } from "@/components/layout/BrandLogo";
 import { useCompanyContent } from "@/features/company/useCompanyContent";
+import { cn } from "@/lib/utils";
 
 const FacebookIcon = ({ className }: { className?: string }) => (
   <svg className={className} fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -31,11 +34,134 @@ const InstagramIcon = ({ className }: { className?: string }) => (
 );
 
 const socialIconClass =
-  "flex h-10 w-10 items-center justify-center rounded-full border border-gray-700 text-gray-400 transition-colors duration-300 hover:border-[#17C3B3] hover:text-[#17C3B3] hover:bg-[#17C3B3]/10";
+  "flex h-10 w-10 items-center justify-center rounded-full border border-white/25 text-white/80 transition-colors duration-300 hover:border-[#17C3B3] hover:text-[#17C3B3] hover:bg-[#17C3B3]/10";
+
+function LicenseButton({
+  title,
+  value,
+  label,
+  open,
+  onToggle,
+}: {
+  title: string;
+  value: string;
+  label: string;
+  open: boolean;
+  onToggle: () => void;
+}) {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+  const popupRef = useRef<HTMLDivElement>(null);
+  const [coords, setCoords] = useState<{ top: number; left: number } | null>(null);
+
+  useLayoutEffect(() => {
+    if (!open) {
+      setCoords(null);
+      return;
+    }
+
+    function place() {
+      const button = buttonRef.current;
+      const popup = popupRef.current;
+      if (!button || !popup) return;
+
+      const rect = button.getBoundingClientRect();
+      const popupWidth = popup.offsetWidth;
+      const popupHeight = popup.offsetHeight;
+      const gap = 8;
+      const pad = 12;
+      const vw = window.innerWidth;
+      const vh = window.innerHeight;
+
+      let top = rect.top - gap - popupHeight;
+      if (top < pad) top = rect.bottom + gap;
+      if (top + popupHeight > vh - pad) {
+        top = Math.max(pad, vh - pad - popupHeight);
+      }
+
+      let left = rect.left + rect.width / 2 - popupWidth / 2;
+      left = Math.min(Math.max(pad, left), Math.max(pad, vw - pad - popupWidth));
+
+      setCoords({ top, left });
+    }
+
+    place();
+    const frame = requestAnimationFrame(place);
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      cancelAnimationFrame(frame);
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [open, value, label]);
+
+  return (
+    <li className="relative w-full">
+      {open
+        ? createPortal(
+            <div
+              ref={popupRef}
+              data-license-popup=""
+              className="fixed z-[80] flex max-w-[calc(100vw-24px)] flex-wrap items-center justify-center gap-2 rounded-[16px] bg-[#c8c8c8] px-2.5 py-2 sm:gap-3"
+              style={
+                coords
+                  ? { top: coords.top, left: coords.left }
+                  : { top: 0, left: 0, visibility: "hidden" }
+              }
+            >
+              <span className="px-1 text-sm font-bold text-[#2e2e2e]">{label}</span>
+              {value ? (
+                <span
+                  dir="ltr"
+                  className="inline-flex min-h-9 max-w-full items-center justify-center break-all rounded-[16px] bg-white px-4 py-1.5 text-sm font-medium text-[#2e2e2e]"
+                >
+                  {value}
+                </span>
+              ) : null}
+            </div>,
+            document.body
+          )
+        : null}
+      <button
+        ref={buttonRef}
+        type="button"
+        aria-expanded={open}
+        onClick={onToggle}
+        className="flex w-full items-center justify-center rounded-[16px] bg-white px-6 py-2.5 text-sm font-semibold text-[#2e2e2e] transition-colors hover:bg-[#17C3B3] hover:text-white"
+      >
+        {title}
+      </button>
+    </li>
+  );
+}
 
 export function Footer() {
   const { t, locale } = useLocale();
   const company = useCompanyContent();
+  const [openLicenseId, setOpenLicenseId] = useState<string | null>(null);
+  const licensesRef = useRef<HTMLUListElement>(null);
+
+  useEffect(() => {
+    if (!openLicenseId) return;
+
+    function onPointerDown(event: PointerEvent) {
+      const target = event.target as Node | null;
+      if (licensesRef.current?.contains(target)) return;
+      if (target instanceof Element && target.closest("[data-license-popup]")) return;
+      setOpenLicenseId(null);
+    }
+
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setOpenLicenseId(null);
+    }
+
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [openLicenseId]);
 
   const importantLinks = [
     { label: t("nav.home"), href: "/" },
@@ -85,19 +211,39 @@ export function Footer() {
   ];
 
   return (
-    <footer className="w-full bg-[#0a0f1d] px-6 pt-12 pb-6 lg:px-12 lg:pt-16 lg:pb-8 text-gray-300">
+    <footer className="w-full bg-[#6A2B92] px-6 pt-12 pb-6 lg:px-12 lg:pt-16 lg:pb-8 text-white/85">
       <div className="mx-auto w-full max-w-[1400px]">
-        <div className="grid grid-cols-1 gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-8">
+        <div className={cn("grid grid-cols-1 gap-10 md:grid-cols-2 lg:gap-8", company.licenses.length > 0 ? "lg:grid-cols-5" : "lg:grid-cols-4")}>
           
           {/* Column 1: Logo & Description */}
           <div className="flex flex-col gap-4">
             <Link href="/" className="w-fit rounded-lg bg-white p-2">
               <BrandLogo className="h-auto w-[150px] object-contain" />
             </Link>
-            <p className="max-w-xs text-sm leading-relaxed text-gray-400">
+            <p className="max-w-xs text-sm leading-relaxed text-white/75">
               {t("footer.description")}
             </p>
           </div>
+
+          {company.licenses.length > 0 ? (
+            <div className="flex flex-col gap-5">
+              <h3 className="text-lg font-bold text-white">{t("footer.licenses")}</h3>
+              <ul ref={licensesRef} className="inline-flex w-max flex-col items-stretch gap-2.5">
+                {company.licenses.map((item) => (
+                  <LicenseButton
+                    key={item.id}
+                    title={item.title}
+                    value={item.value}
+                    label={t("footer.trust")}
+                    open={openLicenseId === item.id}
+                    onToggle={() =>
+                      setOpenLicenseId((current) => (current === item.id ? null : item.id))
+                    }
+                  />
+                ))}
+              </ul>
+            </div>
+          ) : null}
 
           {/* Column 2: Quick Links */}
           <div className="flex flex-col gap-5">
@@ -109,7 +255,7 @@ export function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-gray-400 transition-colors hover:text-[#17C3B3]"
+                    className="text-sm text-white/75 transition-colors hover:text-[#17C3B3]"
                   >
                     {link.label}
                   </Link>
@@ -131,12 +277,12 @@ export function Footer() {
                     {item.href ? (
                       <a href={item.href} className="flex items-start gap-3 transition-colors hover:text-[#17C3B3]">
                         <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#17C3B3]" />
-                        <span className="text-sm text-gray-400" dir={item.dir}>{item.value}</span>
+                        <span className="text-sm text-white/75" dir={item.dir}>{item.value}</span>
                       </a>
                     ) : (
                       <div className="flex items-start gap-3">
                         <Icon className="mt-0.5 h-4 w-4 shrink-0 text-[#17C3B3]" />
-                        <span className="text-sm text-gray-400" dir={item.dir}>{item.value}</span>
+                        <span className="text-sm text-white/75" dir={item.dir}>{item.value}</span>
                       </div>
                     )}
                   </li>
@@ -172,9 +318,9 @@ export function Footer() {
 
         </div>
 
-        <hr className="mt-8 mb-6 border-gray-800" />
+        <hr className="mt-8 mb-6 border-white/20" />
         
-        <div className="text-center text-sm text-gray-500 flex flex-col gap-2">
+        <div className="text-center text-sm text-white/70 flex flex-col gap-2">
           <p>
             {t("footer.rightsPrefix")}{" "}
             <span className="font-semibold text-white">{t("footer.brand")}</span>{" "}

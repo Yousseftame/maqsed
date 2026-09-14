@@ -1,20 +1,19 @@
+import { formatServiceValue, type OfferServiceItem } from "@/features/admin/offers/offer-services";
+
 export const AGREEMENT_LABELS: Record<string, string> = {
   exclusive: "حصري",
   marketing: "تسويقي",
   services: "تقديم خدمات",
 };
 
-export type OfferEmailService = {
-  description: string;
-  price: number;
-};
+export type OfferEmailService = OfferServiceItem;
 
 export type OfferEmailPayload = {
   offerId: string;
   offerNumber: string;
   title: string;
   description?: string;
-  projectName: string;
+  projectName?: string;
   unitNumber?: string;
   developerName: string;
   developerEmail: string;
@@ -75,7 +74,7 @@ export function buildOfferEmail(payload: OfferEmailPayload) {
   const agreementLabels = payload.agreementTypes
     .map((type) => AGREEMENT_LABELS[type] || type)
     .filter(Boolean);
-  const subject = `عرض فني — ${payload.projectName} (${payload.offerNumber})`;
+  const subject = `عرض فني — ${payload.title} (${payload.offerNumber})`;
   const offerNumber = payload.offerNumber.startsWith("#")
     ? payload.offerNumber
     : `#${payload.offerNumber}`;
@@ -95,8 +94,8 @@ export function buildOfferEmail(payload: OfferEmailPayload) {
         .map(
           (service) => `
             <tr>
-              <td style="padding:12px 16px;border-bottom:1px solid ${LINE};font-size:14px;color:${INK};font-weight:500;">${escapeHtml(service.description || "—")}</td>
-              <td style="padding:12px 16px;border-bottom:1px solid ${LINE};font-size:14px;color:${INK};font-weight:800;text-align:left;direction:ltr;white-space:nowrap;">${formatAmount(service.price)}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid ${LINE};font-size:14px;color:${INK};font-weight:500;white-space:pre-wrap;">${nl2br(service.description || "—")}</td>
+              <td style="padding:12px 16px;border-bottom:1px solid ${LINE};font-size:14px;color:${INK};font-weight:800;text-align:left;white-space:nowrap;">${escapeHtml(formatServiceValue(service, true))}</td>
             </tr>`
         )
         .join("")
@@ -136,7 +135,11 @@ export function buildOfferEmail(payload: OfferEmailPayload) {
           <tr>
             <td style="padding:28px 32px 8px;">
               <h1 style="margin:0 0 8px;color:${INK};font-size:22px;line-height:1.45;font-weight:800;">${escapeHtml(payload.title)}</h1>
-              <p style="margin:0;color:${MUTED};font-size:14px;">المشروع: <span style="color:${INK};font-weight:700;">${escapeHtml(payload.projectName)}</span></p>
+              ${
+                payload.projectName?.trim()
+                  ? `<p style="margin:0;color:${MUTED};font-size:14px;">المشروع: <span style="color:${INK};font-weight:700;">${escapeHtml(payload.projectName.trim())}</span></p>`
+                  : ""
+              }
               ${
                 payload.unitNumber?.trim()
                   ? `<p style="margin:6px 0 0;color:${MUTED};font-size:14px;">الوحدة: <span style="color:${INK};font-weight:700;">${escapeHtml(payload.unitNumber.trim())}</span></p>`
@@ -188,7 +191,7 @@ export function buildOfferEmail(payload: OfferEmailPayload) {
               <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid ${LINE};border-radius:8px;overflow:hidden;">
                 <tr style="background:#f9fafb;">
                   <th style="padding:10px 16px;text-align:right;font-size:12px;font-weight:700;color:${MUTED};">الخدمة</th>
-                  <th style="padding:10px 16px;text-align:left;font-size:12px;font-weight:700;color:${MUTED};white-space:nowrap;">السعر (ريال)</th>
+                  <th style="padding:10px 16px;text-align:left;font-size:12px;font-weight:700;color:${MUTED};white-space:nowrap;">القيمة</th>
                 </tr>
                 ${servicesHtml}
               </table>
@@ -209,6 +212,9 @@ export function buildOfferEmail(payload: OfferEmailPayload) {
                 <tr>
                   <td style="padding:14px 0 0;border-top:1px solid #e5e7eb;color:${INK};font-size:16px;font-weight:800;">الإجمالي</td>
                   <td style="padding:14px 0 0;border-top:1px solid #e5e7eb;color:${INK};font-size:16px;font-weight:800;text-align:left;direction:ltr;">${formatSar(payload.total)}</td>
+                </tr>
+                <tr>
+                  <td colspan="2" style="padding:12px 0 0;color:${LABEL};font-size:12px;line-height:1.8;">النسب والخدمات بدون تكلفة تظهر في النطاق ولا تُضاف إلى الإجمالي أو الضريبة.</td>
                 </tr>
               </table>
             </td>
@@ -249,19 +255,20 @@ export function buildOfferEmail(payload: OfferEmailPayload) {
   const text = [
     `مرحباً ${greetingName}،`,
     "",
-    `نرفق لكم العرض الفني رقم ${payload.offerNumber} لمشروع ${payload.projectName}${payload.unitNumber?.trim() ? ` — الوحدة ${payload.unitNumber.trim()}` : ""}.`,
+    `نرفق لكم العرض الفني رقم ${payload.offerNumber}${payload.projectName?.trim() ? ` لمشروع ${payload.projectName.trim()}` : ""}${payload.unitNumber?.trim() ? ` — الوحدة ${payload.unitNumber.trim()}` : ""}.`,
     `العنوان: ${payload.title}`,
     agreementLabels.length ? `نوع الاتفاقية: ${agreementLabels.join("، ")}` : "",
     description ? `الوصف:\n${description}` : "",
     payload.developerPhone ? `الهاتف: ${payload.developerPhone}` : "",
     "",
     ...payload.services.map(
-      (service) => `- ${service.description || "—"}: ${formatSar(service.price)}`
+      (service) => `- ${service.description || "—"}: ${formatServiceValue(service, true)}`
     ),
     "",
     `المجموع قبل الضريبة: ${formatSar(payload.subtotal)}`,
     `ضريبة القيمة المضافة (15%): ${formatSar(payload.vat)}`,
     `الإجمالي: ${formatSar(payload.total)}`,
+    "النسب والخدمات بدون تكلفة تظهر في النطاق ولا تُضاف إلى الإجمالي أو الضريبة.",
     "",
     `رمز الوصول الآمن: ${payload.otp}`,
     `رابط العرض: ${payload.offerUrl}`,

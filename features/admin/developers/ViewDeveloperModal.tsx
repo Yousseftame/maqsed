@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { X, Mail, Phone, Building2, Calendar, FolderClosed, Home, Activity, LogIn, LogOut, Users } from "lucide-react";
+import { X, Mail, Phone, Key, Building2, Calendar, FolderClosed, Home, Activity, LogIn, LogOut, Users } from "lucide-react";
 import Image from "next/image";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
@@ -247,6 +247,16 @@ export function ViewDeveloperModal({ isOpen, onClose, developer }: ViewDeveloper
                     </div>
                       <span className="text-base font-semibold text-[#0a0f1d] text-start">{developer.phoneNumber || "—"}</span>
                     </div>
+
+                    {developer.role === "developer" && (
+                      <div className="flex flex-col justify-center gap-1 rounded-[16px] border border-[#0a0f1d]/5 bg-white p-5 transition-colors hover:bg-[#F4F4F4]">
+                        <div className="mb-2 flex items-center gap-2">
+                          <Key className="h-4 w-4 text-[#8c8c8c]" />
+                          <span className="text-xs font-bold text-[#8c8c8c]">{t("admin.developers.createForm.password") || "Password"}</span>
+                        </div>
+                        <span className="text-base font-semibold text-[#0a0f1d] text-start" dir="ltr">{developer.password || "—"}</span>
+                      </div>
+                    )}
 
                     {developer.role === "developer" && (
                       <div className="flex flex-col justify-center gap-1 rounded-[16px] border border-[#0a0f1d]/5 bg-white p-5 transition-colors hover:bg-[#F4F4F4]">

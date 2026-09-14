@@ -11,6 +11,7 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { usersService } from "@/features/auth/users.service";
 import type { UserData } from "@/types/user";
 import { AddDeveloperModal } from "./AddDeveloperModal";
+import { DeveloperShareModal, type DeveloperShareAccount } from "./DeveloperShareModal";
 import { AddAdminModal } from "./AddAdminModal";
 import { ViewDeveloperModal } from "./ViewDeveloperModal";
 import { EditDeveloperModal } from "./EditDeveloperModal";
@@ -108,6 +109,7 @@ export function DevelopersSection() {
   const [queryStr, setQueryStr] = useState("");
   const [activeTab, setActiveTab] = useState<"developer" | "admin">("developer");
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [createdDeveloper, setCreatedDeveloper] = useState<DeveloperShareAccount | null>(null);
   const [isAddAdminModalOpen, setIsAddAdminModalOpen] = useState(false);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -427,8 +429,10 @@ export function DevelopersSection() {
 
     <AddDeveloperModal 
       isOpen={isAddModalOpen} 
-      onClose={() => setIsAddModalOpen(false)} 
+      onClose={() => setIsAddModalOpen(false)}
+      onCreated={setCreatedDeveloper}
     />
+    <DeveloperShareModal account={createdDeveloper} onClose={() => setCreatedDeveloper(null)} />
 
     <AddAdminModal 
       isOpen={isAddAdminModalOpen} 

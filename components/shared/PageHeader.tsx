@@ -22,17 +22,10 @@ export function PageHeader({ title, breadcrumbPaths, backgroundImage, isPattern 
       {/* Background Graphic */}
       <div 
         className={cn(
-          "absolute inset-0 w-full h-full z-0",
-          isPattern 
-            ? `opacity-15 mix-blend-overlay pointer-events-none ${!isRtl ? "scale-x-[-1]" : ""}` 
-            : "bg-cover bg-center"
+          "absolute inset-0 z-0 h-full w-full bg-cover bg-center bg-no-repeat",
+          isPattern && "pointer-events-none"
         )}
-        style={{
-          backgroundImage: `url('${backgroundImage}')`,
-          backgroundSize: isPattern ? "70%" : undefined,
-          backgroundRepeat: isPattern ? "repeat" : undefined,
-          backgroundPosition: isPattern ? "left top" : undefined
-        }}
+        style={{ backgroundImage: `url('${backgroundImage}')` }}
       />
 
       {/* Dark overlay for non-pattern photos */}

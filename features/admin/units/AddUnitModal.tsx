@@ -11,6 +11,8 @@ import { unitsService } from "@/features/admin/units/units.service";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "@/features/admin/projects/ProjectImageGallery";
+import { AdvertisementInfoEditor } from "@/features/admin/shared/AdvertisementInfoEditor";
+import { normalizeAdInfo, sanitizeAdInfo } from "@/features/admin/shared/ad-info";
 import { FeatureCheckboxGroup } from "@/features/admin/menus/FeatureCheckboxGroup";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
 import { normalizeMenuValues } from "@/features/admin/menus/menu-options.service";
@@ -61,6 +63,7 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
   const { locale, t } = useLocale();
   const { of, items } = useMenuOptions();
   const [images, setImages] = useState<ProjectGalleryImage[]>([]);
+  const [adInfo, setAdInfo] = useState<string[]>([]);
   const [slugTouched, setSlugTouched] = useState(false);
   const lastFilledModelId = useRef<string | null>(null);
 
@@ -68,6 +71,7 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
     if (!isOpen) {
       reset();
       setSlugTouched(false);
+      setAdInfo([]);
       setImages((prev) => {
         revokeGalleryPreviews(prev);
         return [];
@@ -110,7 +114,10 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
         age: copyUnit.age?.toString() || "",
       });
       setSlugTouched(false);
+      setAdInfo(normalizeAdInfo(copyUnit.adInfo));
       setImages([]);
+    } else {
+      setAdInfo([]);
     }
   }, [isOpen, copyUnit, reset]);
 
@@ -232,6 +239,7 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
         facade: normalizeMenuValues(data.facade, items),
         views: 0,
         images: uploadedUrls,
+        adInfo: sanitizeAdInfo(adInfo),
       };
 
       if (isIndependent) {
@@ -622,6 +630,14 @@ export function AddUnitModal({ isOpen, onClose, copyUnit }: AddUnitModalProps) {
                 )}
 
                 {/* 6. صور العقار */}
+                <div className={formSectionClass}>
+                  <AdvertisementInfoEditor
+                    lines={adInfo}
+                    onChange={setAdInfo}
+                    disabled={addMutation.isPending}
+                  />
+                </div>
+
                 <div className={formSectionClass}>
                   <h3 className={sectionTitleClass}>{isIndependent ? "6. صور العقار (اختياري)" : "5. صور العقار (اختياري)"}</h3>
                   <ProjectImageGallery

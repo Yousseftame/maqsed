@@ -12,13 +12,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { getFunctions, httpsCallable } from "firebase/functions";
 import { getApp } from "firebase/app";
 import { usersService } from "@/features/auth/users.service";
+import { toDeveloperShareAccount, type DeveloperShareAccount } from "./DeveloperShareModal";
 
 type AddDeveloperModalProps = {
   isOpen: boolean;
   onClose: () => void;
+  onCreated?: (account: DeveloperShareAccount) => void;
 };
 
-export function AddDeveloperModal({ isOpen, onClose }: AddDeveloperModalProps) {
+export function AddDeveloperModal({ isOpen, onClose, onCreated }: AddDeveloperModalProps) {
   const { t } = useLocale();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -96,13 +98,19 @@ export function AddDeveloperModal({ isOpen, onClose }: AddDeveloperModalProps) {
       if ((result.data as any).success) {
         const uid = (result.data as any).uid;
         if (uid) {
-          await usersService.updateUserData(uid, {
-            usersPerDeveloper: Number(data.usersPerDeveloper) || 0,
-          });
+          try {
+            await usersService.updateUserData(uid, {
+              usersPerDeveloper: Number(data.usersPerDeveloper) || 0,
+              password: data.password,
+            });
+          } catch {
+            // Account already has this field from createDeveloperAccount.
+          }
         }
         queryClient.invalidateQueries({ queryKey: ["developers"] });
         queryClient.invalidateQueries({ queryKey: ["users"] });
         toast.success(t("admin.developers.createForm.success") || "Developer account created successfully!");
+        onCreated?.(toDeveloperShareAccount(data));
         onClose();
       }
     } catch (error: any) {

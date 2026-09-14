@@ -14,6 +14,7 @@ import { OfferDetailModal } from "./OfferDetailModal";
 import { EditOfferModal } from "./EditOfferModal";
 import { OfferShareModal } from "./OfferShareModal";
 import { AssignOfferDashboardModal } from "./AssignOfferDashboardModal";
+import { type DeveloperShareAccount, loadDeveloperShareByOfferId, saveDeveloperShareForOffer } from "@/features/admin/developers/DeveloperShareModal";
 import { downloadOfferPDF } from "./offer-pdf";
 import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
@@ -34,6 +35,11 @@ export function OffersSection() {
   const [editingOffer, setEditingOffer] = useState<OfferData | null>(null);
   const [sharingOffer, setSharingOffer] = useState<OfferData | null>(null);
   const [assigningOffer, setAssigningOffer] = useState<OfferData | null>(null);
+  const [createdDeveloperByOfferId, setCreatedDeveloperByOfferId] = useState<Record<string, DeveloperShareAccount>>({});
+
+  useEffect(() => {
+    setCreatedDeveloperByOfferId(loadDeveloperShareByOfferId());
+  }, []);
 
   const { data: offers = [], refetch, isRefetching } = useQuery({
     queryKey: ["offers"],
@@ -131,18 +137,6 @@ export function OffersSection() {
       header: t("admin.offers.title") || "Offer Title",
       cell: (row) => (
         <span className="font-semibold text-[#0a0f1d]">{row.title || "-"}</span>
-      ),
-    },
-    {
-      id: "projectName",
-      header: isRtl ? "المشروع" : "Project",
-      cell: (row) => (
-        <div className="flex flex-col">
-          <span className="text-[#0a0f1d] font-medium">{row.projectName || "-"}</span>
-          {row.unitNumber ? (
-            <span className="text-xs text-[#6B7280]">{isRtl ? `الوحدة: ${row.unitNumber}` : `Unit: ${row.unitNumber}`}</span>
-          ) : null}
-        </div>
       ),
     },
     {
@@ -413,7 +407,15 @@ export function OffersSection() {
       />
       <EditOfferModal offer={editingOffer} onClose={() => setEditingOffer(null)} />
       <OfferShareModal offer={sharingOffer} onClose={() => setSharingOffer(null)} />
-      <AssignOfferDashboardModal offer={assigningOffer} onClose={() => setAssigningOffer(null)} />
+      <AssignOfferDashboardModal
+        offer={assigningOffer}
+        createdAccount={assigningOffer ? createdDeveloperByOfferId[assigningOffer.id] || null : null}
+        onDeveloperCreated={(offerId, account) => {
+          saveDeveloperShareForOffer(offerId, account);
+          setCreatedDeveloperByOfferId((current) => ({ ...current, [offerId]: account }));
+        }}
+        onClose={() => setAssigningOffer(null)}
+      />
     </div>
   );
 }

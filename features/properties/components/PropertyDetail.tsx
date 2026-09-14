@@ -28,6 +28,7 @@ import type { City } from "@/features/admin/cities/data";
 import type { Locale } from "@/lib/i18n/types";
 import { formatProjectPriceRange, projectPriceRangeFromUnits } from "@/features/properties/project-price";
 import { useRecordPublicView } from "@/features/analytics/useRecordPublicView";
+import { AdvertisementInfoCard } from "@/features/admin/shared/AdvertisementInfoView";
 import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
 import { getActiveUnitDiscount } from "@/features/units/unit-discount";
 import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
@@ -167,7 +168,7 @@ function SectionHeading({ kicker, title, compact }: { kicker: string; title: str
 function DeveloperBadge({ name, logo, role }: { name: string; logo?: string; role: string }) {
   const logoSrc = mediaUrl(logo);
   return (
-    <div className="flex w-full items-center justify-start gap-3">
+    <div className="flex min-w-0 max-w-sm flex-1 items-center justify-start gap-3">
       <span className="flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white ring-1 ring-gray-100">
         {logoSrc ? (
           <img src={logoSrc} alt={name} className="h-full w-full object-contain p-1.5" />
@@ -179,22 +180,6 @@ function DeveloperBadge({ name, logo, role }: { name: string; logo?: string; rol
         <p className="text-[11px] font-bold tracking-wide text-gray-400">{role}</p>
         <p className="truncate text-lg font-black text-[#2e2e2e]">{name}</p>
       </div>
-    </div>
-  );
-}
-
-function ContractorTile({ name, logo }: { name: string; logo?: string }) {
-  const logoSrc = mediaUrl(logo);
-  return (
-    <div className="flex w-36 flex-col items-center gap-3">
-      <div className="flex h-36 w-36 items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm">
-        {logoSrc ? (
-          <img src={logoSrc} alt={name} className="max-h-full max-w-full object-contain" />
-        ) : (
-          <span className="text-2xl font-black text-[#6A2B92]">{name.slice(0, 1)}</span>
-        )}
-      </div>
-      <p className="w-full truncate text-center text-sm font-black text-[#2e2e2e]">{name}</p>
     </div>
   );
 }
@@ -306,6 +291,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
   const guarantees = asStringArray(property?.guarantees).map((value) => label(value)).filter(Boolean);
   const offers = asStringArray(property?.offers).map((value) => label(value)).filter(Boolean);
   const nearby = property?.nearbyPlaces?.filter((place) => place?.name?.trim()) || [];
+  const adInfo = (property?.adInfo || []).map((item) => item.trim()).filter(Boolean);
   const nearbyLocations = asStringArray(property?.locations).map((value) => label(value)).filter(Boolean);
   const partners = (property?.partnerLogos || []).map((url) => mediaUrl(url)).filter(Boolean);
 
@@ -476,14 +462,25 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
       <section className="w-full px-6 md:px-12 lg:px-20">
         <div className="mx-auto flex max-w-[1400px] flex-col gap-10 lg:flex-row lg:gap-16">
           <div className="flex-1 flex flex-col gap-16">
-            {(property.developerName || property.developerLogo || property.description?.trim()) ? (
+            {(property.developerName || property.developerLogo || property.contractorName || property.contractorLogo || property.description?.trim() || adInfo.length > 0) ? (
               <div className="flex flex-col gap-8">
-                {(property.developerName || property.developerLogo) ? (
-                  <DeveloperBadge
-                    name={property.developerName || (isRtl ? "المطور" : "Developer")}
-                    logo={property.developerLogo}
-                    role={isRtl ? "اسم المطور" : "Developer"}
-                  />
+                {(property.developerName || property.developerLogo || property.contractorName || property.contractorLogo) ? (
+                  <div className="flex flex-wrap items-center justify-start gap-x-10 gap-y-5">
+                    {(property.developerName || property.developerLogo) ? (
+                      <DeveloperBadge
+                        name={property.developerName || (isRtl ? "المطور" : "Developer")}
+                        logo={property.developerLogo}
+                        role={isRtl ? "اسم المطور" : "Developer"}
+                      />
+                    ) : null}
+                    {(property.contractorName || property.contractorLogo) ? (
+                      <DeveloperBadge
+                        name={property.contractorName || (isRtl ? "المقاول" : "Contractor")}
+                        logo={property.contractorLogo}
+                        role={isRtl ? "اسم المقاول" : "Contractor"}
+                      />
+                    ) : null}
+                  </div>
                 ) : null}
 
                 {property.description?.trim() ? (
@@ -498,6 +495,10 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                       {property.description}
                     </p>
                   </div>
+                ) : null}
+
+                {adInfo.length > 0 ? (
+                  <AdvertisementInfoCard items={adInfo} title={isRtl ? "معلومات الاعلان" : "Advertisement info"} />
                 ) : null}
               </div>
             ) : null}
@@ -589,41 +590,22 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
               </div>
             ) : null}
 
-            {(property.contractorName || property.contractorLogo || partners.length > 0) ? (
-              <div className="flex flex-col gap-10">
-                {(property.contractorName || property.contractorLogo) ? (
-                  <div>
-                    <SectionHeading
-                      kicker={isRtl ? "اسم المقاول" : "Contractor"}
-                      title={isRtl ? "المقاول" : "The Contractor"}
-                    />
-                    <div className="flex flex-wrap items-start justify-start gap-4">
-                      <ContractorTile
-                        name={property.contractorName || (isRtl ? "المقاول" : "Contractor")}
-                        logo={property.contractorLogo}
-                      />
+            {partners.length > 0 ? (
+              <div>
+                <SectionHeading
+                  kicker={isRtl ? "شركاؤنا في هذا المشروع" : "Our partners in this project"}
+                  title={isRtl ? "شركاء النجاح" : "Partners of Success"}
+                />
+                <div className="flex flex-wrap items-center justify-start gap-4">
+                  {partners.map((logo, index) => (
+                    <div
+                      key={`${logo}-${index}`}
+                      className="flex h-36 w-36 items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                    >
+                      <img src={logo} alt={isRtl ? `شريك ${index + 1}` : `Partner ${index + 1}`} className="max-h-full max-w-full object-contain" />
                     </div>
-                  </div>
-                ) : null}
-
-                {partners.length > 0 ? (
-                  <div>
-                    <SectionHeading
-                      kicker={isRtl ? "شركاؤنا في هذا المشروع" : "Our partners in this project"}
-                      title={isRtl ? "شركاء النجاح" : "Partners of Success"}
-                    />
-                    <div className="flex flex-wrap items-center justify-start gap-4">
-                      {partners.map((logo, index) => (
-                        <div
-                          key={`${logo}-${index}`}
-                          className="flex h-36 w-36 items-center justify-center rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
-                        >
-                          <img src={logo} alt={isRtl ? `شريك ${index + 1}` : `Partner ${index + 1}`} className="max-h-full max-w-full object-contain" />
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
+                  ))}
+                </div>
               </div>
             ) : null}
 

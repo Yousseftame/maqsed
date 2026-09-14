@@ -86,7 +86,7 @@ export function AgentsSection() {
   }, [emblaApi, isRtl, mappedUnits.length, isPending]);
 
   return (
-    <section className="relative z-30 w-full overflow-hidden bg-white px-6 py-24 md:px-12 lg:px-20">
+    <section className="relative z-30 w-full overflow-hidden bg-white px-6 pt-12 pb-8 md:px-12 md:pt-16 md:pb-10 lg:px-20">
       <div className="mx-auto max-w-[1400px]">
         <div className="mb-16 flex flex-col items-start justify-between gap-10 lg:flex-row lg:items-end">
           <div className="max-w-2xl">

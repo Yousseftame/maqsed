@@ -12,14 +12,9 @@ export function SellPage() {
       <section className="relative overflow-hidden bg-[#3E1854] rounded-b-[2.5rem] md:rounded-b-[3.5rem] lg:rounded-b-[4rem] px-6 pb-24 pt-20 md:px-12 lg:px-20 lg:pb-28 lg:pt-28">
         
         {/* Background Pattern */}
-        <div 
-          className={`absolute inset-0 w-full h-full z-0 opacity-15 mix-blend-overlay pointer-events-none ${!isRtl ? "scale-x-[-1]" : ""}`}
-          style={{
-            backgroundImage: "url('/Gemini_Generated_Image_kax3jnkax3jnkax3.jpg')",
-            backgroundSize: "70%",
-            backgroundRepeat: "repeat",
-            backgroundPosition: "left top"
-          }}
+        <div
+          className="absolute inset-0 z-0 h-full w-full bg-cover bg-center bg-no-repeat pointer-events-none"
+          style={{ backgroundImage: "url('/patern-maqsed.jpg')" }}
         />
 
         <div className="relative mx-auto flex max-w-[1400px] flex-col items-start lg:items-center lg:text-center z-10">

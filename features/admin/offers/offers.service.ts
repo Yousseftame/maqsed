@@ -1,18 +1,15 @@
-import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, increment, limit, orderBy, query, serverTimestamp, updateDoc, where, writeBatch } from "firebase/firestore";
+import { collection, deleteDoc, deleteField, doc, getDoc, getDocs, limit, orderBy, query, updateDoc, where } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebase";
-import { INDEPENDENT_PROJECT_ID } from "./offer-affiliation";
+import { billableServicesTotal, type OfferServiceItem } from "./offer-services";
 
-export interface OfferServiceItem {
-  description: string;
-  price: number;
-}
+export type { OfferServiceItem, OfferServiceKind } from "./offer-services";
 
 export interface OfferData {
   id: string;
   offerNumber?: string;
   title: string;
   description?: string;
-  projectName: string;
+  projectName?: string;
   projectId?: string;
   unitId?: string;
   unitNumber?: string;
@@ -49,9 +46,7 @@ export function offerAmount(offer: Pick<OfferData, "total" | "financialAmount">)
 export function offerFinancials(
   offer: Pick<OfferData, "subtotal" | "vat" | "total" | "financialAmount" | "services">
 ) {
-  const servicesTotal = Array.isArray(offer.services)
-    ? offer.services.reduce((sum, item) => sum + (Number(item.price) || 0), 0)
-    : 0;
+  const servicesTotal = billableServicesTotal(offer.services);
 
   let subtotal = Number(offer.subtotal);
   if (!Number.isFinite(subtotal) || subtotal <= 0) subtotal = servicesTotal;
@@ -156,10 +151,6 @@ class OffersService {
     data: {
       title: string;
       description?: string;
-      projectName: string;
-      projectId: string;
-      unitId: string;
-      unitNumber: string;
       developerName: string;
       developerEmail: string;
       developerPhone: string;
@@ -214,11 +205,6 @@ class OffersService {
       throw new Error("ALREADY_ASSIGNED");
     }
 
-    const unitId = String(latest.unitId || "").trim();
-    if (!unitId) {
-      throw new Error("UNIT_MISSING");
-    }
-
     const developerUid = String(developer.uid || "").trim();
     if (!developerUid) {
       throw new Error("DEVELOPER_MISSING");
@@ -233,70 +219,11 @@ class OffersService {
       throw new Error("DEVELOPER_DISABLED");
     }
 
-    const unitRef = doc(db, "units", unitId);
-    const unitSnap = await getDoc(unitRef);
-    if (!unitSnap.exists()) {
-      throw new Error("UNIT_NOT_FOUND");
-    }
-
-    const unitData = unitSnap.data() as { developerUid?: string; projectId?: string };
-    const unitOwner = String(unitData.developerUid || "").trim();
-    if (unitOwner && unitOwner !== developerUid) {
-      throw new Error("UNIT_ASSIGNED_OTHER");
-    }
-
-    const projectId = String(latest.projectId || unitData.projectId || "").trim();
-    const isIndependent = !projectId || projectId === INDEPENDENT_PROJECT_ID;
-    let shouldCountProject = false;
-    let propertyRef: ReturnType<typeof doc> | null = null;
-
-    if (!isIndependent) {
-      propertyRef = doc(db, "properties", projectId);
-      const propertySnap = await getDoc(propertyRef);
-      if (!propertySnap.exists()) {
-        throw new Error("PROJECT_NOT_FOUND");
-      }
-      const existingProjectOwner = String(propertySnap.data()?.developerUid || "").trim();
-      if (existingProjectOwner && existingProjectOwner !== developerUid) {
-        throw new Error("PROJECT_ASSIGNED_OTHER");
-      }
-      shouldCountProject = !existingProjectOwner;
-    }
-
-    const unitAlreadyOwned = unitOwner === developerUid;
-    const batch = writeBatch(db);
-
-    if (propertyRef && shouldCountProject) {
-      batch.update(propertyRef, {
-        developerUid,
-        updatedAt: serverTimestamp(),
-      });
-    }
-    if (!unitAlreadyOwned) {
-      batch.update(unitRef, {
-        developerUid,
-        updatedAt: serverTimestamp(),
-      });
-    }
-
-    const statsUpdate: Record<string, ReturnType<typeof increment>> = {};
-    if (!unitAlreadyOwned) {
-      statsUpdate["developerStats.unitsCount"] = increment(1);
-    }
-    if (shouldCountProject) {
-      statsUpdate["developerStats.projectsCount"] = increment(1);
-    }
-    if (Object.keys(statsUpdate).length > 0) {
-      batch.update(developerRef, statsUpdate);
-    }
-
-    batch.update(doc(db, this.collectionName, latest.id), {
+    await updateDoc(doc(db, this.collectionName, latest.id), {
       assignedDeveloperUid: developerUid,
       assignedDeveloperName: developer.name,
       dashboardAssignedAt: Date.now(),
     });
-
-    await batch.commit();
   }
 }
 

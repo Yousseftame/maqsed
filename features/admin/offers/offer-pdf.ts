@@ -1,4 +1,5 @@
 import type { OfferData } from "@/features/admin/offers/offers.service";
+import { formatServiceValue } from "@/features/admin/offers/offer-services";
 
 const AGREEMENT_LABELS: Record<string, string> = {
   exclusive: "حصري",
@@ -51,8 +52,8 @@ export async function downloadOfferPDF(offer: OfferData) {
     .map(
       (svc) => `
       <tr style="border-bottom: 1px solid #f3f4f6;">
-        <td style="padding: 12px 18px; font-size: 15px; color: #1f2937; ${AR}">${svc.description || "—"}</td>
-        <td style="padding: 12px 18px; font-size: 15px; font-weight: 700; color: #111827; direction: ltr; text-align: left;">${Number(svc.price).toLocaleString()}</td>
+        <td style="padding: 12px 18px; font-size: 15px; color: #1f2937; white-space: pre-wrap; ${AR}">${escapeHtml(svc.description || "—")}</td>
+        <td style="padding: 12px 18px; font-size: 15px; font-weight: 700; color: #111827; text-align: left; white-space: nowrap; ${AR}">${escapeHtml(formatServiceValue(svc, true))}</td>
       </tr>
     `
     )
@@ -92,7 +93,11 @@ export async function downloadOfferPDF(offer: OfferData) {
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 28px;">
           <div>
             <div style="font-size: 19px; font-weight: 700; color: #0a0f1d; ${AR}">${offer.title || "—"}</div>
-            <div style="font-size: 14px; color: #6b7280; margin-top: 5px; ${AR}">المشروع: <span style="color: #0a0f1d; font-weight: 600;">${offer.projectName || "—"}</span></div>
+            ${
+              (offer.projectName || "").trim()
+                ? `<div style="font-size: 14px; color: #6b7280; margin-top: 5px; ${AR}">المشروع: <span style="color: #0a0f1d; font-weight: 600;">${escapeHtml(offer.projectName!.trim())}</span></div>`
+                : ""
+            }
             ${
               (offer.unitNumber || "").trim()
                 ? `<div style="font-size: 14px; color: #6b7280; margin-top: 4px; ${AR}">الوحدة: <span style="color: #0a0f1d; font-weight: 600;">${escapeHtml(offer.unitNumber!.trim())}</span></div>`
@@ -148,7 +153,7 @@ export async function downloadOfferPDF(offer: OfferData) {
               <thead>
                 <tr style="background: #0d9488;">
                   <th style="padding: 12px 18px; text-align: right; font-size: 13px; font-weight: 700; color: #ffffff; border-bottom: 1px solid #0d9488; ${AR}">الخدمة</th>
-                  <th style="padding: 12px 18px; text-align: left; font-size: 13px; font-weight: 700; color: #ffffff; border-bottom: 1px solid #0d9488; white-space: nowrap; direction: rtl; unicode-bidi: embed;">السعر (ريال)</th>
+                  <th style="padding: 12px 18px; text-align: left; font-size: 13px; font-weight: 700; color: #ffffff; border-bottom: 1px solid #0d9488; white-space: nowrap; direction: rtl; unicode-bidi: embed;">القيمة</th>
                 </tr>
               </thead>
               <tbody>
@@ -170,10 +175,11 @@ export async function downloadOfferPDF(offer: OfferData) {
             <span style="font-size: 15px; color: #6b7280; ${AR}">ضريبة القيمة المضافة (15%)</span>
             <span style="font-size: 15px; color: #374151; font-weight: 600; direction: ltr;">${Number(offer.vat || 0).toLocaleString()} SAR</span>
           </div>
-          <div style="display: flex; justify-content: space-between; background: #0d9488; padding: 14px 18px; border-radius: 8px; margin-bottom: 18px;">
+          <div style="display: flex; justify-content: space-between; background: #0d9488; padding: 14px 18px; border-radius: 8px; margin-bottom: 12px;">
             <span style="font-size: 17px; font-weight: 800; color: #ffffff; ${AR}">الإجمالي شامل الضريبة</span>
             <span style="font-size: 17px; font-weight: 800; color: #ffffff; direction: ltr;">${Number(offer.total || offer.financialAmount || 0).toLocaleString()} SAR</span>
           </div>
+          <div style="font-size: 12px; color: #6b7280; line-height: 1.8; margin-bottom: 18px; ${AR}">النسب والخدمات بدون تكلفة تظهر في النطاق ولا تُضاف إلى الإجمالي أو الضريبة.</div>
           <div style="border-top: 1px solid #e5e7eb; padding-top: 14px; text-align: left;">
             <div style="font-size: 12px; font-weight: 700; color: #0d9488; direction: rtl; unicode-bidi: embed;">مقصد للعقارات</div>
           </div>

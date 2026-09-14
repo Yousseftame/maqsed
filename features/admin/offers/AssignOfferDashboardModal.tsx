@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useForm } from "react-hook-form";
-import { X, Loader2, Eye, EyeOff, Building2, Hash, User } from "lucide-react";
+import { X, Loader2, Eye, EyeOff, Building2, Hash, User, CheckCircle2 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { z } from "zod";
@@ -15,9 +15,12 @@ import { usersService } from "@/features/auth/users.service";
 import { cn } from "@/lib/utils";
 import { offerAmount, offersService, type OfferData } from "./offers.service";
 import type { UserData } from "@/types/user";
+import { toDeveloperShareAccount, DeveloperAccountSharePanel, type DeveloperShareAccount } from "@/features/admin/developers/DeveloperShareModal";
 
 type AssignOfferDashboardModalProps = {
   offer: OfferData | null;
+  createdAccount?: DeveloperShareAccount | null;
+  onDeveloperCreated?: (offerId: string, account: DeveloperShareAccount) => void;
   onClose: () => void;
 };
 
@@ -67,7 +70,12 @@ function extractAssignError(error: unknown): string {
   return "";
 }
 
-export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboardModalProps) {
+export function AssignOfferDashboardModal({
+  offer,
+  createdAccount = null,
+  onDeveloperCreated,
+  onClose,
+}: AssignOfferDashboardModalProps) {
   const { t, isRtl } = useLocale();
   const queryClient = useQueryClient();
   const [mode, setMode] = useState<"existing" | "create">("existing");
@@ -134,7 +142,16 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
       setSelectedDeveloperUid("");
       setShowPassword(false);
       setShowConfirmPassword(false);
-      reset();
+      reset({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        company: "",
+        usersPerDeveloper: "",
+        password: "",
+        confirmPassword: "",
+      });
       return;
     }
 
@@ -143,8 +160,8 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
     reset({
       firstName: names.firstName,
       lastName: names.lastName,
-      email: offer.developerEmail || "",
-      phone: (offer.developerPhone || "").replace(/[^\d+\s]/g, ""),
+      email: "",
+      phone: "",
       company: "",
       usersPerDeveloper: "",
       password: "",
@@ -158,9 +175,9 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
     return () => {
       document.body.style.overflow = "unset";
     };
-  }, [offer, reset]);
+  }, [offer?.id, reset]);
 
-  const assignToDeveloper = async (uid: string, name: string) => {
+  const assignToDeveloper = async (uid: string, name: string, close = true) => {
     if (!offer) return;
     await offersService.assignOfferToDashboard(offer, { uid, name });
     await Promise.all([
@@ -171,7 +188,7 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
       queryClient.invalidateQueries({ queryKey: ["properties"] }),
     ]);
     toast.success(isRtl ? "تمت إضافة العرض للوحة المطور بنجاح." : "Offer added to the developer dashboard.");
-    onClose();
+    if (close) onClose();
   };
 
   const onCreateAndAssign = async (data: CreateDeveloperForm) => {
@@ -200,13 +217,30 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
       try {
         await usersService.updateUserData(payload.uid, {
           usersPerDeveloper: Number(data.usersPerDeveloper) || 0,
+          password: data.password,
         });
       } catch {
         // Account already has this field from createDeveloperAccount.
       }
 
+      const shareAccount = toDeveloperShareAccount({
+        firstName: data.firstName,
+        lastName: data.lastName,
+        email: data.email,
+        password: data.password,
+        phone: data.phone,
+        company: data.company,
+      });
+      onDeveloperCreated?.(offer.id, shareAccount);
       const name = `${data.firstName} ${data.lastName || ""}`.trim() || data.email;
-      await assignToDeveloper(payload.uid, name);
+      try {
+        await assignToDeveloper(payload.uid, name, false);
+      } catch (assignError) {
+        setMode("existing");
+        setSelectedDeveloperUid(createdUid);
+        queryClient.invalidateQueries({ queryKey: ["users"] });
+        throw assignError;
+      }
     } catch (error: unknown) {
       if (createdUid) {
         setMode("existing");
@@ -287,8 +321,12 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
                 </h3>
                 <div className="grid gap-4 sm:grid-cols-2">
                   <DetailItem icon={Hash} label={isRtl ? "العنوان" : "Title"} value={offer.title} />
-                  <DetailItem icon={Building2} label={isRtl ? "المشروع" : "Project"} value={offer.projectName} />
-                  <DetailItem icon={Hash} label={isRtl ? "الوحدة" : "Unit"} value={offer.unitNumber} />
+                  {(offer.projectName || "").trim() ? (
+                    <DetailItem icon={Building2} label={isRtl ? "المشروع" : "Project"} value={offer.projectName} />
+                  ) : null}
+                  {(offer.unitNumber || "").trim() ? (
+                    <DetailItem icon={Hash} label={isRtl ? "الوحدة" : "Unit"} value={offer.unitNumber} />
+                  ) : null}
                   <DetailItem icon={User} label={isRtl ? "المطور" : "Developer"} value={offer.developerName} />
                   <DetailItem label={isRtl ? "البريد" : "Email"} value={offer.developerEmail} />
                   <DetailItem label={isRtl ? "الجوال" : "Phone"} value={offer.developerPhone} />
@@ -299,17 +337,41 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
                 </div>
               </div>
 
-              {alreadyAssigned ? (
+              {createdAccount ? (
+                <div className="space-y-4">
+                  {alreadyAssigned ? (
+                    <div className="rounded-[16px] bg-[#E8F8EF] px-5 py-4 text-sm font-bold text-[#2f9e44]">
+                      {isRtl
+                        ? `تمت الإضافة مسبقاً إلى: ${offer.assignedDeveloperName || createdAccount.firstName || "—"}`
+                        : `Already added to: ${offer.assignedDeveloperName || createdAccount.firstName || "—"}`}
+                    </div>
+                  ) : null}
+                  <div className="rounded-[20px] border border-[#0a0f1d]/8 bg-white p-5">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-green-50">
+                        <CheckCircle2 className="h-5 w-5 text-green-500" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-bold text-[#0a0f1d]">
+                          {isRtl ? "بيانات دخول المطور الجديد" : "New developer login details"}
+                        </p>
+                        <p dir="ltr" className="text-xs font-medium text-[#8c8c8c]">
+                          {createdAccount.email}
+                        </p>
+                      </div>
+                    </div>
+                    <DeveloperAccountSharePanel
+                      account={createdAccount}
+                      showEmail
+                      sendToEmail={offer.developerEmail}
+                    />
+                  </div>
+                </div>
+              ) : alreadyAssigned ? (
                 <div className="rounded-[16px] bg-[#E8F8EF] px-5 py-4 text-sm font-bold text-[#2f9e44]">
                   {isRtl
                     ? `تمت الإضافة مسبقاً إلى: ${offer.assignedDeveloperName || "—"}`
                     : `Already added to: ${offer.assignedDeveloperName || "—"}`}
-                </div>
-              ) : !offer.unitId ? (
-                <div className="rounded-[16px] bg-[#FFF4E5] px-5 py-4 text-sm font-bold text-[#FF9F43]">
-                  {isRtl
-                    ? "هذا العرض غير مرتبط بوحدة، لذلك لا يمكن إضافته للوحة."
-                    : "This offer is not linked to a unit, so it cannot be added to the dashboard."}
                 </div>
               ) : (
                 <>
@@ -384,7 +446,18 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
                       <div className="mb-5 grid gap-5 sm:grid-cols-2">
                         <div>
                           <label className={labelClass}>{t("admin.developers.createForm.email") || "Email Address"}</label>
-                          <input {...register("email")} dir="ltr" className={`${inputClass} text-left`} />
+                          <input
+                            {...register("email")}
+                            dir="ltr"
+                            autoComplete="off"
+                            placeholder="developer@email.com"
+                            className={`${inputClass} text-left`}
+                          />
+                          <p className="mt-1.5 text-xs font-medium text-[#8c8c8c]">
+                            {isRtl
+                              ? "بريد حساب المطور الجديد. ليس بريد العرض أعلاه."
+                              : "New developer login email. Not the offer email above."}
+                          </p>
                           {errors.email && <span className="mt-1 block text-xs text-red-500">{errors.email.message}</span>}
                         </div>
                         <div>
@@ -460,11 +533,21 @@ export function AssignOfferDashboardModal({ offer, onClose }: AssignOfferDashboa
               >
                 {t("admin.cancel") || (isRtl ? "إلغاء" : "Cancel")}
               </button>
-              {!alreadyAssigned && offer.unitId ? (
+              {!alreadyAssigned && !createdAccount ? (
                 <button
                   type={mode === "create" ? "submit" : "button"}
                   form={mode === "create" ? "assign-offer-create-developer" : undefined}
                   onClick={mode === "existing" ? onAssignExisting : undefined}
+                  disabled={isSubmitting}
+                  className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-8 text-sm font-bold text-white transition-colors hover:bg-[#161c2d] disabled:opacity-70"
+                >
+                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                  {isRtl ? "إضافة للوحة" : "Add to dashboard"}
+                </button>
+              ) : !alreadyAssigned && createdAccount ? (
+                <button
+                  type="button"
+                  onClick={onAssignExisting}
                   disabled={isSubmitting}
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-8 text-sm font-bold text-white transition-colors hover:bg-[#161c2d] disabled:opacity-70"
                 >

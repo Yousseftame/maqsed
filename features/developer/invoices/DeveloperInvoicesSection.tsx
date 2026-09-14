@@ -35,9 +35,7 @@ export function DeveloperInvoicesSection() {
     return invoices.filter(
       (row) =>
         (row.offerNumber || "").toLowerCase().includes(q) ||
-        (row.title || "").toLowerCase().includes(q) ||
-        (row.projectName || "").toLowerCase().includes(q) ||
-        (row.unitNumber || "").toLowerCase().includes(q)
+        (row.title || "").toLowerCase().includes(q)
     );
   }, [invoices, queryStr]);
 
@@ -75,13 +73,7 @@ export function DeveloperInvoicesSection() {
       id: "title",
       header: t("admin.offers.title") || (isRtl ? "العنوان" : "Title"),
       cell: (row) => (
-        <div className="flex flex-col">
-          <span className="font-semibold text-[#0a0f1d]">{row.title || "—"}</span>
-          <span className="text-xs text-[#6B7280]">
-            {row.projectName || "—"}
-            {row.unitNumber ? ` · ${row.unitNumber}` : ""}
-          </span>
-        </div>
+        <span className="font-semibold text-[#0a0f1d]">{row.title || "—"}</span>
       ),
     },
     {

@@ -18,6 +18,7 @@ import { storage } from "@/lib/firebase/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { asStringArray } from "@/features/admin/menus/menu-options.service";
 import { slugify } from "@/features/admin/projects/properties.service";
+import { normalizeAdInfo } from "@/features/admin/shared/ad-info";
 
 export type Unit = {
   id: string;
@@ -69,6 +70,8 @@ export type Unit = {
   // Section 7: Images
   images: string[];
 
+  adInfo?: string[];
+
   createdAt?: Timestamp | any;
   updatedAt?: Timestamp | any;
   developerUid?: string;
@@ -81,6 +84,7 @@ function normalizeUnit(raw: Record<string, unknown> & { id?: string }): Unit {
     additionalComponents: asStringArray(raw.additionalComponents),
     features: asStringArray(raw.features),
     facade: asStringArray(raw.facade),
+    adInfo: normalizeAdInfo(raw.adInfo),
   };
 }
 
@@ -135,6 +139,7 @@ export const unitsService = {
         : {}),
       ...(data.features !== undefined ? { features: asStringArray(data.features) } : {}),
       ...(data.facade !== undefined ? { facade: asStringArray(data.facade) } : {}),
+      ...(data.adInfo !== undefined ? { adInfo: normalizeAdInfo(data.adInfo) } : {}),
       updatedAt: serverTimestamp(),
     });
   },

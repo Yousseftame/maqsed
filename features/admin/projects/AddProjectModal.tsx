@@ -11,6 +11,8 @@ import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "./ProjectImageGallery";
 import { NearbyPlacesEditor, sanitizeNearbyPlaces, type NearbyPlaceInput } from "./NearbyPlacesEditor";
+import { AdvertisementInfoEditor } from "@/features/admin/shared/AdvertisementInfoEditor";
+import { sanitizeAdInfo } from "@/features/admin/shared/ad-info";
 import { PartyLogoField, revokeLogoPreview, resolveLogoUpload } from "./PartyLogoField";
 import { FeatureCheckboxGroup } from "@/features/admin/menus/FeatureCheckboxGroup";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
@@ -53,6 +55,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
   const [images, setImages] = useState<ProjectGalleryImage[]>([]);
   const [partnerLogos, setPartnerLogos] = useState<ProjectGalleryImage[]>([]);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlaceInput[]>([]);
+  const [adInfo, setAdInfo] = useState<string[]>([]);
   const [developerLogo, setDeveloperLogo] = useState<ProjectGalleryImage | null>(null);
   const [contractorLogo, setContractorLogo] = useState<ProjectGalleryImage | null>(null);
   const [slugTouched, setSlugTouched] = useState(false);
@@ -78,6 +81,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         return [];
       });
       setNearbyPlaces([]);
+      setAdInfo([]);
       setDeveloperLogo((prev) => {
         revokeLogoPreview(prev);
         return null;
@@ -148,6 +152,7 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
         locations: asStringArray(data.locations),
         images: uploadedUrls,
         nearbyPlaces: sanitizeNearbyPlaces(nearbyPlaces),
+        adInfo: sanitizeAdInfo(adInfo),
         partnerLogos: uploadedPartnerLogos,
         developerName: (data.developerName || "").trim(),
         developerLogo: developerLogoResult.url,
@@ -435,6 +440,16 @@ export function AddProjectModal({ isOpen, onClose }: AddProjectModalProps) {
                   <NearbyPlacesEditor
                     places={nearbyPlaces}
                     onChange={setNearbyPlaces}
+                    disabled={addMutation.isPending}
+                  />
+                </div>
+
+                <hr className="my-8 border-[#0a0f1d]/10" />
+
+                <div className={formSectionClass}>
+                  <AdvertisementInfoEditor
+                    lines={adInfo}
+                    onChange={setAdInfo}
                     disabled={addMutation.isPending}
                   />
                 </div>

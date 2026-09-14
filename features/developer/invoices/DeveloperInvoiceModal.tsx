@@ -1,9 +1,10 @@
 "use client";
 
 import { AnimatePresence, motion } from "motion/react";
-import { Building2, Hash, ReceiptText, X } from "lucide-react";
+import { Hash, X } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { offerFinancials, type OfferData } from "@/features/admin/offers/offers.service";
+import { formatServiceValue } from "@/features/admin/offers/offer-services";
 import { StatusBadge } from "@/features/admin/ui/StatusBadge";
 
 type Props = {
@@ -59,13 +60,7 @@ export function DeveloperInvoiceModal({ offer, onClose }: Props) {
 
             <div className="flex-1 space-y-6 overflow-y-auto px-6 py-6 no-scrollbar sm:px-8">
               <div className="flex flex-wrap items-center justify-between gap-3">
-                <div>
-                  <p className="text-lg font-bold text-[#0a0f1d]">{offer.title || "—"}</p>
-                  <p className="mt-1 text-sm font-medium text-[#8c8c8c]">
-                    {offer.projectName || "—"}
-                    {offer.unitNumber ? ` · ${isRtl ? "الوحدة" : "Unit"} ${offer.unitNumber}` : ""}
-                  </p>
-                </div>
+                <p className="text-lg font-bold text-[#0a0f1d]">{offer.title || "—"}</p>
                 <StatusBadge tone={received ? "success" : "warning"}>
                   {received
                     ? (isRtl ? "تم استلام المبلغ" : "Payment received")
@@ -74,9 +69,15 @@ export function DeveloperInvoiceModal({ offer, onClose }: Props) {
               </div>
 
               <div className="grid gap-4 sm:grid-cols-2">
-                <DetailItem icon={Hash} label={isRtl ? "رقم العرض" : "Offer number"} value={offer.offerNumber ? `#${offer.offerNumber}` : "—"} />
-                <DetailItem icon={Building2} label={isRtl ? "المشروع" : "Project"} value={offer.projectName} />
-                <DetailItem icon={ReceiptText} label={isRtl ? "الوحدة" : "Unit"} value={offer.unitNumber} />
+                <div className="min-w-0 rounded-[16px] bg-[#F8F8F8] px-4 py-3">
+                  <p className="mb-1 flex items-center gap-1.5 text-[11px] font-bold text-[#8c8c8c]">
+                    <Hash className="h-3.5 w-3.5" />
+                    {isRtl ? "رقم العرض" : "Offer number"}
+                  </p>
+                  <p className="truncate text-sm font-semibold text-[#0a0f1d]">
+                    {offer.offerNumber ? `#${offer.offerNumber}` : "—"}
+                  </p>
+                </div>
               </div>
 
               {offer.services && offer.services.length > 0 ? (
@@ -90,18 +91,18 @@ export function DeveloperInvoiceModal({ offer, onClose }: Props) {
                             {isRtl ? "الخدمة" : "Service"}
                           </th>
                           <th className="px-4 py-2.5 text-end text-[11px] font-bold text-[#8c8c8c] whitespace-nowrap">
-                            ر.س
+                            {isRtl ? "القيمة" : "Value"}
                           </th>
                         </tr>
                       </thead>
                       <tbody>
                         {offer.services.map((service, index) => (
                           <tr key={`${service.description}-${index}`} className="border-t border-[#F4F4F4]">
-                            <td className="px-4 py-2.5 text-sm font-medium text-[#0a0f1d]">
+                            <td className="px-4 py-2.5 text-sm font-medium text-[#0a0f1d] whitespace-pre-wrap">
                               {service.description || "—"}
                             </td>
-                            <td className="px-4 py-2.5 text-end text-sm font-bold tabular-nums text-[#0a0f1d]">
-                              {Number(service.price || 0).toLocaleString()}
+                            <td className="px-4 py-2.5 text-end text-sm font-bold tabular-nums text-[#0a0f1d] whitespace-nowrap">
+                              {formatServiceValue(service, isRtl)}
                             </td>
                           </tr>
                         ))}
@@ -126,6 +127,11 @@ export function DeveloperInvoiceModal({ offer, onClose }: Props) {
                     <span>{isRtl ? "الإجمالي" : "Total"}</span>
                     <span className="font-mono">{formatSar(financials.total)}</span>
                   </div>
+                  <p className="pt-1 text-[11px] font-medium leading-relaxed text-white/45">
+                    {isRtl
+                      ? "النسب والخدمات بدون تكلفة تظهر في النطاق ولا تُضاف إلى الإجمالي أو الضريبة."
+                      : "Percent and no-cost services appear in the scope and are not added to the total or VAT."}
+                  </p>
                 </div>
               </div>
             </div>
@@ -143,25 +149,5 @@ export function DeveloperInvoiceModal({ offer, onClose }: Props) {
         </div>
       ) : null}
     </AnimatePresence>
-  );
-}
-
-function DetailItem({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: typeof Hash;
-  label: string;
-  value?: string | null;
-}) {
-  return (
-    <div className="min-w-0 rounded-[16px] bg-[#F8F8F8] px-4 py-3">
-      <p className="mb-1 flex items-center gap-1.5 text-[11px] font-bold text-[#8c8c8c]">
-        <Icon className="h-3.5 w-3.5" />
-        {label}
-      </p>
-      <p className="truncate text-sm font-semibold text-[#0a0f1d]">{value?.trim() || "—"}</p>
-    </div>
   );
 }

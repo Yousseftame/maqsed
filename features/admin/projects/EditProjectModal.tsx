@@ -11,6 +11,8 @@ import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "./ProjectImageGallery";
 import { NearbyPlacesEditor, sanitizeNearbyPlaces, type NearbyPlaceInput } from "./NearbyPlacesEditor";
+import { AdvertisementInfoEditor } from "@/features/admin/shared/AdvertisementInfoEditor";
+import { normalizeAdInfo, sanitizeAdInfo } from "@/features/admin/shared/ad-info";
 import { PartyLogoField, logoFromUrl, revokeLogoPreview, resolveLogoUpload } from "./PartyLogoField";
 import { FeatureCheckboxGroup } from "@/features/admin/menus/FeatureCheckboxGroup";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
@@ -63,6 +65,7 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
   const [images, setImages] = useState<ProjectGalleryImage[]>([]);
   const [partnerLogos, setPartnerLogos] = useState<ProjectGalleryImage[]>([]);
   const [nearbyPlaces, setNearbyPlaces] = useState<NearbyPlaceInput[]>([]);
+  const [adInfo, setAdInfo] = useState<string[]>([]);
   const [developerLogo, setDeveloperLogo] = useState<ProjectGalleryImage | null>(null);
   const [contractorLogo, setContractorLogo] = useState<ProjectGalleryImage | null>(null);
 
@@ -96,6 +99,7 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
           minutes: place.minutes === undefined || place.minutes === null ? "" : String(place.minutes),
         }))
       );
+      setAdInfo(normalizeAdInfo(property.adInfo));
       setDeveloperLogo(logoFromUrl(property.developerLogo));
       setContractorLogo(logoFromUrl(property.contractorLogo));
     } else if (!isOpen) {
@@ -109,6 +113,7 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
         return [];
       });
       setNearbyPlaces([]);
+      setAdInfo([]);
       setDeveloperLogo((prev) => {
         revokeLogoPreview(prev);
         return null;
@@ -199,6 +204,7 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
         locations: asStringArray(data.locations),
         images: allImages,
         nearbyPlaces: sanitizeNearbyPlaces(nearbyPlaces),
+        adInfo: sanitizeAdInfo(adInfo),
         partnerLogos: allPartnerLogos,
         developerName: (data.developerName || "").trim(),
         developerLogo: developerLogoResult.url,
@@ -474,6 +480,16 @@ export function EditProjectModal({ isOpen, onClose, property }: EditProjectModal
                   <NearbyPlacesEditor
                     places={nearbyPlaces}
                     onChange={setNearbyPlaces}
+                    disabled={updateMutation.isPending}
+                  />
+                </div>
+
+                <hr className="my-8 border-[#0a0f1d]/10" />
+
+                <div className={formSectionClass}>
+                  <AdvertisementInfoEditor
+                    lines={adInfo}
+                    onChange={setAdInfo}
                     disabled={updateMutation.isPending}
                   />
                 </div>

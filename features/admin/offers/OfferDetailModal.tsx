@@ -19,6 +19,7 @@ import {
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { OfferData } from "./offers.service";
 import { downloadOfferPDF } from "./offer-pdf";
+import { formatServiceValue } from "./offer-services";
 
 const AGREEMENT_LABELS: Record<string, string> = {
   exclusive: "حصري",
@@ -167,8 +168,12 @@ export function OfferDetailModal({ offer, onClose, onAssignToDashboard }: Props)
                         value={offer.assignedDeveloperName}
                       />
                     ) : null}
-                    <InfoRow icon={Building2} label={isRtl ? "المشروع" : "Project"} value={offer.projectName} />
-                    <InfoRow icon={Hash} label={isRtl ? "الوحدة" : "Unit"} value={offer.unitNumber} />
+                    {(offer.projectName || "").trim() ? (
+                      <InfoRow icon={Building2} label={isRtl ? "المشروع" : "Project"} value={offer.projectName} />
+                    ) : null}
+                    {(offer.unitNumber || "").trim() ? (
+                      <InfoRow icon={Hash} label={isRtl ? "الوحدة" : "Unit"} value={offer.unitNumber} />
+                    ) : null}
                     <InfoRow icon={Mail} label={isRtl ? "البريد الإلكتروني" : "Email"} value={offer.developerEmail} />
                     <InfoRow icon={Phone} label={isRtl ? "الجوال" : "Phone"} value={offer.developerPhone} />
                   </div>
@@ -228,16 +233,16 @@ export function OfferDetailModal({ offer, onClose, onAssignToDashboard }: Props)
                               {isRtl ? "الخدمة" : "Service"}
                             </th>
                             <th className="px-3 py-2 text-left text-[10px] font-bold text-[#8c8c8c] whitespace-nowrap">
-                              SAR
+                              {isRtl ? "القيمة" : "Value"}
                             </th>
                           </tr>
                         </thead>
                         <tbody>
                           {offer.services.map((svc, i) => (
                             <tr key={i} className="border-t border-[#F4F4F4]">
-                              <td className="px-3 py-2 text-xs text-[#0a0f1d] font-medium">{svc.description || "—"}</td>
-                              <td className="px-3 py-2 text-xs font-bold text-[#0a0f1d] tabular-nums text-left">
-                                {Number(svc.price).toLocaleString()}
+                              <td className="px-3 py-2 text-xs text-[#0a0f1d] font-medium whitespace-pre-wrap">{svc.description || "—"}</td>
+                              <td className="px-3 py-2 text-xs font-bold text-[#0a0f1d] tabular-nums text-left whitespace-nowrap">
+                                {formatServiceValue(svc, isRtl)}
                               </td>
                             </tr>
                           ))}
@@ -269,6 +274,11 @@ export function OfferDetailModal({ offer, onClose, onAssignToDashboard }: Props)
                         {Number(offer.total || offer.financialAmount || 0).toLocaleString()} SAR
                       </span>
                     </div>
+                    <p className="pt-1 text-[11px] font-medium leading-relaxed text-white/45">
+                      {isRtl
+                        ? "النسب والخدمات بدون تكلفة تظهر في النطاق ولا تُضاف إلى الإجمالي أو الضريبة."
+                        : "Percent and no-cost services appear in the scope and are not added to the total or VAT."}
+                    </p>
                   </div>
                 </div>
               </div>

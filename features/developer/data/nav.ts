@@ -1,10 +1,10 @@
 import {
   LayoutGrid,
-  Folder,
-  Building2,
+  FileSignature,
   Users,
   FileText,
   ReceiptText,
+  FileChartColumn,
   type LucideIcon,
 } from "lucide-react";
 
@@ -22,9 +22,9 @@ export type DeveloperNavEntry = DeveloperNavLink;
 export const DEVELOPER_NAV: DeveloperNavEntry[] = [
   { type: "link", labelKey: "developer.nav.dashboard", href: "/developer/dashboard", icon: LayoutGrid },
   { type: "link", labelKey: "developer.nav.users", href: "/developer/users", icon: Users },
-  { type: "link", labelKey: "developer.nav.projects", href: "/developer/projects", icon: Folder },
-  { type: "link", labelKey: "developer.nav.units", href: "/developer/units", icon: Building2 },
+  { type: "link", labelKey: "developer.nav.offers", href: "/developer/offers", icon: FileSignature },
   { type: "link", labelKey: "developer.nav.invoices", href: "/developer/invoices", icon: ReceiptText },
+  { type: "link", labelKey: "developer.nav.reports", href: "/developer/reports", icon: FileChartColumn },
   { type: "link", labelKey: "developer.nav.files", href: "/developer/files", icon: FileText },
 ];
 

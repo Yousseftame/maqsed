@@ -8,6 +8,7 @@ import { type City } from "@/features/admin/cities/data";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { MenuValuePills } from "@/features/admin/menus/MenuValuePills";
 import { asStringArray } from "@/features/admin/menus/menu-options.service";
+import { AdvertisementInfoAdminBlock } from "@/features/admin/shared/AdvertisementInfoView";
 
 type ViewProjectModalProps = {
   isOpen: boolean;
@@ -302,6 +303,12 @@ export function ViewProjectModal({ isOpen, onClose, property, cities, unitsCount
                       ))}
                     </div>
                   </div>
+                </>
+              )}
+              {property.adInfo && property.adInfo.length > 0 && (
+                <>
+                  <hr className="my-8 border-[#0a0f1d]/10" />
+                  <AdvertisementInfoAdminBlock items={property.adInfo} />
                 </>
               )}
               {property.images && property.images.length > 0 && (

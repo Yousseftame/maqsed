@@ -3,6 +3,7 @@ import path from "node:path";
 import nodemailer from "nodemailer";
 import { OFFER_EMAIL_LOGO_CID, buildOfferEmail, type OfferEmailPayload } from "./offer-email";
 import { buildInterestEmail, type InterestEmailPayload } from "./interest-email";
+import { buildDeveloperEmail, type DeveloperEmailPayload } from "./developer-email";
 
 export class SmtpConfigError extends Error {
   readonly code = "not_configured" as const;
@@ -105,5 +106,16 @@ export async function sendInterestEmail(payload: InterestEmailPayload) {
     html,
     text,
     logLabel: "Interest email",
+  });
+}
+
+export async function sendDeveloperEmail(payload: DeveloperEmailPayload) {
+  const { subject, html, text } = buildDeveloperEmail(payload);
+  await sendHtmlEmail({
+    to: payload.to,
+    subject,
+    html,
+    text,
+    logLabel: "Developer account email",
   });
 }

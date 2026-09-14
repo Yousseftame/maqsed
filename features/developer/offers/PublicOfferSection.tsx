@@ -6,8 +6,9 @@ import { db } from "@/lib/firebase/firebase";
 import { doc, getDoc, updateDoc, serverTimestamp } from "firebase/firestore";
 import { Lock, CheckCircle, XCircle, Loader2, Download } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { downloadOfferPDF } from "@/features/admin/offers/offer-pdf";
 import type { OfferData } from "@/features/admin/offers/offers.service";
+import { downloadOfferPDF } from "@/features/admin/offers/offer-pdf";
+import { formatServiceValue } from "@/features/admin/offers/offer-services";
 import toast from "react-hot-toast";
 
 interface PublicOfferSectionProps {
@@ -302,10 +303,12 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
                   <div className="flex items-start justify-between gap-4">
                     <div>
                       <h1 className="text-xl font-bold text-gray-900 mb-1">{offerData.title}</h1>
-                      <p className="text-sm text-gray-500">
-                        {isRtl ? "المشروع:" : "Project:"}{" "}
-                        <span className="text-gray-800 font-medium">{offerData.projectName}</span>
-                      </p>
+                      {(offerData.projectName || "").trim() ? (
+                        <p className="text-sm text-gray-500">
+                          {isRtl ? "المشروع:" : "Project:"}{" "}
+                          <span className="text-gray-800 font-medium">{offerData.projectName}</span>
+                        </p>
+                      ) : null}
                       {(offerData.unitNumber || "").trim() ? (
                         <p className="text-sm text-gray-500 mt-1">
                           {t("offerPage.unit") || (isRtl ? "الوحدة:" : "Unit:")}{" "}
@@ -374,16 +377,16 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
                               {isRtl ? "الخدمة" : "Service"}
                             </th>
                             <th className="py-2.5 px-4 text-left font-semibold text-gray-500 text-xs whitespace-nowrap">
-                              {isRtl ? "السعر (ريال)" : "Price (SAR)"}
+                              {isRtl ? "القيمة" : "Value"}
                             </th>
                           </tr>
                         </thead>
                         <tbody>
                           {offerData.services.map((svc: any, i: number) => (
                             <tr key={i} className="border-b border-gray-50">
-                              <td className="py-3 px-4 text-gray-800 font-medium">{svc.description || "—"}</td>
-                              <td className="py-3 px-4 font-bold text-gray-900 tabular-nums text-left">
-                                {Number(svc.price).toLocaleString()}
+                              <td className="py-3 px-4 text-gray-800 font-medium whitespace-pre-wrap">{svc.description || "—"}</td>
+                              <td className="py-3 px-4 font-bold text-gray-900 tabular-nums text-left whitespace-nowrap">
+                                {formatServiceValue(svc, isRtl)}
                               </td>
                             </tr>
                           ))}
@@ -408,6 +411,11 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
                         {Number(offerData.total || offerData.financialAmount || 0).toLocaleString()} SAR
                       </span>
                     </div>
+                    <p className="pt-2 text-xs font-medium leading-relaxed text-gray-400">
+                      {isRtl
+                        ? "النسب والخدمات بدون تكلفة تظهر في النطاق ولا تُضاف إلى الإجمالي أو الضريبة."
+                        : "Percent and no-cost services appear in the scope and are not added to the total or VAT."}
+                    </p>
                   </div>
                 </div>
 

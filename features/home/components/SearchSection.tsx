@@ -8,7 +8,7 @@ export function SearchSection() {
   const { t, locale } = useLocale();
 
   return (
-    <section className="relative z-30 flex w-full flex-col items-center overflow-hidden bg-white px-6 py-24">
+    <section className="relative z-30 flex w-full flex-col items-center overflow-hidden bg-white px-6 pt-16 pb-12 md:pt-20 md:pb-14">
       {/* Background Graphic */}
       <div
         className="pointer-events-none absolute inset-0 z-0 select-none opacity-[0.15]"

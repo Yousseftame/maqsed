@@ -830,6 +830,13 @@ export const ar: Dictionary = {
       commercial: "السجل التجاري",
       fal: "رخصة فال",
       complaints: "رقم الشكاوى",
+      licenses: "الموثوقية والتراخيص",
+      licensesHint: "تظهر في تذييل الموقع. أضف الاسم والرقم أو النص الذي يظهر عند الضغط على الزر.",
+      licenseTitleAr: "الاسم (عربي)",
+      licenseTitleEn: "الاسم (English)",
+      licenseValue: "الرقم أو النص",
+      addLicense: "إضافة ترخيص",
+      emptyLicenses: "لا توجد تراخيص بعد. أضف ترخيصاً ليظهر في التذييل.",
     },
     partners: {
       name: "اسم الشريك",
@@ -953,6 +960,8 @@ export const ar: Dictionary = {
     description: "منصة رقمية متكاملة لتوفير وإدارة السكن المؤسسي للعمالة والأفراد تربط بين مالكي العقارات والشركات والأفراد بشكل فعال",
     importantLinks: "روابط هامة",
     contactUs: "تواصل معنا",
+    licenses: "الموثوقية والتراخيص",
+    trust: "الموثوقية",
     location: "الرياض، المملكة العربية السعودية",
     brand: "مقصد",
     rightsPrefix: "© ٢٠٢٦",
@@ -977,6 +986,7 @@ export const ar: Dictionary = {
     panelName: "لوحة المطور",
     nav: {
       dashboard: "نظرة عامة",
+      offers: "العروض",
       projects: "مشروعي",
       units: "الوحدات الخاصة بي",
 
@@ -984,6 +994,7 @@ export const ar: Dictionary = {
       users: "المستخدمون",
       files: "الملفات",
       invoices: "الفواتير",
+      reports: "التقارير",
     },
     users: {
       name: "اسم الموظف",

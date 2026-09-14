@@ -1,6 +1,5 @@
 import { HeroSection } from "@/features/home/components/HeroSection";
 import { SearchSection } from "@/features/home/components/SearchSection";
-import { CurrentPropertiesSection } from "@/features/home/components/CurrentPropertiesSection";
 import { PropertiesSection } from "@/features/home/components/PropertiesSection";
 import { AgentsSection } from "@/features/home/components/AgentsSection";
 import { CTASection } from "@/features/home/components/CTASection";
@@ -11,7 +10,6 @@ export default function Home() {
       <link rel="preload" as="image" href="/9.avif" fetchPriority="high" />
       <HeroSection />
       <SearchSection />
-      <CurrentPropertiesSection />
       {/* <AboutSection /> */}
 
       <PropertiesSection />

@@ -17,10 +17,8 @@ export function UnitDiscountBadge({
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full px-3 py-1.5 text-xs font-bold tracking-wide",
-        variant === "overlay"
-          ? "bg-[#6A2B92] text-white shadow-sm backdrop-blur-md"
-          : "border border-[#6A2B92]/20 bg-white text-[#6A2B92]",
+        "inline-flex items-center rounded-full px-3 py-1.5 text-xs font-bold tracking-wide bg-emerald-600 text-white shadow-sm",
+        variant === "overlay" ? "backdrop-blur-md" : null,
         className
       )}
     >

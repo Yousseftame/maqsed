@@ -767,6 +767,13 @@ export interface Dictionary {
       commercial: string;
       fal: string;
       complaints: string;
+      licenses: string;
+      licensesHint: string;
+      licenseTitleAr: string;
+      licenseTitleEn: string;
+      licenseValue: string;
+      addLicense: string;
+      emptyLicenses: string;
     };
     partners: {
       name: string;
@@ -890,6 +897,8 @@ export interface Dictionary {
     description: string;
     importantLinks: string;
     contactUs: string;
+    licenses: string;
+    trust: string;
     location: string;
     brand: string;
     rightsPrefix: string;
@@ -914,6 +923,7 @@ export interface Dictionary {
     panelName: string;
     nav: {
       dashboard: string;
+      offers: string;
       projects: string;
       units: string;
 
@@ -921,6 +931,7 @@ export interface Dictionary {
       users: string;
       files: string;
       invoices: string;
+      reports: string;
     };
     users: {
       name: string;
@@ -1812,6 +1823,13 @@ export const en: Dictionary = {
       commercial: "Commercial registration",
       fal: "Fal license",
       complaints: "Complaints number",
+      licenses: "Trust & licenses",
+      licensesHint: "Shown in the website footer. Add a name and the number or text that appears when the button is clicked.",
+      licenseTitleAr: "Name (Arabic)",
+      licenseTitleEn: "Name (English)",
+      licenseValue: "Number or text",
+      addLicense: "Add license",
+      emptyLicenses: "No licenses yet. Add one to show it in the footer.",
     },
     partners: {
       name: "Partner name",
@@ -1935,6 +1953,8 @@ export const en: Dictionary = {
     description: "An integrated digital platform for providing and managing corporate housing for workers and individuals, effectively connecting property owners, companies, and individuals",
     importantLinks: "Important Links",
     contactUs: "Contact Us",
+    licenses: "Trust & Licenses",
+    trust: "Trust",
     location: "Riyadh, Saudi Arabia",
     brand: "MAQSED",
     rightsPrefix: "© 2026",
@@ -1959,6 +1979,7 @@ export const en: Dictionary = {
     panelName: "Developer Panel",
     nav: {
       dashboard: "Dashboard",
+      offers: "Offers",
       projects: "My Projects",
       units: "My Units",
 
@@ -1966,6 +1987,7 @@ export const en: Dictionary = {
       users: "Users",
       files: "Files",
       invoices: "Invoices",
+      reports: "Reports",
     },
     users: {
       name: "Employee Name",

@@ -74,6 +74,7 @@ exports.createDeveloperAccount = (0, https_1.onCall)(async (request) => {
             displayName: firstName,
             lastName: lastName || "",
             phoneNumber: phone || "",
+            password,
             companyName: company || "",
             usersPerDeveloper: Number(usersPerDeveloper) || 0,
             status: "active",

@@ -26,6 +26,7 @@ export interface UserData {
   displayName?: string; // First Name
   lastName?: string;
   phoneNumber?: string;
+  password?: string;
   companyName?: string;
   usersPerDeveloper?: number;
   developerUid?: string;

@@ -11,6 +11,8 @@ import { unitsService, type Unit } from "@/features/admin/units/units.service";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { ProjectImageGallery, revokeGalleryPreviews, type ProjectGalleryImage } from "@/features/admin/projects/ProjectImageGallery";
+import { AdvertisementInfoEditor } from "@/features/admin/shared/AdvertisementInfoEditor";
+import { normalizeAdInfo, sanitizeAdInfo } from "@/features/admin/shared/ad-info";
 import { FeatureCheckboxGroup } from "@/features/admin/menus/FeatureCheckboxGroup";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
 import { normalizeMenuValues } from "@/features/admin/menus/menu-options.service";
@@ -62,6 +64,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
   const { locale, t } = useLocale();
   const { of, items } = useMenuOptions();
   const [images, setImages] = useState<ProjectGalleryImage[]>([]);
+  const [adInfo, setAdInfo] = useState<string[]>([]);
   const lastFilledModelId = useRef<string | null>(null);
 
   useEffect(() => {
@@ -106,8 +109,10 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
         age: unit.age?.toString() || "",
       });
       setImages((unit.images || []).map((url) => ({ file: null, preview: url })));
+      setAdInfo(normalizeAdInfo(unit.adInfo));
     } else if (!isOpen) {
       reset();
+      setAdInfo([]);
       setImages((prev) => {
         revokeGalleryPreviews(prev);
         return [];
@@ -238,6 +243,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
         features: normalizeMenuValues(data.features, items),
         facade: normalizeMenuValues(data.facade, items),
         images: allImages,
+        adInfo: sanitizeAdInfo(adInfo),
       };
 
       if (isIndependent) {
@@ -637,6 +643,14 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                 )}
 
                 {/* 6. صور العقار */}
+                <div className={formSectionClass}>
+                  <AdvertisementInfoEditor
+                    lines={adInfo}
+                    onChange={setAdInfo}
+                    disabled={updateMutation.isPending}
+                  />
+                </div>
+
                 <div className={formSectionClass}>
                   <h3 className={sectionTitleClass}>{isIndependent ? "6. صور العقار (اختياري)" : "5. صور العقار (اختياري)"}</h3>
                   <ProjectImageGallery

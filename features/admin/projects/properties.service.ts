@@ -19,6 +19,7 @@ import {
 import { storage } from "@/lib/firebase/firebase";
 import { ref, uploadBytes, getDownloadURL, deleteObject } from "firebase/storage";
 import { asStringArray } from "@/features/admin/menus/menu-options.service";
+import { normalizeAdInfo } from "@/features/admin/shared/ad-info";
 
 export type Building = {
   id: string;
@@ -78,6 +79,7 @@ export type Property = {
 
   images: string[];
   nearbyPlaces?: NearbyPlace[];
+  adInfo?: string[];
   partnerLogos?: string[];
   developerName?: string;
   developerLogo?: string;
@@ -129,6 +131,7 @@ function normalizeProperty(raw: Record<string, unknown> & { id: string }): Prope
     locations: asStringArray(raw.locations),
     models: Array.isArray(raw.models) ? (raw.models as PropertyModel[]).map(normalizeModel) : [],
     buildings: Array.isArray(raw.buildings) ? (raw.buildings as Building[]) : [],
+    adInfo: normalizeAdInfo(raw.adInfo),
   };
 }
 
@@ -207,6 +210,7 @@ export const propertiesService = {
         ...(data.guarantees !== undefined ? { guarantees: asStringArray(data.guarantees) } : {}),
         ...(data.offers !== undefined ? { offers: asStringArray(data.offers) } : {}),
         ...(data.locations !== undefined ? { locations: asStringArray(data.locations) } : {}),
+        ...(data.adInfo !== undefined ? { adInfo: normalizeAdInfo(data.adInfo) } : {}),
         ...(data.models !== undefined
           ? { models: data.models.map((model) => normalizeModel(model)) }
           : {}),

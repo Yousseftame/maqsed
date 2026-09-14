@@ -2,14 +2,18 @@
 
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
-import { X, Loader2, Plus, Trash2, Save } from "lucide-react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { X, Loader2, Plus, Save } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { offersService, type OfferData } from "./offers.service";
-import { propertiesService } from "@/features/admin/projects/properties.service";
-import { unitsService } from "@/features/admin/units/units.service";
-import { OfferAffiliationFields } from "./OfferAffiliationFields";
-import { resolveProjectId, resolveUnitId } from "./offer-affiliation";
+import {
+  applyOfferServicePatch,
+  emptyOfferService,
+  normalizeOfferService,
+  offerServiceTotals,
+  type OfferServiceItem,
+} from "./offer-services";
+import { OfferServicesFields } from "./OfferServicesFields";
 import toast from "react-hot-toast";
 
 const AGREEMENT_OPTIONS = [
@@ -32,25 +36,11 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
     title: "",
     description: "",
     developerName: "",
-    projectId: "",
-    projectName: "",
-    unitId: "",
-    unitNumber: "",
     developerEmail: "",
     developerPhone: "",
   });
   const [agreementTypes, setAgreementTypes] = useState<string[]>([]);
-  const [services, setServices] = useState([{ description: "", price: 0 }]);
-
-  const { data: properties = [] } = useQuery({
-    queryKey: ["properties"],
-    queryFn: () => propertiesService.getProperties(),
-  });
-
-  const { data: units = [] } = useQuery({
-    queryKey: ["units"],
-    queryFn: () => unitsService.getUnits(),
-  });
+  const [services, setServices] = useState<OfferServiceItem[]>([emptyOfferService()]);
 
   useEffect(() => {
     if (!offer) return;
@@ -58,34 +48,18 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
       title: offer.title || "",
       description: offer.description || "",
       developerName: offer.developerName || "",
-      projectId: offer.projectId || "",
-      projectName: offer.projectName || "",
-      unitId: offer.unitId || "",
-      unitNumber: offer.unitNumber || "",
       developerEmail: offer.developerEmail || "",
       developerPhone: offer.developerPhone || "",
     });
     setAgreementTypes(offer.agreementTypes || []);
     setServices(
       offer.services && offer.services.length > 0
-        ? offer.services.map((s) => ({ description: s.description, price: Number(s.price) || 0 }))
-        : [{ description: "", price: 0 }]
+        ? offer.services.map(normalizeOfferService)
+        : [emptyOfferService()]
     );
   }, [offer]);
 
-  useEffect(() => {
-    if (!offer) return;
-    setFormData((prev) => {
-      const projectId = prev.projectId || resolveProjectId(offer, properties, isRtl);
-      const unitId = prev.unitId || resolveUnitId({ ...offer, projectId }, units, properties, isRtl);
-      if (projectId === prev.projectId && unitId === prev.unitId) return prev;
-      return { ...prev, projectId, unitId };
-    });
-  }, [offer, properties, units, isRtl]);
-
-  const subtotal = services.reduce((acc, s) => acc + (Number(s.price) || 0), 0);
-  const vat = subtotal * 0.15;
-  const total = subtotal + vat;
+  const { subtotal, vat, total } = offerServiceTotals(services);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -98,17 +72,14 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
     );
   };
 
-  const addService = () => setServices([...services, { description: "", price: 0 }]);
+  const addService = () => setServices((prev) => [...prev, emptyOfferService()]);
 
   const removeService = (index: number) => {
-    if (services.length > 1) setServices(services.filter((_, i) => i !== index));
+    setServices((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
   };
 
-  const updateService = (index: number, field: "description" | "price", value: string | number) => {
-    const updated = [...services];
-    if (field === "price") updated[index].price = Number(value) || 0;
-    else updated[index].description = value as string;
-    setServices(updated);
+  const updateService = (index: number, patch: Partial<OfferServiceItem>) => {
+    setServices((prev) => prev.map((item, i) => (i === index ? applyOfferServicePatch(item, patch) : item)));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -119,8 +90,10 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
       toast.error(isRtl ? "الرجاء اختيار نوع اتفاقية واحد على الأقل." : "Please select at least one agreement type.");
       return;
     }
-    if (!formData.projectId || !formData.unitId) {
-      toast.error(isRtl ? "الرجاء اختيار المشروع والوحدة." : "Please select a project and a unit.");
+
+    const normalizedServices = services.map(normalizeOfferService);
+    if (normalizedServices.some((item) => !item.description)) {
+      toast.error(isRtl ? "الرجاء كتابة كل خدمة كما ستظهر." : "Please write each service as it should appear.");
       return;
     }
 
@@ -130,7 +103,7 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
         ...formData,
         description: formData.description.trim(),
         agreementTypes,
-        services,
+        services: normalizedServices,
         subtotal,
         vat,
         total,
@@ -202,22 +175,10 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
                     {isRtl ? "المعلومات الأساسية" : "Basic Information"}
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
+                    <div className="sm:col-span-2">
                       <label className={labelClass}>{isRtl ? "عنوان العرض" : "Offer Title"}</label>
                       <input name="title" value={formData.title} onChange={handleChange} required className={inputClass} placeholder={isRtl ? "عنوان العرض..." : "Offer title..."} />
                     </div>
-                    <OfferAffiliationFields
-                      value={{
-                        projectId: formData.projectId,
-                        projectName: formData.projectName,
-                        unitId: formData.unitId,
-                        unitNumber: formData.unitNumber,
-                      }}
-                      onChange={(next) => setFormData((prev) => ({ ...prev, ...next }))}
-                      inputClass={inputClass}
-                      labelClass={labelClass}
-                      isRtl={isRtl}
-                    />
                     <div className="sm:col-span-2">
                       <label className={labelClass}>{isRtl ? "وصف العرض" : "Description"}</label>
                       <textarea
@@ -284,7 +245,7 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
                 <div className="rounded-[18px] border border-[#0a0f1d]/5 bg-[#FAFAFA] p-5 space-y-3">
                   <div className="flex items-center justify-between">
                     <h3 className="text-sm font-black text-[#0a0f1d]">
-                      {isRtl ? "الخدمات والأسعار" : "Services & Prices"}
+                      {isRtl ? "نطاق الخدمات والتسعير" : "Scope of Services & Pricing"}
                     </h3>
                     <button
                       type="button"
@@ -295,41 +256,18 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
                       {isRtl ? "إضافة" : "Add"}
                     </button>
                   </div>
-                  {/* Column headers */}
-                  <div className="grid gap-2 px-1" style={{ gridTemplateColumns: "1fr 120px 40px" }}>
-                    <span className="text-xs font-bold text-[#8c8c8c]">{isRtl ? "وصف الخدمة" : "Service"}</span>
-                    <span className="text-xs font-bold text-[#8c8c8c] text-center">{isRtl ? "السعر (ريال)" : "Price (SAR)"}</span>
-                    <span />
-                  </div>
-                  <div className="space-y-2">
-                    {services.map((svc, i) => (
-                      <div key={i} className="grid gap-2 items-center" style={{ gridTemplateColumns: "1fr 120px 40px" }}>
-                        <input
-                          value={svc.description}
-                          onChange={(e) => updateService(i, "description", e.target.value)}
-                          placeholder={isRtl ? "وصف الخدمة..." : "Service description..."}
-                          className={inputClass}
-                        />
-                        <input
-                          type="number"
-                          value={svc.price || ""}
-                          onChange={(e) => updateService(i, "price", e.target.value)}
-                          placeholder="0"
-                          className={`${inputClass} text-center`}
-                          dir="ltr"
-                          min="0"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => removeService(i)}
-                          disabled={services.length === 1}
-                          className="flex h-10 w-10 items-center justify-center rounded-[10px] text-red-400 hover:bg-red-50 transition-colors disabled:opacity-30"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
+                  <p className="text-xs font-medium text-[#8c8c8c]">
+                    {isRtl
+                      ? "اكتب الخدمة كما ستظهر. المبلغ يُحتسب في الإجمالي، والنسبة وبدون تكلفة لا يُضافان."
+                      : "Write each service as it should appear. Amounts count toward the total; percent and no-cost do not."}
+                  </p>
+                  <OfferServicesFields
+                    services={services}
+                    isRtl={isRtl}
+                    onUpdate={updateService}
+                    onRemove={removeService}
+                    onAdd={addService}
+                  />
 
                   {/* Totals */}
                   <div className="mt-4 rounded-[12px] bg-[#F4F4F4] p-4 space-y-1.5 text-sm">
@@ -345,6 +283,11 @@ export function EditOfferModal({ offer, onClose }: EditOfferModalProps) {
                       <span>{isRtl ? "الإجمالي" : "Total"}</span>
                       <span className="tabular-nums">{total.toLocaleString()} SAR</span>
                     </div>
+                    <p className="pt-1 text-[11px] font-medium text-[#8c8c8c]">
+                      {isRtl
+                        ? "النسب والخدمات بدون تكلفة لا تُضاف إلى الإجمالي أو الضريبة."
+                        : "Percent and no-cost services are not added to the total or VAT."}
+                    </p>
                   </div>
                 </div>
 

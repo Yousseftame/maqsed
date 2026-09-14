@@ -24,10 +24,21 @@ function asNumber(value: unknown) {
 
 function parseServices(value: unknown): OfferEmailService[] | null {
   if (!Array.isArray(value) || value.length > 50) return null;
-  return value.map((item) => ({
-    description: asString((item as { description?: unknown })?.description, 200),
-    price: asNumber((item as { price?: unknown })?.price),
-  }));
+  return value.map((item) => {
+    const row = (item || {}) as {
+      description?: unknown;
+      price?: unknown;
+      kind?: unknown;
+      percent?: unknown;
+    };
+    const kind = row.kind === "percent" || row.kind === "free" || row.kind === "amount" ? row.kind : "amount";
+    return {
+      description: asString(row.description, 400),
+      kind,
+      price: asNumber(row.price),
+      percent: asNumber(row.percent),
+    };
+  });
 }
 
 function parsePayload(body: unknown, origin: string): OfferEmailPayload | null {
@@ -52,7 +63,7 @@ function parsePayload(body: unknown, origin: string): OfferEmailPayload | null {
   const projectName = asString(data.projectName, 200);
   const unitNumber = asString(data.unitNumber, 80);
   const offerNumber = asString(data.offerNumber, 32);
-  if (!title || !projectName || !offerNumber) return null;
+  if (!title || !offerNumber) return null;
 
   return {
     offerId,

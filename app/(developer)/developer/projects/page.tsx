@@ -1,7 +1,5 @@
-"use client";
-
-import { DeveloperProjectsSection } from "@/features/developer/projects/DeveloperProjectsSection";
+import { redirect } from "next/navigation";
 
 export default function DeveloperProjectsPage() {
-  return <DeveloperProjectsSection />;
+  redirect("/developer/offers");
 }

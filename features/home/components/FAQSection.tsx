@@ -18,7 +18,7 @@ export function FAQSection() {
   };
 
   return (
-    <section className="relative z-30 w-full overflow-hidden bg-white px-6 py-24 md:px-12 lg:px-20">
+    <section className="relative z-30 w-full overflow-hidden bg-white px-6 pt-4 pb-16 md:px-12 md:pt-8 md:pb-20 lg:px-20">
       <div className="relative z-10 mx-auto flex w-full max-w-4xl flex-col items-center text-center">
         
         {/* Top Badge */}

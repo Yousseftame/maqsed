@@ -18,7 +18,7 @@ function buildOfferMessage(offer: OfferData, offerUrl: string) {
   const name = (offer.developerName || "").trim() || "العميل";
   const offerNumber = offer.offerNumber ? `#${String(offer.offerNumber).replace(/^#/, "")}` : "—";
   const title = (offer.title || "").trim() || "—";
-  const project = (offer.projectName || "").trim() || "—";
+  const project = (offer.projectName || "").trim();
   const unit = (offer.unitNumber || "").trim();
   const description = (offer.description || "").trim();
   const otp = (offer.secretCode || "").trim();
@@ -32,8 +32,11 @@ function buildOfferMessage(offer: OfferData, offerUrl: string) {
     "",
     `رقم العرض: *${offerNumber}*`,
     `العنوان: *${title}*`,
-    `المشروع: *${project}*`,
   ];
+
+  if (project) {
+    lines.push(`المشروع: *${project}*`);
+  }
 
   if (unit) {
     lines.push(`الوحدة: *${unit}*`);

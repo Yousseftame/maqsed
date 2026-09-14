@@ -9,6 +9,7 @@ import { MenuValuePills } from "@/features/admin/menus/MenuValuePills";
 import { getActiveUnitDiscount } from "@/features/units/unit-discount";
 import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
 import { useNow } from "@/features/units/useNow";
+import { AdvertisementInfoAdminBlock } from "@/features/admin/shared/AdvertisementInfoView";
 
 interface ViewUnitModalProps {
   isOpen: boolean;
@@ -222,6 +223,8 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                   </div>
                 </div>
               )}
+
+              <AdvertisementInfoAdminBlock items={unit.adInfo} />
 
               {/* Images */}
               {unit.images && unit.images.length > 0 && (

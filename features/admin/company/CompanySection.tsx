@@ -2,13 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
-import { ImagePlus, Loader2 } from "lucide-react";
+import { ImagePlus, Loader2, Plus, Trash2 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Panel } from "@/features/admin/ui/Panel";
 import { AdminButton, fieldClass } from "@/features/admin/ui/AdminButton";
 import { Field } from "@/features/admin/ui/Field";
 import { COMPANY_DEFAULTS, DEFAULT_COMPANY_LOGO } from "@/features/admin/company/data";
-import { companyService } from "@/features/company/company.service";
+import { companyService, normalizeLicenses, type CompanyLicense } from "@/features/company/company.service";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
 
@@ -31,6 +31,7 @@ export function CompanySection() {
   const [commercial, setCommercial] = useState("");
   const [fal, setFal] = useState("");
   const [complaints, setComplaints] = useState("");
+  const [licenses, setLicenses] = useState<CompanyLicense[]>([]);
   const [isSaving, setIsSaving] = useState(false);
 
   const { data, isFetched } = useQuery({
@@ -58,6 +59,7 @@ export function CompanySection() {
     setCommercial(data?.commercial?.trim() || COMPANY_DEFAULTS.commercial);
     setFal(data?.fal?.trim() || COMPANY_DEFAULTS.fal);
     setComplaints(data?.complaints?.trim() || COMPANY_DEFAULTS.complaints);
+    setLicenses(normalizeLicenses(data?.licenses));
   }, [data, isFetched]);
 
   function onLogoChange(file: File | undefined) {
@@ -87,6 +89,14 @@ export function CompanySection() {
         commercial: commercial.trim(),
         fal: fal.trim(),
         complaints: complaints.trim(),
+        licenses: licenses
+          .map((item) => ({
+            id: item.id,
+            titleAr: item.titleAr.trim(),
+            titleEn: item.titleEn.trim(),
+            value: item.value?.trim() || "",
+          }))
+          .filter((item) => item.titleAr || item.titleEn),
       });
       if (logo.startsWith("blob:")) URL.revokeObjectURL(logo);
       setLogo(nextLogo);
@@ -218,49 +228,76 @@ export function CompanySection() {
         </div>
       </Panel>
 
-      <Panel title={t("admin.company.legal")}>
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          <Field label={t("admin.company.ownerAr")}>
-            <input
-              dir="rtl"
-              value={ownerAr}
-              onChange={(event) => setOwnerAr(event.target.value)}
-              className={fieldClass}
-            />
-          </Field>
-          <Field label={t("admin.company.ownerEn")}>
-            <input
-              dir="ltr"
-              value={ownerEn}
-              onChange={(event) => setOwnerEn(event.target.value)}
-              className={cn(fieldClass, "text-start")}
-            />
-          </Field>
-          <Field label={t("admin.company.commercial")}>
-            <input
-              dir="ltr"
-              value={commercial}
-              onChange={(event) => setCommercial(event.target.value)}
-              className={cn(fieldClass, "text-start")}
-            />
-          </Field>
-          <Field label={t("admin.company.fal")}>
-            <input
-              dir="ltr"
-              value={fal}
-              onChange={(event) => setFal(event.target.value)}
-              className={cn(fieldClass, "text-start")}
-            />
-          </Field>
-          <Field label={t("admin.company.complaints")}>
-            <input
-              dir="ltr"
-              value={complaints}
-              onChange={(event) => setComplaints(event.target.value)}
-              className={cn(fieldClass, "text-start")}
-            />
-          </Field>
-        </div>
+      <Panel title={t("admin.company.licenses")}>
+        <p className="mb-5 text-sm font-medium text-[#8c8c8c]">{t("admin.company.licensesHint")}</p>
+        {licenses.length === 0 ? (
+          <p className="mb-4 text-sm font-medium text-[#8c8c8c]">{t("admin.company.emptyLicenses")}</p>
+        ) : (
+          <div className="mb-4 flex flex-col gap-3">
+            {licenses.map((item, index) => (
+              <div key={item.id} className="grid grid-cols-1 gap-3 sm:grid-cols-[1fr_1fr_1fr_auto]">
+                <input
+                  dir="rtl"
+                  value={item.titleAr}
+                  onChange={(event) =>
+                    setLicenses((current) =>
+                      current.map((license, i) => (i === index ? { ...license, titleAr: event.target.value } : license))
+                    )
+                  }
+                  placeholder={t("admin.company.licenseTitleAr")}
+                  className={fieldClass}
+                />
+                <input
+                  dir="ltr"
+                  value={item.titleEn}
+                  onChange={(event) =>
+                    setLicenses((current) =>
+                      current.map((license, i) => (i === index ? { ...license, titleEn: event.target.value } : license))
+                    )
+                  }
+                  placeholder={t("admin.company.licenseTitleEn")}
+                  className={cn(fieldClass, "text-start")}
+                />
+                <input
+                  dir="ltr"
+                  value={item.value || ""}
+                  onChange={(event) =>
+                    setLicenses((current) =>
+                      current.map((license, i) => (i === index ? { ...license, value: event.target.value } : license))
+                    )
+                  }
+                  placeholder={t("admin.company.licenseValue")}
+                  className={cn(fieldClass, "text-start")}
+                />
+                <button
+                  type="button"
+                  onClick={() => setLicenses((current) => current.filter((_, i) => i !== index))}
+                  className="flex h-12 w-12 items-center justify-center rounded-full bg-[#F4F4F4] text-red-500 transition-colors hover:bg-red-50 hover:text-red-600"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
+        <button
+          type="button"
+          onClick={() =>
+            setLicenses((current) => [
+              ...current,
+              {
+                id: `license-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+                titleAr: "",
+                titleEn: "",
+                value: "",
+              },
+            ])
+          }
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#F4F4F4] px-5 text-sm font-bold text-[#0a0f1d] transition-colors hover:bg-[#EAEAEA]"
+        >
+          <Plus className="h-4 w-4" />
+          {t("admin.company.addLicense")}
+        </button>
       </Panel>
 
       <div className="flex justify-end">

@@ -14,6 +14,7 @@ import { asStringArray } from "@/features/admin/menus/menu-options.service";
 import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
 import { formatProjectPriceRange, projectPriceRangeFromUnits } from "@/features/properties/project-price";
 import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
+import { ProjectDeveloperOverlay } from "@/features/properties/components/ProjectDeveloperOverlay";
 import type { City } from "@/features/admin/cities/data";
 import type { Locale } from "@/lib/i18n/types";
 
@@ -53,11 +54,15 @@ function normalizeStatus(status: string | undefined) {
 
 function isListedProject(status: string | undefined) {
   const value = normalizeStatus(status);
-  return value === "active" || value === "soon";
+  return value === "active" || value === "soon" || value === "soldout";
 }
 
 function isSoon(status: string | undefined) {
   return normalizeStatus(status) === "soon";
+}
+
+function isSoldOut(status: string | undefined) {
+  return normalizeStatus(status) === "soldout";
 }
 
 function projectImage(property: Property) {
@@ -171,6 +176,7 @@ export function PropertiesSection() {
           category,
           location,
           soon: isSoon(property.status),
+          soldOut: isSoldOut(property.status),
           priceLabel: formatProjectPriceRange(projectPriceRangeFromUnits(property.id, units), isRtl),
           unitsCount: unitsCountForProject(property, units),
           features: asStringArray(property.features)
@@ -178,6 +184,8 @@ export function PropertiesSection() {
             .filter(Boolean)
             .slice(0, 4),
           views: Number(property.views) || 0,
+          developerName: property.developerName?.trim() || "",
+          developerLogo: property.developerLogo?.trim() || "",
         };
       });
   }, [properties, cities, units, locale, isRtl, label]);
@@ -215,14 +223,17 @@ export function PropertiesSection() {
     };
   }, []);
 
-  const visibleProperties = (
-    activeFilter === ALL_FILTER ? projects : projects.filter((project) => project.typeLabel === activeFilter)
-  ).slice(0, 6);
+  const filteredProperties =
+    activeFilter === ALL_FILTER ? projects : projects.filter((project) => project.typeLabel === activeFilter);
+  const visibleProperties = [
+    ...filteredProperties.filter((project) => !project.soldOut),
+    ...filteredProperties.filter((project) => project.soldOut),
+  ].slice(0, 6);
 
   return (
     <section
       ref={sectionRef}
-      className="relative z-30 w-full overflow-hidden bg-white px-6 py-24 md:px-12 lg:px-20"
+      className="relative z-30 w-full overflow-hidden bg-white px-6 py-12 md:px-12 md:py-16 lg:px-20"
     >
       <div
         className="pointer-events-none absolute top-0 left-0 z-[100] hidden h-[105px] w-[105px] items-center justify-center rounded-full bg-[#17C3B3] text-center text-white shadow-xl lg:flex"
@@ -330,14 +341,20 @@ export function PropertiesSection() {
                     <MostViewedBadge views={prop.views} />
                   </div>
 
+                  <ProjectDeveloperOverlay name={prop.developerName} logo={prop.developerLogo} />
+
                   {prop.soon ? (
                     <div className="absolute top-4 end-4 z-10 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-4 py-1.5 text-sm font-medium text-white shadow-sm backdrop-blur-md">
                       <Clock className="h-4 w-4" />
                       <span>{isRtl ? "قريباً" : "Soon"}</span>
                     </div>
+                  ) : prop.soldOut ? (
+                    <div className="absolute top-4 end-4 z-10 rounded-full bg-red-500 px-4 py-1.5 text-sm font-bold text-white shadow-sm">
+                      {isRtl ? "مباع" : "Sold"}
+                    </div>
                   ) : (
                     <div className="absolute top-4 end-4 z-10 rounded-full bg-[#17C3B3] px-4 py-1.5 text-sm font-bold text-white shadow-sm">
-                      {isRtl ? "متاح" : "Available"}
+                      {isRtl ? "بدأ البيع" : "Now Selling"}
                     </div>
                   )}
                 </div>

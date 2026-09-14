@@ -22,6 +22,7 @@ import {
 } from "@/features/properties/property-search";
 import { formatProjectPriceRange, projectPriceRangeFromUnits } from "@/features/properties/project-price";
 import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
+import { ProjectDeveloperOverlay } from "@/features/properties/components/ProjectDeveloperOverlay";
 
 const ALL = ALL_SEARCH;
 const PAGE_SIZE = 8;
@@ -52,6 +53,8 @@ type ListedProject = {
   unitsCount: number;
   features: string[];
   views: number;
+  developerName: string;
+  developerLogo: string;
 };
 
 function named(city: City | undefined, locale: Locale) {
@@ -245,6 +248,8 @@ function PropertiesListingInner() {
             .filter(Boolean)
             .slice(0, 4),
           views: Number(property.views) || 0,
+          developerName: property.developerName?.trim() || "",
+          developerLogo: property.developerLogo?.trim() || "",
         },
       ];
     });
@@ -417,18 +422,20 @@ function PropertiesListingInner() {
                     <MostViewedBadge views={prop.views} />
                   </div>
 
+                  <ProjectDeveloperOverlay name={prop.developerName} logo={prop.developerLogo} />
+
                   {prop.status === "soon" ? (
                     <div className="absolute top-4 end-4 z-10 flex items-center gap-1.5 rounded-full border border-white/20 bg-black/40 px-4 py-1.5 text-sm font-medium text-white shadow-sm backdrop-blur-md">
                       <Clock className="h-4 w-4" />
                       <span>{isRtl ? "قريباً" : "Soon"}</span>
                     </div>
                   ) : prop.status === "soldOut" ? (
-                    <div className="absolute top-4 end-4 z-10 rounded-full border border-green-200 bg-green-50 px-4 py-1.5 text-sm font-bold text-green-700 shadow-sm">
-                      {isRtl ? "بدأ البيع" : "Now Selling"}
+                    <div className="absolute top-4 end-4 z-10 rounded-full bg-red-500 px-4 py-1.5 text-sm font-bold text-white shadow-sm">
+                      {isRtl ? "مباع" : "Sold"}
                     </div>
                   ) : (
                     <div className="absolute top-4 end-4 z-10 rounded-full bg-[#17C3B3] px-4 py-1.5 text-sm font-bold text-white shadow-sm">
-                      {isRtl ? "متاح" : "Available"}
+                      {isRtl ? "بدأ البيع" : "Now Selling"}
                     </div>
                   )}
                 </div>
@@ -483,11 +490,7 @@ function PropertiesListingInner() {
                           ? isRtl
                             ? "يتاح للحجز"
                             : "Available for booking"
-                          : prop.status === "soldOut"
-                            ? isRtl
-                              ? "نفدت الوحدات"
-                              : "Sold out"
-                            : prop.priceLabel}
+                          : prop.priceLabel}
                       </div>
                       <div className="flex shrink-0 items-center gap-1.5 text-[#0a0f1d] transition-colors group-hover:text-[#6A2B92]">
                         {!isRtl && (

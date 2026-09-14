@@ -7,6 +7,13 @@ import { COMPANY_DEFAULTS, DEFAULT_COMPANY_LOGO } from "@/features/admin/company
 const COLLECTION = "company";
 const DOC_ID = "main";
 
+export type CompanyLicense = {
+  id: string;
+  titleAr: string;
+  titleEn: string;
+  value?: string;
+};
+
 export type CompanyPageData = {
   logo?: string;
   phone?: string;
@@ -22,6 +29,13 @@ export type CompanyPageData = {
   commercial?: string;
   fal?: string;
   complaints?: string;
+  licenses?: CompanyLicense[];
+};
+
+export type ResolvedCompanyLicense = {
+  id: string;
+  title: string;
+  value: string;
 };
 
 export type ResolvedCompanyContent = {
@@ -37,6 +51,7 @@ export type ResolvedCompanyContent = {
   commercial: string;
   fal: string;
   complaints: string;
+  licenses: ResolvedCompanyLicense[];
 };
 
 function pick(value: string | undefined, fallback: string): string {
@@ -45,6 +60,28 @@ function pick(value: string | undefined, fallback: string): string {
 
 function sanitizeFileName(name: string): string {
   return name.replace(/[^a-zA-Z0-9.\u0600-\u06FF-]/g, "_");
+}
+
+export function normalizeLicenses(raw: unknown): CompanyLicense[] {
+  if (!Array.isArray(raw)) return [];
+  return raw.flatMap((item, index) => {
+    if (!item || typeof item !== "object") return [];
+    const record = item as Record<string, unknown>;
+    const titleAr = String(record.titleAr || "").trim();
+    const titleEn = String(record.titleEn || "").trim();
+    const value = String(record.value || record.url || "").trim();
+    const id = String(record.id || "").trim() || `license-${index}`;
+    return [{ id, titleAr, titleEn, value }];
+  });
+}
+
+function resolveLicenses(licenses: CompanyLicense[] | undefined, isAr: boolean): ResolvedCompanyLicense[] {
+  return normalizeLicenses(licenses)
+    .map((item) => {
+      const title = isAr ? item.titleAr || item.titleEn : item.titleEn || item.titleAr;
+      return title ? { id: item.id, title, value: item.value || "" } : null;
+    })
+    .filter((item): item is ResolvedCompanyLicense => Boolean(item));
 }
 
 export function resolveCompanyContent(
@@ -71,6 +108,7 @@ export function resolveCompanyContent(
     commercial: pick(data?.commercial, COMPANY_DEFAULTS.commercial),
     fal: pick(data?.fal, COMPANY_DEFAULTS.fal),
     complaints: pick(data?.complaints, COMPANY_DEFAULTS.complaints),
+    licenses: resolveLicenses(data?.licenses, isAr),
   };
 }
 
@@ -78,7 +116,11 @@ export const companyService = {
   async getCompany(): Promise<CompanyPageData | null> {
     const snap = await getDoc(doc(db, COLLECTION, DOC_ID));
     if (!snap.exists()) return null;
-    return snap.data() as CompanyPageData;
+    const data = snap.data() as CompanyPageData;
+    return {
+      ...data,
+      licenses: normalizeLicenses(data.licenses),
+    };
   },
 
   async saveCompany(data: CompanyPageData): Promise<void> {
@@ -86,6 +128,7 @@ export const companyService = {
       doc(db, COLLECTION, DOC_ID),
       {
         ...data,
+        licenses: normalizeLicenses(data.licenses),
         updatedAt: serverTimestamp(),
       },
       { merge: true }

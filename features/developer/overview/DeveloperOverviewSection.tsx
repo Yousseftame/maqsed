@@ -2,11 +2,11 @@
 
 import { useRef } from "react";
 import Link from "next/link";
-import { Banknote, Building2, CircleCheck, Clock, FileText, Folder, Percent, ReceiptText, RefreshCw, Users, Wallet } from "lucide-react";
+import { Banknote, CircleCheck, Clock, FileSignature, FileText, Percent, ReceiptText, RefreshCw, Users, Wallet } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { StatGrid, StatCard } from "@/features/admin/ui/StatCard";
 import { Panel } from "@/features/admin/ui/Panel";
-import type { DeveloperDashboardStats } from "./useDeveloperDashboard";
+import type { DeveloperDashboardFilter, DeveloperDashboardStats } from "./useDeveloperDashboard";
 
 function formatMoney(value: number) {
   return `${(Math.round(value * 100) / 100).toLocaleString(undefined, { maximumFractionDigits: 2 })} ر.س`;
@@ -18,10 +18,12 @@ function FilterScroller({
   filters,
   filter,
   onFilter,
+  isRtl,
 }: {
-  filters: { id: string; label: string }[];
+  filters: DeveloperDashboardFilter[];
   filter: string;
   onFilter: (id: string) => void;
+  isRtl: boolean;
 }) {
   const scrollerRef = useRef<HTMLDivElement>(null);
   const dragRef = useRef({
@@ -96,13 +98,22 @@ function FilterScroller({
               onFilter(item.id);
             }}
             className={cn(
-              "shrink-0 rounded-full px-3.5 py-2 text-xs font-bold whitespace-nowrap transition-colors sm:px-5 sm:text-sm",
+              "flex shrink-0 items-center gap-2 rounded-full px-3.5 py-2 text-xs font-bold whitespace-nowrap transition-colors sm:px-5 sm:text-sm",
               filter === item.id
                 ? "bg-[#0a0f1d] text-white shadow-md"
                 : "text-[#8c8c8c] hover:bg-white hover:text-[#0a0f1d]"
             )}
           >
-            {item.label}
+            <span>{item.label}</span>
+            {item.paid === true ? (
+              <span className={cn("text-[10px] font-bold", filter === item.id ? "text-white/70" : "text-[#2f9e44]")}>
+                {isRtl ? "مدفوع" : "Paid"}
+              </span>
+            ) : item.paid === false ? (
+              <span className={cn("text-[10px] font-bold", filter === item.id ? "text-white/70" : "text-[#FF9F43]")}>
+                {isRtl ? "غير مدفوع" : "Unpaid"}
+              </span>
+            ) : null}
           </button>
         ))}
       </div>
@@ -122,7 +133,7 @@ export function DeveloperOverviewSection({
   canRefresh,
 }: {
   filter: string;
-  filters: { id: string; label: string }[];
+  filters: DeveloperDashboardFilter[];
   onFilter: (id: string) => void;
   isDeveloper: boolean;
   isRtl: boolean;
@@ -133,29 +144,22 @@ export function DeveloperOverviewSection({
 }) {
   const pageCards = [
     {
-      href: "/developer/projects",
-      icon: Folder,
-      label: isRtl ? "المشاريع" : "Projects",
-      value: stats.projectCount,
-    },
-    {
-      href: "/developer/units",
-      icon: Building2,
-      label: isRtl ? "الوحدات" : "Units",
-      value: stats.unitCount,
-      hint: isRtl ? `${stats.availableUnits} متاحة` : `${stats.availableUnits} available`,
+      href: "/developer/offers",
+      icon: FileSignature,
+      label: isRtl ? "العروض" : "Offers",
+      value: stats.pageOfferCount,
     },
     {
       href: "/developer/invoices",
       icon: ReceiptText,
       label: isRtl ? "الفواتير" : "Invoices",
-      value: stats.invoiceCount,
+      value: stats.pageInvoiceCount,
     },
     {
       href: "/developer/files",
       icon: FileText,
       label: isRtl ? "الملفات" : "Files",
-      value: stats.fileCount,
+      value: stats.pageFileCount,
     },
     ...(isDeveloper
       ? [
@@ -186,13 +190,14 @@ export function DeveloperOverviewSection({
         }
       >
         <div className="flex flex-col gap-4">
-          <FilterScroller filters={filters} filter={filter} onFilter={onFilter} />
+          <FilterScroller filters={filters} filter={filter} onFilter={onFilter} isRtl={isRtl} />
           <div className="rounded-[24px] bg-[#F4F4F4] p-4 sm:p-5">
             <StatGrid className="sm:grid-cols-2 xl:grid-cols-2">
               <StatCard
                 label={isRtl ? "إجمالي الفواتير" : "Invoice total"}
                 value={formatMoney(stats.invoiceTotal)}
                 icon={Banknote}
+                className={moneyValueClass}
               />
               <StatCard
                 label={isRtl ? "نسبة التحصيل" : "Collection rate"}
@@ -244,7 +249,7 @@ export function DeveloperOverviewSection({
       <StatGrid className={pageCards.length > 4 ? "xl:grid-cols-5" : undefined}>
         {pageCards.map((card) => (
           <Link key={card.href} href={card.href} className="block transition-transform hover:-translate-y-0.5">
-            <StatCard icon={card.icon} label={card.label} value={card.value} hint={card.hint} />
+            <StatCard icon={card.icon} label={card.label} value={card.value} />
           </Link>
         ))}
       </StatGrid>

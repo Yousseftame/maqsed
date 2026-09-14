@@ -1,16 +1,23 @@
-﻿"use client";
+"use client";
 
 import { useState } from "react";
 import { db } from "@/lib/firebase/firebase";
 import { collection, addDoc, serverTimestamp } from "firebase/firestore";
 import { useRouter } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
-import { Send, Loader2, Plus, Trash2, CheckCircle2 } from "lucide-react";
+import { Send, Loader2, Plus, CheckCircle2 } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { offersService } from "./offers.service";
+import {
+  applyOfferServicePatch,
+  emptyOfferService,
+  normalizeOfferService,
+  offerServiceTotals,
+  type OfferServiceItem,
+} from "./offer-services";
+import { OfferServicesFields } from "./OfferServicesFields";
 import toast from "react-hot-toast";
 import { OfferShareModal } from "./OfferShareModal";
-import { OfferAffiliationFields } from "./OfferAffiliationFields";
 
 const AGREEMENT_OPTIONS = [
   { id: "exclusive", label: "حصري" },
@@ -29,20 +36,14 @@ export function CreateOfferSection() {
     title: "",
     description: "",
     developerName: "",
-    projectId: "",
-    projectName: "",
-    unitId: "",
-    unitNumber: "",
     developerEmail: "",
     developerPhone: "",
   });
 
   const [agreementTypes, setAgreementTypes] = useState<string[]>([]);
-  const [services, setServices] = useState([{ description: "", price: 0 }]);
+  const [services, setServices] = useState<OfferServiceItem[]>([emptyOfferService()]);
 
-  const subtotal = services.reduce((acc, curr) => acc + (Number(curr.price) || 0), 0);
-  const vat = subtotal * 0.15;
-  const total = subtotal + vat;
+  const { subtotal, vat, total } = offerServiceTotals(services);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
@@ -55,22 +56,14 @@ export function CreateOfferSection() {
     );
   };
 
-  const addService = () => setServices([...services, { description: "", price: 0 }]);
-  
+  const addService = () => setServices((prev) => [...prev, emptyOfferService()]);
+
   const removeService = (index: number) => {
-    if (services.length > 1) {
-      setServices(services.filter((_, i) => i !== index));
-    }
+    setServices((prev) => (prev.length > 1 ? prev.filter((_, i) => i !== index) : prev));
   };
 
-  const updateService = (index: number, field: "description" | "price", value: string | number) => {
-    const newServices = [...services];
-    if (field === "price") {
-      newServices[index].price = Number(value) || 0;
-    } else {
-      newServices[index].description = value as string;
-    }
-    setServices(newServices);
+  const updateService = (index: number, patch: Partial<OfferServiceItem>) => {
+    setServices((prev) => prev.map((item, i) => (i === index ? applyOfferServicePatch(item, patch) : item)));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,8 +72,10 @@ export function CreateOfferSection() {
       toast.error(isRtl ? "الرجاء اختيار نوع اتفاقية واحد على الأقل." : "Please select at least one agreement type.");
       return;
     }
-    if (!formData.projectId || !formData.unitId) {
-      toast.error(isRtl ? "الرجاء اختيار المشروع والوحدة." : "Please select a project and a unit.");
+
+    const normalizedServices = services.map(normalizeOfferService);
+    if (normalizedServices.some((item) => !item.description)) {
+      toast.error(isRtl ? "الرجاء كتابة كل خدمة كما ستظهر." : "Please write each service as it should appear.");
       return;
     }
 
@@ -95,7 +90,7 @@ export function CreateOfferSection() {
         description: formData.description.trim(),
         offerNumber: nextNumber,
         agreementTypes,
-        services,
+        services: normalizedServices,
         subtotal,
         vat,
         total,
@@ -178,21 +173,6 @@ export function CreateOfferSection() {
           </div>
 
           <div className="grid gap-5 sm:grid-cols-2 mb-5">
-            <OfferAffiliationFields
-              value={{
-                projectId: formData.projectId,
-                projectName: formData.projectName,
-                unitId: formData.unitId,
-                unitNumber: formData.unitNumber,
-              }}
-              onChange={(next) => setFormData((prev) => ({ ...prev, ...next }))}
-              inputClass={inputClass}
-              labelClass={labelClass}
-              isRtl={isRtl}
-            />
-          </div>
-
-          <div className="grid gap-5 sm:grid-cols-2 mb-5">
             <div>
               <label className={labelClass}>{isRtl ? "البريد الإلكتروني" : "Email Address"}</label>
               <input
@@ -263,57 +243,20 @@ export function CreateOfferSection() {
         {/* Services & Financials */}
         <div className={formSectionClass}>
           <h3 className={sectionTitleClass}>{isRtl ? "نطاق الخدمات والتسعير" : "Scope of Services & Pricing"}</h3>
-          
-          <div className="space-y-4 mb-6">
-            {services.map((service, idx) => (
-              <div key={idx} className="flex flex-col sm:flex-row gap-4 items-start bg-[#F4F4F4] p-4 rounded-[16px] border border-[#0a0f1d]/5">
-                <div className="flex-1 w-full">
-                  <label className="mb-1 block text-xs font-bold text-[#8c8c8c]">{isRtl ? "وصف الخدمة" : "Description"}</label>
-                  <input
-                    required
-                    type="text"
-                    value={service.description}
-                    onChange={(e) => updateService(idx, "description", e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addService();
-                      }
-                    }}
-                    placeholder={isRtl ? "مثال: تسويق حصري لمدة شهرين..." : "Service description"}
-                    className="h-12 w-full rounded-[12px] border border-[#0a0f1d]/10 bg-white px-4 text-sm font-bold text-[#0a0f1d] outline-none transition-colors focus:border-[#0a0f1d]"
-                  />
-                </div>
-                <div className="w-full sm:w-48">
-                  <label className="mb-1 block text-xs font-bold text-[#8c8c8c]">{isRtl ? "السعر (ريال)" : "Price (SAR)"}</label>
-                  <input
-                    required
-                    type="number"
-                    min="0"
-                    value={service.price || ""}
-                    onChange={(e) => updateService(idx, "price", e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        addService();
-                      }
-                    }}
-                    placeholder="0"
-                    className="h-12 w-full rounded-[12px] border border-[#0a0f1d]/10 bg-white px-4 text-sm font-bold text-[#0a0f1d] outline-none transition-colors focus:border-[#0a0f1d]"
-                  />
-                </div>
-                {services.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={() => removeService(idx)}
-                    className="mt-5 p-3 text-red-500 bg-white hover:bg-red-50 rounded-[12px] transition-colors border border-red-100 shrink-0 self-end"
-                    title={isRtl ? "إزالة" : "Remove"}
-                  >
-                    <Trash2 className="w-5 h-5" />
-                  </button>
-                )}
-              </div>
-            ))}
+          <p className="mb-5 text-sm font-medium text-[#8c8c8c]">
+            {isRtl
+              ? "اكتب الخدمة كما ستظهر. يمكن أن تكون بمبلغ يُحتسب في الإجمالي، أو بنسبة لا تُضاف للإجمالي، أو بدون تكلفة."
+              : "Write each service as it should appear. It can be an amount that counts toward the total, a percentage that is not billed, or no cost."}
+          </p>
+
+          <div className="mb-6">
+            <OfferServicesFields
+              services={services}
+              isRtl={isRtl}
+              onUpdate={updateService}
+              onRemove={removeService}
+              onAdd={addService}
+            />
           </div>
 
           <button
@@ -341,6 +284,11 @@ export function CreateOfferSection() {
               <span>{isRtl ? "الإجمالي مع الضريبة" : "Total (incl. VAT)"}</span>
               <span className="font-mono">{total.toLocaleString()} SAR</span>
             </div>
+            <p className="text-xs font-medium text-white/45 pt-1">
+              {isRtl
+                ? "النسب والخدمات بدون تكلفة تظهر في النطاق ولا تُضاف إلى الإجمالي أو الضريبة."
+                : "Percent and no-cost services appear in the scope and are not added to the total or VAT."}
+            </p>
           </div>
         </div>
 
@@ -379,15 +327,11 @@ export function CreateOfferSection() {
                 offerNumber: successData.offerNumber,
                 title: formData.title,
                 description: formData.description.trim(),
-                projectId: formData.projectId,
-                projectName: formData.projectName,
-                unitId: formData.unitId,
-                unitNumber: formData.unitNumber,
                 developerName: formData.developerName,
                 developerEmail: formData.developerEmail,
                 developerPhone: formData.developerPhone,
                 agreementTypes,
-                services,
+                services: services.map(normalizeOfferService),
                 subtotal,
                 vat,
                 total,
