@@ -39,22 +39,6 @@ export function resolveHeroImages(data: HeroSectionData | null | undefined): str
   return [DEFAULT_HERO_IMAGE];
 }
 
-export function toSerializableHero(
-  data: HeroSectionData | null | undefined
-): HeroSectionData | null | undefined {
-  if (data == null) return data;
-  return {
-    title: data.title,
-    subtitle: data.subtitle,
-    titleAr: data.titleAr,
-    titleEn: data.titleEn,
-    subtitleAr: data.subtitleAr,
-    subtitleEn: data.subtitleEn,
-    backgroundImage: data.backgroundImage,
-    backgroundImages: Array.isArray(data.backgroundImages) ? [...data.backgroundImages] : undefined,
-  };
-}
-
 export function resolveHeroCopy(
   data: HeroSectionData | null | undefined,
   locale: Locale,

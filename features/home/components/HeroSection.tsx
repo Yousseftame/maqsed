@@ -4,76 +4,125 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
-import { OptimizedCoverImage } from "@/components/media/OptimizedCoverImage";
 import {
   DEFAULT_HERO_IMAGE,
   heroService,
   resolveHeroCopy,
   resolveHeroImages,
-  type HeroSectionData,
 } from "@/features/home/hero.service";
 
+function preloadImage(src: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const img = new window.Image();
+    const finish = (ok: boolean) => resolve(ok);
+    img.onload = () => {
+      if (typeof img.decode === "function") {
+        img.decode().then(() => finish(true)).catch(() => finish(true));
+        return;
+      }
+      finish(true);
+    };
+    img.onerror = () => finish(false);
+    img.src = src;
+  });
+}
+
 function HeroBackground({ images }: { images: string[] }) {
+  const [loaded, setLoaded] = useState<Record<string, boolean>>({});
+  const [activeSrc, setActiveSrc] = useState(DEFAULT_HERO_IMAGE);
+  const loadedRef = useRef(loaded);
+  loadedRef.current = loaded;
+
   const slides = useMemo(
     () => images.map((src) => src.trim()).filter(Boolean),
     [images]
   );
-  const [activeSrc, setActiveSrc] = useState(slides[0] || DEFAULT_HERO_IMAGE);
-  const [loadRest, setLoadRest] = useState(false);
-  const activeRef = useRef(activeSrc);
-  activeRef.current = activeSrc;
 
   useEffect(() => {
-    if (slides.length === 0) return;
-    setActiveSrc((current) => (slides.includes(current) ? current : slides[0]));
+    const toLoad = [DEFAULT_HERO_IMAGE, ...slides.filter((src) => src !== DEFAULT_HERO_IMAGE)];
+    let cancelled = false;
+    const links: HTMLLinkElement[] = [];
+
+    toLoad.forEach((src, i) => {
+      const link = document.createElement("link");
+      link.rel = "preload";
+      link.as = "image";
+      link.href = src;
+      if (i === 0) link.setAttribute("fetchpriority", "high");
+      document.head.appendChild(link);
+      links.push(link);
+
+      void preloadImage(src).then((ok) => {
+        if (cancelled || !ok) return;
+        setLoaded((prev) => (prev[src] ? prev : { ...prev, [src]: true }));
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      links.forEach((link) => link.remove());
+    };
   }, [slides]);
 
   useEffect(() => {
+    const firstReady = slides.find((src) => loaded[src]);
+    if (!firstReady) return;
+
+    setActiveSrc((current) => {
+      if (slides.includes(current) && loaded[current]) return current;
+      return firstReady;
+    });
+  }, [slides, loaded]);
+
+  useEffect(() => {
     if (slides.length < 2) return;
-    const warm = window.setTimeout(() => setLoadRest(true), 2500);
+
     const id = window.setInterval(() => {
-      const current = activeRef.current;
-      const pos = slides.indexOf(current);
-      setActiveSrc(slides[(pos + 1) % slides.length] ?? current);
+      setActiveSrc((current) => {
+        const ready = slides.filter((src) => loadedRef.current[src]);
+        if (ready.length === 0) return current;
+        const pos = ready.indexOf(current);
+        return ready[(pos + 1) % ready.length] ?? current;
+      });
     }, 5500);
-    return () => {
-      window.clearTimeout(warm);
-      window.clearInterval(id);
-    };
+
+    return () => window.clearInterval(id);
   }, [slides]);
 
   return (
     <div className="absolute inset-0 z-0 overflow-hidden bg-[#1a0f24]">
       <div className="absolute inset-0 bg-gradient-to-br from-[#3E1854] via-[#1a0f24] to-[#0a0f1d]" />
+      <img
+        src={DEFAULT_HERO_IMAGE}
+        alt=""
+        className="absolute inset-0 h-full w-full object-cover"
+        fetchPriority="high"
+        decoding="async"
+        draggable={false}
+      />
       {slides.map((src, i) => (
-        <div
+        <img
           key={`${src}-${i}`}
-          className="absolute inset-0 transition-opacity duration-1000 ease-in-out"
-          style={{ opacity: src === activeSrc ? 1 : 0 }}
-        >
-          {i === 0 || loadRest ? (
-            <OptimizedCoverImage
-              src={src}
-              alt=""
-              sizes="100vw"
-              quality={60}
-              priority={i === 0}
-              className="object-cover"
-            />
-          ) : null}
-        </div>
+          src={src}
+          alt=""
+          className="absolute inset-0 h-full w-full object-cover transition-opacity duration-1000 ease-in-out"
+          style={{ opacity: src === activeSrc && loaded[src] ? 1 : 0 }}
+          fetchPriority={i === 0 ? "high" : "low"}
+          decoding="async"
+          loading="eager"
+          draggable={false}
+        />
       ))}
       <div className="absolute inset-0 bg-black/60" />
     </div>
   );
 }
 
-export function HeroSection({ initialHero }: { initialHero?: HeroSectionData | null }) {
+export function HeroSection() {
   const { t, locale } = useLocale();
   const { data } = useQuery({
     queryKey: ["herosection"],
     queryFn: () => heroService.getHero(),
-    ...(initialHero !== undefined ? { initialData: initialHero } : {}),
   });
 
   const { title, subtitle } = resolveHeroCopy(data, locale, {

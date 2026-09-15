@@ -61,9 +61,6 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
         <img
           src="/splashscreen.png"
           alt={displayBrand}
-          width={260}
-          height={88}
-          decoding="async"
           className="h-auto w-[220px] object-contain select-none sm:w-[260px]"
           draggable={false}
         />

@@ -55,7 +55,10 @@ export function Navbar() {
         <div className="flex h-16 items-center justify-between">
           <div className="flex flex-shrink-0 items-center">
             <Link href="/" className="flex items-center gap-2" aria-label={t("nav.home")}>
-              <BrandLogo className="h-auto w-[150px] object-contain" />
+              <BrandLogo
+                className="h-auto w-[150px] object-contain"
+                priority
+              />
             </Link>
           </div>
 

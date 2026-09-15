@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { PropertySearchBar } from "@/features/home/components/PropertySearchBar";
 import { useLocale } from "@/components/providers/LocaleProvider";
@@ -15,20 +14,17 @@ export function SearchSection() {
         className="pointer-events-none absolute inset-0 z-0 select-none opacity-[0.15]"
         aria-hidden
       >
-        <div className="absolute inset-0">
-          <Image
-            src="/sadf-removebg-preview.png"
-            alt=""
-            fill
-            sizes="100vw"
-            quality={60}
-            className="object-cover"
-            style={{
-              maskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
-              WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
-            }}
-          />
-        </div>
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: "url('/sadf-removebg-preview.png')",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            maskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)",
+            WebkitMaskImage: "radial-gradient(ellipse at center, black 30%, transparent 75%)"
+          }}
+        />
       </div>
 
       <div className="relative z-10 flex w-full flex-col items-center">
