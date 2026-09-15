@@ -1,16 +1,10 @@
-"use client";
+import type { Metadata } from "next";
+import { DeveloperLayoutClient } from "./DeveloperLayoutClient";
 
-import { RequireAuth } from "@/features/auth/RequireAuth";
-import { DeveloperShell } from "@/features/developer/components/DeveloperShell";
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
-export default function DeveloperLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
-  return (
-    <RequireAuth allowedRoles={["developer", "employee"]}>
-      <DeveloperShell>{children}</DeveloperShell>
-    </RequireAuth>
-  );
+export default function DeveloperLayout({ children }: { children: React.ReactNode }) {
+  return <DeveloperLayoutClient>{children}</DeveloperLayoutClient>;
 }

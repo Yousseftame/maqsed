@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { cn } from "@/lib/utils";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { LanguageToggle } from "@/components/layout/LanguageToggle";
@@ -35,12 +35,26 @@ export function Navbar() {
 
   const menuOrigin = isRtl ? "28px 32px" : "calc(100% - 28px) 32px";
 
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setIsMobileMenuOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [isMobileMenuOpen]);
+
   return (
     <header className="fixed top-0 right-0 left-0 z-50 bg-white">
       <div className="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <div className="flex flex-shrink-0 items-center">
-            <Link href="/" className="flex items-center gap-2">
+            <Link href="/" className="flex items-center gap-2" aria-label={t("nav.home")}>
               <BrandLogo
                 className="h-auto w-[150px] object-contain"
                 priority
@@ -48,18 +62,18 @@ export function Navbar() {
             </Link>
           </div>
 
-          <nav className="hidden items-center gap-5 md:flex">
+          <nav className="hidden items-center gap-5 md:flex" aria-label={t("nav.mainNav")}>
             {navLinks.map((link) => {
               if (link.dropdown) {
                 const isActive = pathname.startsWith("/properties") || pathname.startsWith("/units");
                 return (
-                  <div key={link.name} className="group relative flex h-16 items-center">
+                  <div key={link.name} className="group relative flex h-16 items-center" tabIndex={0}>
                     <div
                       className={cn(
                         "flex cursor-pointer items-center gap-1.5 text-[16px] transition-colors duration-200",
                         isActive
                           ? "font-medium text-[#6A2B92]"
-                          : "font-normal text-[#6B7280] group-hover:text-[#6A2B92]"
+                          : "font-normal text-[#6B7280] group-hover:text-[#6A2B92] group-focus-within:text-[#6A2B92]"
                       )}
                     >
                       <span className="relative">
@@ -74,7 +88,7 @@ export function Navbar() {
                       <ChevronDown className="h-4 w-4 opacity-50 transition-transform group-hover:rotate-180" />
                     </div>
                     
-                    <div className="absolute start-0 top-full hidden w-48 flex-col rounded-xl border border-gray-100 bg-white p-2 shadow-lg group-hover:flex">
+                    <div className="absolute start-0 top-full hidden w-48 flex-col rounded-xl border border-gray-100 bg-white p-2 shadow-lg group-hover:flex group-focus-within:flex">
                       {link.dropdown.map((item) => (
                         <Link
                           key={item.name}
@@ -98,6 +112,7 @@ export function Navbar() {
                 <div key={link.name} className="group flex h-16 items-center">
                   <Link
                     href={link.href!}
+                    aria-current={isActive ? "page" : undefined}
                     className={cn(
                       "relative flex items-center gap-1.5 text-[16px] transition-colors duration-200",
                       isActive
@@ -136,7 +151,9 @@ export function Navbar() {
               type="button"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
               className="p-2 text-gray-600 hover:text-[#6A2B92]"
-              aria-label="Open menu"
+              aria-expanded={isMobileMenuOpen}
+              aria-controls="mobile-menu"
+              aria-label={isMobileMenuOpen ? t("nav.closeMenu") : t("nav.openMenu")}
             >
               {isMobileMenuOpen ? (
                 <X className="h-6 w-6" />
@@ -149,6 +166,11 @@ export function Navbar() {
       </div>
 
       <div
+        id="mobile-menu"
+        role={isMobileMenuOpen ? "dialog" : undefined}
+        aria-modal={isMobileMenuOpen ? true : undefined}
+        aria-hidden={!isMobileMenuOpen}
+        aria-label={t("nav.mainNav")}
         className={cn(
           "fixed inset-0 z-[100] flex flex-col bg-white text-[#6A2B92] transition-all duration-700 ease-[cubic-bezier(0.22,1,0.36,1)] md:hidden",
           isMobileMenuOpen
@@ -168,6 +190,7 @@ export function Navbar() {
           <Link
             href="/"
             className="flex items-center gap-2"
+            aria-label={t("nav.home")}
             onClick={() => setIsMobileMenuOpen(false)}
           >
             <BrandLogo className="h-auto w-[150px] object-contain" />
@@ -176,6 +199,7 @@ export function Navbar() {
             type="button"
             onClick={() => setIsMobileMenuOpen(false)}
             className="p-2 text-gray-400 transition-colors hover:text-[#6A2B92]"
+            aria-label={t("nav.closeMenu")}
           >
             <X className="h-8 w-8" />
           </button>
@@ -262,6 +286,7 @@ export function Navbar() {
               type="button"
               dir="ltr"
               onClick={() => setLocale(locale === "en" ? "ar" : "en")}
+              aria-label={t("nav.switchLanguage")}
               className="relative flex h-14 w-full items-center justify-between overflow-hidden rounded-full border border-[#6A2B92] p-1"
             >
               <div

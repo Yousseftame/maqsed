@@ -15,6 +15,10 @@ export interface Dictionary {
     rights: string;
     scrollToTop: string;
     switchLanguage: string;
+    skipToContent: string;
+    openMenu: string;
+    closeMenu: string;
+    mainNav: string;
   };
   notFound: {
     title: string;
@@ -1009,6 +1013,10 @@ export const en: Dictionary = {
     rights: "All Rights Reserved",
     scrollToTop: "Scroll to top",
     switchLanguage: "Switch language",
+    skipToContent: "Skip to content",
+    openMenu: "Open menu",
+    closeMenu: "Close menu",
+    mainNav: "Main navigation",
   },
   notFound: {
     title: "Page Not Found",

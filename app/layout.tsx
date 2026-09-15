@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import {
   plusJakartaSans,
@@ -14,41 +14,91 @@ import { QueryProvider } from "@/components/providers/QueryProvider";
 import { AuthProvider } from "@/features/auth/AuthProvider";
 import { AppToaster } from "@/components/providers/AppToaster";
 import { MaintenanceGuard } from "@/features/maintenance/MaintenanceGuard";
+import {
+  SITE_DESCRIPTION_AR,
+  SITE_DESCRIPTION_EN,
+  SITE_KEYWORDS,
+  SITE_NAME,
+  SITE_NAME_AR,
+  getSiteUrl,
+} from "@/lib/seo/site";
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  themeColor: "#6A2B92",
+};
 
 export const metadata: Metadata = {
-  title: " Maqsed | مقصد",
-  description:
-    "MAQSED is your trusted real estate platform for buying, selling, and renting premium properties.",
+  metadataBase: new URL(getSiteUrl()),
+  title: {
+    default: SITE_NAME,
+    template: `%s | ${SITE_NAME_AR}`,
+  },
+  description: SITE_DESCRIPTION_AR,
+  keywords: SITE_KEYWORDS,
+  applicationName: SITE_NAME,
+  authors: [{ name: SITE_NAME }],
+  creator: SITE_NAME,
+  publisher: SITE_NAME,
+  category: "real estate",
   icons: {
     icon: [{ url: "/icon-removebg-preview.png", type: "image/png" }],
     shortcut: "/icon-removebg-preview.png",
     apple: "/icon-removebg-preview.png",
   },
+  openGraph: {
+    type: "website",
+    locale: "ar_SA",
+    alternateLocale: ["en_US"],
+    url: getSiteUrl(),
+    siteName: SITE_NAME,
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION_AR,
+    images: [{ url: "/icon-removebg-preview.png", alt: SITE_NAME }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: SITE_NAME,
+    description: SITE_DESCRIPTION_EN,
+    images: ["/icon-removebg-preview.png"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
 };
 
-const localeBootstrap = `(function(){try{var l=localStorage.getItem("maqsed-locale");if(l==="ar"){var d=document.documentElement;d.lang="ar";d.dir="rtl";d.classList.add("locale-ar");d.classList.remove("locale-en");}}catch(e){}})();`;
+const localeBootstrap = `(function(){try{var l=localStorage.getItem("maqsed-locale");if(l==="en"){var d=document.documentElement;d.lang="en";d.dir="ltr";d.classList.add("locale-en");d.classList.remove("locale-ar");}}catch(e){}})();`;
 
 const maintenanceBootstrap = `(function(){try{var p=location.pathname;if(p==="/maintenance"||p.indexOf("/maintenance/")===0||p.indexOf("/admin")===0||p.indexOf("/developer")===0||p==="/login"||p==="/forgot-password")return;if(/(?:^|; )maqsed_maintenance=1(?:;|$)/.test(document.cookie)){document.documentElement.classList.add("maintenance-pending");location.replace("/maintenance");}}catch(e){}})();`;
-
-const chatbaseEmbed = `(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="EnkFrond1mCbol0qqQ1Xb";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();`;
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html
-      lang="en"
-      dir="ltr"
+      lang="ar"
+      dir="rtl"
       suppressHydrationWarning
-      className={`${plusJakartaSans.variable} ${manrope.variable} ${ibmPlexSansArabic.variable} min-h-full antialiased`}
+      className={`${plusJakartaSans.variable} ${manrope.variable} ${ibmPlexSansArabic.variable} locale-ar min-h-full antialiased`}
     >
+      <head>
+        <link rel="preconnect" href="https://firebasestorage.googleapis.com" />
+        <link rel="dns-prefetch" href="https://www.chatbase.co" />
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+      </head>
       <body className="flex min-h-full flex-col" suppressHydrationWarning>
         <Script id="maqsed-locale-bootstrap" strategy="beforeInteractive">
           {localeBootstrap}
         </Script>
         <Script id="maqsed-maintenance-bootstrap" strategy="beforeInteractive">
           {maintenanceBootstrap}
-        </Script>
-        <Script id="chatbase-embed" strategy="afterInteractive">
-          {chatbaseEmbed}
         </Script>
         <LocaleProvider>
           <QueryProvider>

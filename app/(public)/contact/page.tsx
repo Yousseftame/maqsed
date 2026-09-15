@@ -1,12 +1,20 @@
-import type { Metadata } from "next";
 import { ContactPage } from "@/features/contact/components/ContactPage";
+import { JsonLd } from "@/lib/seo/json-ld";
+import { contactPageJsonLd } from "@/lib/seo/public-content";
+import { pageMetadata } from "@/lib/seo/site";
 
-export const metadata: Metadata = {
-  title: "Contact Us | MAQSED",
+export const metadata = pageMetadata({
+  title: "تواصل معنا",
   description:
-    "Get in touch with MAQSED. Send a message about buying, selling, partnerships, or support.",
-};
+    "تواصل مع فريق مقصد للاستفسار عن المشاريع والوحدات، أو الشراكات، أو طلب الدعم.",
+  path: "/contact",
+});
 
 export default function ContactUsPage() {
-  return <ContactPage />;
+  return (
+    <>
+      <JsonLd data={contactPageJsonLd()} />
+      <ContactPage />
+    </>
+  );
 }

@@ -14,6 +14,7 @@ export function AosProvider({ children }: { children: React.ReactNode }) {
       duration: 800,
       offset: 100,
       easing: "ease-in-out",
+      disable: () => window.matchMedia("(prefers-reduced-motion: reduce)").matches,
     });
   }, []);
 

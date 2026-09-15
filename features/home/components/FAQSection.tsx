@@ -51,11 +51,13 @@ export function FAQSection() {
                 <button
                   type="button"
                   onClick={() => toggleFaq(faq.id)}
+                  aria-expanded={isOpen}
+                  aria-controls={`faq-panel-${faq.id}`}
                   className="flex w-full items-center justify-between gap-6 px-6 py-4 sm:px-8 sm:py-5"
                 >
-                  <h4 className="flex-1 text-start text-[15px] sm:text-[17px] font-bold text-[#333]">
+                  <h3 className="flex-1 text-start text-[15px] sm:text-[17px] font-bold text-[#333]">
                     {faq.question}
-                  </h4>
+                  </h3>
                   <div
                     className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full border ${
                       isOpen
@@ -68,6 +70,7 @@ export function FAQSection() {
                 </button>
 
                 <div
+                  id={`faq-panel-${faq.id}`}
                   className={`grid transition-all duration-300 ease-in-out ${
                     isOpen
                       ? "grid-rows-[1fr] opacity-100 pb-5 px-6 sm:px-8"

@@ -1,11 +1,22 @@
-import type { Metadata } from "next";
 import { BlogListPage } from "@/features/blog/components/BlogListPage";
+import { JsonLd } from "@/lib/seo/json-ld";
+import { collectionPageJsonLd } from "@/lib/seo/public-content";
+import { pageMetadata } from "@/lib/seo/site";
 
-export const metadata: Metadata = {
-  title: "Blog | MAQSED",
-  description: "News and articles from MAQSED.",
-};
+const TITLE = "المدونة";
+const DESCRIPTION = "أخبار ومقالات مقصد حول السوق العقاري والمشاريع والوحدات.";
+
+export const metadata = pageMetadata({
+  title: TITLE,
+  description: DESCRIPTION,
+  path: "/blog",
+});
 
 export default function BlogPage() {
-  return <BlogListPage />;
+  return (
+    <>
+      <JsonLd data={collectionPageJsonLd(TITLE, "/blog", DESCRIPTION)} />
+      <BlogListPage />
+    </>
+  );
 }

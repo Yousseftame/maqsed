@@ -208,7 +208,7 @@ export function Footer() {
     { href: company.facebook, label: t("footer.socials.facebook"), icon: FacebookIcon },
     { href: company.instagram, label: t("footer.socials.instagram"), icon: InstagramIcon },
     { href: company.twitter, label: t("footer.socials.twitter"), icon: TwitterIcon },
-  ];
+  ].filter((social) => social.href.startsWith("http"));
 
   return (
     <footer className="w-full bg-[#6A2B92] px-6 pt-12 pb-6 lg:px-12 lg:pt-16 lg:pb-8 text-white/85">
@@ -217,7 +217,7 @@ export function Footer() {
           
           {/* Column 1: Logo & Description */}
           <div className="flex flex-col gap-4">
-            <Link href="/" className="w-fit rounded-lg bg-white p-2">
+            <Link href="/" className="w-fit rounded-lg bg-white p-2" aria-label={t("nav.home")}>
               <BrandLogo className="h-auto w-[150px] object-contain" />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-white/75">
@@ -227,7 +227,7 @@ export function Footer() {
 
           {company.licenses.length > 0 ? (
             <div className="flex flex-col gap-5">
-              <h3 className="text-lg font-bold text-white">{t("footer.licenses")}</h3>
+              <h2 className="text-lg font-bold text-white">{t("footer.licenses")}</h2>
               <ul ref={licensesRef} className="inline-flex w-max flex-col items-stretch gap-2.5">
                 {company.licenses.map((item) => (
                   <LicenseButton
@@ -247,9 +247,9 @@ export function Footer() {
 
           {/* Column 2: Quick Links */}
           <div className="flex flex-col gap-5">
-            <h3 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-white">
               {t("footer.importantLinks")}
-            </h3>
+            </h2>
             <ul className="grid grid-cols-2 gap-x-4 gap-y-3">
               {[...importantLinks, ...legalLinks].map((link) => (
                 <li key={link.label}>
@@ -266,9 +266,9 @@ export function Footer() {
 
           {/* Column 3: Contact */}
           <div className="flex flex-col gap-5">
-            <h3 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-white">
               {t("footer.contactUs")}
-            </h3>
+            </h2>
             <ul className="flex flex-col gap-4">
               {contactItems.map((item, idx) => {
                 const Icon = item.icon;
@@ -292,22 +292,22 @@ export function Footer() {
           </div>
 
           {/* Column 4: Socials */}
+          {socialLinks.length > 0 ? (
           <div className="flex flex-col gap-5">
-            <h3 className="text-lg font-bold text-white">
+            <h2 className="text-lg font-bold text-white">
               {locale === 'ar' ? 'تابعنا' : 'Follow Us'}
-            </h3>
+            </h2>
             <div className="flex items-center gap-3">
               {socialLinks.map((social) => {
                 const Icon = social.icon;
-                const href = social.href || "#";
-                const isExternal = href.startsWith("http");
                 return (
                   <a
                     key={social.label}
-                    href={href}
+                    href={social.href}
                     className={socialIconClass}
                     aria-label={social.label}
-                    {...(isExternal ? { target: "_blank", rel: "noopener noreferrer" } : {})}
+                    target="_blank"
+                    rel="noopener noreferrer"
                   >
                     <Icon className="h-4 w-4" />
                   </a>
@@ -315,6 +315,7 @@ export function Footer() {
               })}
             </div>
           </div>
+          ) : null}
 
         </div>
 

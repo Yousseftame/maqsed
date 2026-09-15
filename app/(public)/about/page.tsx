@@ -1,19 +1,22 @@
-import type { Metadata } from "next";
 import { AboutHeader } from "@/components/shared/AboutHeader";
 import { AboutSection } from "@/features/home/components/AboutSection";
 import { VisionMissionSection } from "@/features/home/components/VisionMissionSection";
-import { StatsSection } from "@/features/home/components/StatsSection";
 import { PartnersSection } from "@/features/home/components/PartnersSection";
-import { CTASection } from "@/features/home/components/CTASection";
+import { JsonLd } from "@/lib/seo/json-ld";
+import { aboutPageJsonLd } from "@/lib/seo/public-content";
+import { pageMetadata } from "@/lib/seo/site";
 
-export const metadata: Metadata = {
-  title: "About Us | MAQSED",
-  description: "Learn more about MAQSED, our mission, and our values.",
-};
+export const metadata = pageMetadata({
+  title: "عن مقصد",
+  description:
+    "تعرف على مقصد، رؤيتنا، رسالتنا، وقيمنا كمنصة عقارية سعودية تجمع المشاريع والوحدات في مكان واحد.",
+  path: "/about",
+});
 
 export default function AboutPage() {
   return (
     <div className="flex w-full flex-col bg-white">
+      <JsonLd data={aboutPageJsonLd()} />
       <AboutHeader />
       <AboutSection />
       <VisionMissionSection />

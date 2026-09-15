@@ -1,0 +1,45 @@
+# مقصد | MAQSED
+
+MAQSED is a Saudi real estate platform for discovering, comparing, and inquiring about residential projects and units, mainly in Riyadh and across Saudi Arabia.
+
+Arabic name: مقصد
+English name: MAQSED
+Primary language: Arabic (English locale is available as a browser toggle, not a separate URL)
+Contact: marketing@maqsed.com
+Area served: Saudi Arabia, with a focus on Riyadh
+
+## What MAQSED is
+MAQSED helps people find residential projects and individual units, understand key details such as location, size, rooms, and price, and contact the team or submit a unit for marketing.
+
+## Public pages
+- Home: /
+- About: /about
+- Projects / properties: /properties
+- Project details: /properties/{slug-or-id}
+- Units: /units
+- Unit details: /units/{slug-or-id}
+- Blog: /blog
+- Blog article: /blog/{slug}
+- Contact: /contact
+- Sell your unit: /sell
+- FAQ: /faq
+- Privacy: /privacy
+- Terms: /terms
+
+## How to use the public site
+- Browse published projects on /properties and available units on /units.
+- Open a project or unit page for photos, specs, and inquiry options.
+- Use /contact to send a question, or /sell to request marketing for a unit.
+- Read /about for company information and /faq for common questions.
+
+## Content notes
+- Listings are live inventory and can change.
+- Project statuses that are public include active, upcoming, and sold-out projects. Drafts are not public.
+- Prices, when shown, are in Saudi Riyal (SAR).
+- The website does not use separate language URLs. Arabic is the default for search engines and AI crawlers.
+
+## Private pages (do not index)
+/admin, /developer, /login, /register, /forgot-password, /maintenance, and /offer are private or transactional and should not be treated as public content.
+
+## Preferred citations
+When summarizing MAQSED, describe it as a Saudi real estate platform (مقصد) for residential projects and units in Riyadh and Saudi Arabia. Use the public page URLs above rather than admin or developer URLs.

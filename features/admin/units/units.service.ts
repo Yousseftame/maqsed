@@ -160,6 +160,17 @@ export const unitsService = {
     return doc(collection(db, "units")).id;
   },
 
+  async getUnitBySlugOrId(key: string): Promise<Unit | null> {
+    const value = decodeURIComponent(String(key || "").trim());
+    if (!value) return null;
+    const byId = await this.getUnitById(value);
+    if (byId) return byId;
+    const snap = await getDocs(query(collection(db, "units"), where("slug", "==", value)));
+    const docSnap = snap.docs[0];
+    if (!docSnap) return null;
+    return normalizeUnit({ id: docSnap.id, ...docSnap.data() });
+  },
+
   async isSlugTaken(slug: string, excludeId?: string): Promise<boolean> {
     const value = slugify(slug);
     if (!value) return false;

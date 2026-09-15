@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { ArrowUpRight, Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { useCompanyContent } from "@/features/company/useCompanyContent";
 import { cn } from "@/lib/utils";
 import { requestsService } from "@/features/admin/customers/requests.service";
 import { SellForm } from "@/features/sell/components/SellForm";
@@ -32,27 +33,6 @@ const Field = ({
 const inputClass =
   "w-full bg-transparent border-b-2 border-[#8c8c8c]/40 pb-3 text-lg font-semibold text-[#0a0f1d] outline-none transition-colors duration-300 placeholder:text-gray-400 focus:border-[#6A2B92]";
 
-const contactDetails = [
-  {
-    icon: Mail,
-    label: "email",
-    value: "marketing@maqsed.com",
-    href: "mailto:marketing@maqsed.com",
-  },
-  {
-    icon: Phone,
-    label: "phone",
-    value: "(+34) 123-456-789",
-    href: "tel:+34123456789",
-  },
-  {
-    icon: MapPin,
-    label: "office",
-    value: "2223 Calle De Alcalá, Madrid",
-    href: undefined,
-  },
-];
-
 const initialForm = {
   fullName: "",
   email: "",
@@ -62,11 +42,33 @@ const initialForm = {
 
 export function ContactPage() {
   const { t, locale, isRtl } = useLocale();
+  const company = useCompanyContent();
   const [activeTab, setActiveTab] = useState<"contact" | "sell">("contact");
   const [subject, setSubject] = useState(subjects[0]);
   const [form, setForm] = useState(initialForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const tabsId = useId();
+  const phoneHref = company.phone.replace(/\D/g, "");
+  const contactDetails = [
+    {
+      icon: Mail,
+      label: "email",
+      value: company.email,
+      href: company.email ? `mailto:${company.email}` : undefined,
+    },
+    {
+      icon: Phone,
+      label: "phone",
+      value: company.phone,
+      href: phoneHref ? `tel:${phoneHref}` : undefined,
+    },
+    {
+      icon: MapPin,
+      label: "office",
+      value: company.location,
+      href: undefined,
+    },
+  ].filter((item) => item.value.trim());
 
   const update = (key: keyof typeof form, value: string) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -252,6 +254,7 @@ export function ContactPage() {
                       <Field label={t("contactPage.form.fullName")}>
                         <input
                           required
+                          autoComplete="name"
                           value={form.fullName}
                           onChange={(e) => update("fullName", e.target.value)}
                           className={inputClass}
@@ -262,6 +265,7 @@ export function ContactPage() {
                         <input
                           required
                           type="email"
+                          autoComplete="email"
                           value={form.email}
                           onChange={(e) => update("email", e.target.value)}
                           className={inputClass}
@@ -272,6 +276,7 @@ export function ContactPage() {
                         <input
                           type="tel"
                           required
+                          autoComplete="tel"
                           value={form.phone}
                           onChange={(e) => update("phone", e.target.value.replace(/[^\d+]/g, ""))}
                           className={inputClass}

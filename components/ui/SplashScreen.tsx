@@ -25,6 +25,11 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      onComplete();
+      return;
+    }
+
     const showLogo = setTimeout(() => setPhase("text"), 200);
     const startFade = setTimeout(() => setPhase("fade"), 1100);
     const done = setTimeout(() => onComplete(), 1600);
@@ -45,6 +50,8 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
         phase === "fade" ? "-translate-y-full" : "translate-y-0"
       }`}
       dir={isArabic ? "rtl" : "ltr"}
+      aria-hidden="true"
+      role="presentation"
     >
       <div
         className={`flex items-center justify-center overflow-hidden transition-[height] duration-[600ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${

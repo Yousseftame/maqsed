@@ -111,6 +111,8 @@ function ProjectCover({ src, alt }: { src: string; alt: string }) {
       src={src}
       alt={alt}
       className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+      loading="lazy"
+      decoding="async"
       onError={() => setFailed(true)}
     />
   );

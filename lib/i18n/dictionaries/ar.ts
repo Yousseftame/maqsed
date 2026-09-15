@@ -17,6 +17,10 @@ export const ar: Dictionary = {
     rights: "جميع الحقوق محفوظة",
     scrollToTop: "العودة للأعلى",
     switchLanguage: "تغيير اللغة",
+    skipToContent: "تخطي إلى المحتوى",
+    openMenu: "فتح القائمة",
+    closeMenu: "إغلاق القائمة",
+    mainNav: "القائمة الرئيسية",
   },
   notFound: {
     title: "الصفحة غير موجودة",
