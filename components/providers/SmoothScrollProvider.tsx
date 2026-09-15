@@ -64,36 +64,47 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (disableSmooth) return;
-    const instance = new Lenis({
-      duration: 1.4,
-      easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
-      smoothWheel: true,
-      touchMultiplier: 1.5,
-      autoResize: true,
-      naiveDimensions: true,
-      stopInertiaOnNavigate: true,
-    });
 
-    lenisRef.current = instance;
-    setLenis(instance);
-
+    let cancelled = false;
     let frame = 0;
-    function raf(time: number) {
-      instance.raf(time);
+    let resizeObserver: ResizeObserver | null = null;
+
+    const start = () => {
+      if (cancelled) return;
+      const instance = new Lenis({
+        duration: 1.4,
+        easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+        smoothWheel: true,
+        touchMultiplier: 1.5,
+        autoResize: true,
+        naiveDimensions: true,
+        stopInertiaOnNavigate: true,
+      });
+
+      lenisRef.current = instance;
+      setLenis(instance);
+
+      function raf(time: number) {
+        instance.raf(time);
+        frame = requestAnimationFrame(raf);
+      }
+
       frame = requestAnimationFrame(raf);
-    }
 
-    frame = requestAnimationFrame(raf);
+      resizeObserver = new ResizeObserver(() => {
+        syncLenisToPage(instance, { toTop: false });
+      });
+      resizeObserver.observe(document.body);
+    };
 
-    const resizeObserver = new ResizeObserver(() => {
-      syncLenisToPage(instance, { toTop: false });
-    });
-    resizeObserver.observe(document.body);
+    const timer = window.setTimeout(start, 1800);
 
     return () => {
+      cancelled = true;
+      window.clearTimeout(timer);
       cancelAnimationFrame(frame);
-      resizeObserver.disconnect();
-      instance.destroy();
+      resizeObserver?.disconnect();
+      lenisRef.current?.destroy();
       lenisRef.current = null;
       setLenis(null);
     };

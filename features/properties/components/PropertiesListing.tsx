@@ -23,6 +23,7 @@ import {
 import { formatProjectPriceRange, projectPriceRangeFromUnits } from "@/features/properties/project-price";
 import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
 import { ProjectDeveloperOverlay } from "@/features/properties/components/ProjectDeveloperOverlay";
+import { OptimizedCoverImage } from "@/components/media/OptimizedCoverImage";
 
 const ALL = ALL_SEARCH;
 const PAGE_SIZE = 8;
@@ -130,22 +131,12 @@ function unitsCountForProject(property: Property, units: Unit[]) {
 }
 
 function ProjectCover({ src, alt }: { src: string; alt: string }) {
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
-
-  if (!src || failed) return <div className="h-full w-full bg-gray-200" />;
-
   return (
-    <img
+    <OptimizedCoverImage
       src={src}
       alt={alt}
-      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-      loading="lazy"
-      decoding="async"
-      onError={() => setFailed(true)}
+      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      className="transition-transform duration-700 group-hover:scale-105"
     />
   );
 }

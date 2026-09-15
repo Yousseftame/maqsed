@@ -25,6 +25,7 @@ import {
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { Lightbox } from "@/components/ui/Lightbox";
 import { cn } from "@/lib/utils";
+import { OptimizedCoverImage } from "@/components/media/OptimizedCoverImage";
 import { SalesContactModal } from "./SalesContactModal";
 import { ShareButton } from "@/components/shared/ShareButton";
 import { propertiesService, propertyPublicPath, type Property } from "@/features/admin/projects/properties.service";
@@ -143,22 +144,16 @@ function featureIcon(label: string): ComponentType<{ className?: string; strokeW
   return CheckCircle2;
 }
 
-function CoverImage({ src, alt, onClick }: { src: string; alt: string; onClick?: () => void }) {
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
-
-  if (!src || failed) return <div className="h-full w-full bg-gray-200" />;
+function CoverImage({ src, alt, onClick, priority = false }: { src: string; alt: string; onClick?: () => void; priority?: boolean }) {
   return (
-    <img
+    <OptimizedCoverImage
       src={src}
       alt={alt}
-      draggable={false}
+      sizes="(max-width: 1400px) 100vw, 1400px"
+      quality={75}
+      priority={priority}
       onClick={onClick}
-      onError={() => setFailed(true)}
-      className={cn("h-full w-full object-cover", onClick ? "cursor-pointer" : "")}
+      className={onClick ? "cursor-pointer" : undefined}
     />
   );
 }
@@ -491,6 +486,7 @@ export function UnitDetail({ unitId }: UnitDetailProps) {
                 <CoverImage
                   src={currentImage}
                   alt={displayNumber}
+                  priority={currentImageIdx === 0}
                   onClick={gallery.length ? () => setLightboxIndex(currentImageIdx) : undefined}
                 />
               </motion.div>

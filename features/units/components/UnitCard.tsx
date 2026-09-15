@@ -1,6 +1,5 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Building2, ArrowUpRight } from "lucide-react";
 import type { UnitListing } from "@/features/units/data/units";
@@ -9,6 +8,7 @@ import { isMostViewed } from "@/features/analytics/most-viewed";
 import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
 import { getActiveUnitDiscount } from "@/features/units/unit-discount";
 import { useNow } from "@/features/units/useNow";
+import { OptimizedCoverImage } from "@/components/media/OptimizedCoverImage";
 
 function formatArea(value: number, isRtl: boolean) {
   const amount = value.toLocaleString(undefined, { maximumFractionDigits: 1 });
@@ -26,22 +26,12 @@ function unitHref(unit: UnitListing) {
 }
 
 function UnitCover({ src, alt }: { src: string; alt: string }) {
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
-
-  if (!src || failed) return <div className="h-full w-full bg-gray-200" />;
-
   return (
-    <img
+    <OptimizedCoverImage
       src={src}
       alt={alt}
-      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-      loading="lazy"
-      decoding="async"
-      onError={() => setFailed(true)}
+      sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+      className="transition-transform duration-700 group-hover:scale-105"
     />
   );
 }
