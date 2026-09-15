@@ -40,29 +40,40 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
-      setUser(nextUser);
-      if (nextUser) {
-        try {
-          const profile = await usersService.getUserProfile(nextUser.uid);
-          setUserData(profile);
-        } catch (error) {
-          console.error("Failed to fetch user profile:", error);
-          setUserData(null);
-        }
-      } else {
+      if (!nextUser) {
+        setUser(null);
         setUserData(null);
+        setLoading(false);
+        return;
       }
-      setLoading(false);
+
+      try {
+        const profile = await usersService.getUserProfile(nextUser.uid);
+        setUser(nextUser);
+        setUserData(profile);
+      } catch (error) {
+        console.error("Failed to fetch user profile:", error);
+        setUser(nextUser);
+        setUserData(null);
+      } finally {
+        setLoading(false);
+      }
     });
 
     return unsubscribe;
   }, []);
 
   const signIn = useCallback(async (email: string, password: string) => {
-    const credential = await signInWithEmail(email, password);
-    const idToken = await credential.user.getIdToken();
-    await createSessionCookie(idToken);
-    await usersService.logUserAction(credential.user.uid, "login").catch(console.error);
+    setLoading(true);
+    try {
+      const credential = await signInWithEmail(email, password);
+      const idToken = await credential.user.getIdToken();
+      await createSessionCookie(idToken);
+      await usersService.logUserAction(credential.user.uid, "login").catch(console.error);
+    } catch (error) {
+      setLoading(false);
+      throw error;
+    }
   }, []);
 
   const signOut = useCallback(async () => {

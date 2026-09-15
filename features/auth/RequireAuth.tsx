@@ -19,7 +19,7 @@ export function RequireAuth({
   const pathname = usePathname();
 
   useEffect(() => {
-    if (loading || (user && userData === undefined)) return;
+    if (loading) return;
 
     if (!user) {
       const next =
@@ -39,7 +39,15 @@ export function RequireAuth({
     }
   }, [loading, pathname, router, user, userData, allowedRoles]);
 
-  if (loading || !user || (user && !userData)) {
+  if (loading || !user || !userData) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-white">
+        <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0a0f1d]/20 border-t-[#0a0f1d]" />
+      </div>
+    );
+  }
+
+  if (allowedRoles && !allowedRoles.includes(userData.role)) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-white">
         <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#0a0f1d]/20 border-t-[#0a0f1d]" />

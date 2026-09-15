@@ -1,11 +1,9 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import {
-  getDefaultRedirectPath,
   SESSION_COOKIE,
   MAINTENANCE_COOKIE,
   MAINTENANCE_PATH,
-  isAuthPath,
   isMaintenanceExemptPath,
   isMaintenancePath,
   isProtectedPath,
@@ -32,10 +30,6 @@ export async function proxy(request: NextRequest) {
     url.pathname = "/login";
     url.searchParams.set("next", pathname);
     return NextResponse.redirect(url);
-  }
-
-  if (isAuthPath(pathname) && hasSession) {
-    return NextResponse.redirect(new URL(getDefaultRedirectPath(), request.url));
   }
 
   if (isMaintenanceExemptPath(pathname) && !isMaintenancePath(pathname)) {

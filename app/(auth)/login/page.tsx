@@ -7,7 +7,7 @@ import { Eye, EyeOff, ArrowUpRight, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useAuth } from "@/features/auth/AuthProvider";
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { getSafeNextPath, getDefaultRedirectPath } from "@/lib/auth/constants";
+import { getSafeNextPath } from "@/lib/auth/constants";
 import { createSessionCookie } from "@/lib/auth/session";
 import { cn } from "@/lib/utils";
 
@@ -35,7 +35,7 @@ function LoginForm() {
   const searchParams = useSearchParams();
   const { user, userData, loading: authLoading, signIn } = useAuth();
   const { locale, t } = useLocale();
-  const nextPath = getSafeNextPath(searchParams.get("next"), userData?.role);
+  const requestedNext = searchParams.get("next");
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -49,7 +49,7 @@ function LoginForm() {
   const goToApp = () => {
     if (redirectingRef.current) return;
     redirectingRef.current = true;
-    router.replace(nextPath || getDefaultRedirectPath(userData?.role));
+    router.replace(getSafeNextPath(requestedNext, userData?.role));
   };
 
   useEffect(() => {

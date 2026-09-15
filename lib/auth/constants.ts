@@ -8,8 +8,25 @@ export function isDeveloperPanelRole(role?: UserRole | null): boolean {
 
 export function getDefaultRedirectPath(role?: UserRole | null): string {
   if (isDeveloperPanelRole(role)) return "/developer/dashboard";
-  // Default to admin for now, or you could do "/login" if no role
   return "/admin/dashboard";
+}
+
+export function isAdminPanelPath(pathname: string) {
+  return pathname === "/admin" || pathname.startsWith("/admin/");
+}
+
+export function isDeveloperPanelPath(pathname: string) {
+  return pathname === "/developer" || pathname.startsWith("/developer/");
+}
+
+export function canAccessPathForRole(pathname: string, role?: UserRole | null) {
+  if (isAdminPanelPath(pathname)) {
+    return role === "admin" || role === "superAdmin";
+  }
+  if (isDeveloperPanelPath(pathname)) {
+    return isDeveloperPanelRole(role);
+  }
+  return true;
 }
 
 export const PROTECTED_PREFIXES = ["/admin", "/developer"] as const;
@@ -51,13 +68,18 @@ export function readMaintenanceCookie(): boolean {
 }
 
 export function getSafeNextPath(next: string | null | undefined, role?: UserRole | null) {
+  const fallback = getDefaultRedirectPath(role);
   if (
     !next ||
     !next.startsWith("/") ||
     next.startsWith("//") ||
     isAuthPath(next)
   ) {
-    return getDefaultRedirectPath(role);
+    return fallback;
+  }
+
+  if (!canAccessPathForRole(next, role)) {
+    return fallback;
   }
 
   return next;

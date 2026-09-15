@@ -61,7 +61,7 @@ export function DeveloperSidebar({
           )}
         >
           <Link
-            href="/admin/dashboard"
+            href="/developer/dashboard"
             onClick={onMobileClose}
             className={cn(
               "relative flex shrink-0 items-center justify-center overflow-hidden transition-[width,height]",
