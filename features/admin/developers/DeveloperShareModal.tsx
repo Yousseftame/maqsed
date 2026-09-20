@@ -166,8 +166,8 @@ export function DeveloperAccountSharePanel({
         if (code === "auth_failed") {
           throw new Error(
             isRtl
-              ? "سيرفر البريد رفض تسجيل الدخول. تأكد من بريد des@cbrand.sa وكلمة المرور في .env.local ثم أعد تشغيل السيرفر."
-              : "The mail server rejected the login. Check des@cbrand.sa and its password in .env.local, then restart the server."
+              ? "سيرفر البريد رفض تسجيل الدخول. تأكد من بريد info@maqsad.sa وكلمة المرور في .env.local ثم أعد تشغيل السيرفر."
+              : "The mail server rejected the login. Check info@maqsad.sa and its password in .env.local, then restart the server."
           );
         }
         throw new Error(

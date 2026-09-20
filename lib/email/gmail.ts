@@ -18,6 +18,8 @@ function cleanEnv(value?: string) {
   return value?.trim().replace(/^["']|["']$/g, "") ?? "";
 }
 
+const DEFAULT_FROM_EMAIL = "info@maqsad.sa";
+
 function getSmtpCredentials() {
   const user = cleanEnv(process.env.SMTP_USER || process.env.GMAIL_USER);
   const pass = (process.env.SMTP_PASS || process.env.GMAIL_APP_PASSWORD || "")
@@ -29,8 +31,9 @@ function getSmtpCredentials() {
 
   const host = cleanEnv(process.env.SMTP_HOST) || "smtp.gmail.com";
   const port = Number(process.env.SMTP_PORT) || 465;
+  const from = cleanEnv(process.env.SMTP_FROM) || DEFAULT_FROM_EMAIL;
 
-  return { user, pass, host, port, secure: port === 465 };
+  return { user, pass, host, port, from, secure: port === 465 };
 }
 
 function getLogoAttachment() {
@@ -54,7 +57,7 @@ export function isSmtpConfigError(error: unknown): error is SmtpConfigError {
 export const isGmailConfigError = isSmtpConfigError;
 
 async function sendHtmlEmail(options: { to: string; subject: string; html: string; text: string; logLabel: string }) {
-  const { user, pass, host, port, secure } = getSmtpCredentials();
+  const { user, pass, host, port, from, secure } = getSmtpCredentials();
   const transporter = nodemailer.createTransport({
     host,
     port,
@@ -64,7 +67,8 @@ async function sendHtmlEmail(options: { to: string; subject: string; html: strin
 
   try {
     await transporter.sendMail({
-      from: `"Maqsed" <${user}>`,
+      from: `"Maqsed" <${from}>`,
+      replyTo: from,
       to: options.to,
       subject: options.subject,
       text: options.text,
