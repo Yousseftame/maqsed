@@ -110,14 +110,14 @@ export function InterestRequestsSection() {
 
   const columns: Column<InterestRequest>[] = [
     {
-      key: "customer",
+      id: "customer",
       header: t("admin.customers.customer") || "Customer",
       cell: (row) => (
         <span className="font-bold text-[#0a0f1d]">{row.fullName}</span>
       ),
     },
     {
-      key: "phone",
+      id: "phone",
       header: t("contactPage.form.phone") || "Phone",
       cell: (row) => (
         <span className="text-sm font-medium text-[#0a0f1d]" dir="ltr">
@@ -126,7 +126,7 @@ export function InterestRequestsSection() {
       ),
     },
     {
-      key: "email",
+      id: "email",
       header: t("contactPage.form.email") || "Email",
       cell: (row) => (
         <span className="text-sm font-medium text-[#0a0f1d]" dir="ltr">
@@ -135,7 +135,7 @@ export function InterestRequestsSection() {
       ),
     },
     {
-      key: "message",
+      id: "message",
       header: t("contactPage.form.message") || "Message",
       cell: (row) => (
         <span className="line-clamp-2 max-w-[220px] text-sm font-medium text-[#6B7280]">
@@ -144,7 +144,7 @@ export function InterestRequestsSection() {
       ),
     },
     {
-      key: "status",
+      id: "status",
       header: t("admin.customers.status") || "Status",
       cell: (row) => (
         <StatusBadge tone={REQUEST_STATUS_TONE[row.status] || "default"}>
@@ -153,7 +153,7 @@ export function InterestRequestsSection() {
       ),
     },
     {
-      key: "date",
+      id: "date",
       header: t("admin.customers.date") || "Date",
       cell: (row) => (
         <span className="text-sm font-medium text-[#8c8c8c]">
