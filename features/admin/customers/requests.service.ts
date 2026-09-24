@@ -60,9 +60,22 @@ export interface SalesRequest {
   updatedAt: any;
 }
 
+export interface InterestRequest {
+  id: string;
+  fullName: string;
+  phone: string;
+  email: string;
+  message: string;
+  source?: string;
+  status: RequestStatus;
+  createdAt: any;
+  updatedAt: any;
+}
+
 const CONTACT_COLLECTION = "contact_requests";
 const SELL_COLLECTION = "sell_requests";
 const SALES_COLLECTION = "sales_requests";
+const INTEREST_COLLECTION = "interest_requests";
 
 export const requestsService = {
   // Aggregate count for sidebar (low cost)
@@ -176,6 +189,26 @@ export const requestsService = {
 
   async deleteSalesRequest(id: string): Promise<void> {
     const docRef = doc(db, SALES_COLLECTION, id);
+    await deleteDoc(docRef);
+  },
+
+  // Interest Requests (قائمة الاهتمام — sub website)
+  async getInterestRequests(): Promise<InterestRequest[]> {
+    const q = query(collection(db, INTEREST_COLLECTION), orderBy("createdAt", "desc"));
+    const snapshot = await getDocs(q);
+    return snapshot.docs.map((docSnap) => ({ id: docSnap.id, ...docSnap.data() } as InterestRequest));
+  },
+
+  async updateInterestRequestStatus(id: string, status: RequestStatus): Promise<void> {
+    const docRef = doc(db, INTEREST_COLLECTION, id);
+    await updateDoc(docRef, {
+      status,
+      updatedAt: serverTimestamp(),
+    });
+  },
+
+  async deleteInterestRequest(id: string): Promise<void> {
+    const docRef = doc(db, INTEREST_COLLECTION, id);
     await deleteDoc(docRef);
   },
 };

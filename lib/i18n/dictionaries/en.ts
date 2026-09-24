@@ -341,6 +341,7 @@ export interface Dictionary {
       units: string;
       cities: string;
       customers: string;
+      interestRequests: string;
       settingsHeading: string;
       company: string;
       menu: string;
@@ -482,6 +483,15 @@ export interface Dictionary {
         process: string;
         send: string;
       };
+    };
+    interestRequests: {
+      title: string;
+      total: string;
+      search: string;
+      source: string;
+      sourceSub: string;
+      sourceBadge: string;
+      sourceHint: string;
     };
     menus: {
       tabProjects: string;
@@ -1401,6 +1411,7 @@ export const en: Dictionary = {
       units: "Unit Management",
       cities: "Cities and Neighborhoods",
       customers: "Customer Communication",
+      interestRequests: "Interest List (Sub)",
       settingsHeading: "Settings and Content",
       company: "Company Information",
       menu: "Menu Settings",
@@ -1542,6 +1553,16 @@ export const en: Dictionary = {
         process: "Process",
         send: "Send",
       },
+    },
+    interestRequests: {
+      title: "Interest List",
+      total: "Total interest",
+      search: "Search interest list..",
+      source: "Source",
+      sourceSub: "Sub website",
+      sourceBadge: "From the sub website",
+      sourceHint:
+        "These leads are submitted from the Maqsed sub website, not from the main website contact forms.",
     },
     menus: {
       tabProjects: "Projects",

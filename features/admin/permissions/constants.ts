@@ -74,4 +74,5 @@ export const ADMIN_PATH_PERMISSIONS: {
   { prefix: "/admin/projects", module: "projects", action: "read" },
   { prefix: "/admin/units", module: "units", action: "read" },
   { prefix: "/admin/customers", module: "customers", action: "read" },
+  { prefix: "/admin/interest-requests", module: "customers", action: "read" },
 ];

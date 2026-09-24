@@ -404,6 +404,7 @@ export const ar: Dictionary = {
       units: "إدارة الوحدات",
       cities: "المدن والأحياء",
       customers: "تواصل العملاء",
+      interestRequests: "قائمة الاهتمام (فرعي)",
       settingsHeading: "الإعدادات والمحتوى",
       company: "بيانات الشركة",
       menu: "إعدادات القوائم",
@@ -545,6 +546,16 @@ export const ar: Dictionary = {
         process: "معالجة",
         send: "إرسال",
       },
+    },
+    interestRequests: {
+      title: "قائمة الاهتمام",
+      total: "إجمالي الاهتمام",
+      search: "ابحث في قائمة الاهتمام..",
+      source: "المصدر",
+      sourceSub: "الموقع الفرعي",
+      sourceBadge: "من الموقع الفرعي",
+      sourceHint:
+        "هذه الطلبات تُسجَّل من الموقع الفرعي لمقصد، وليست من نماذج التواصل في الموقع الرئيسي.",
     },
     menus: {
       tabProjects: "المشاريع",
