@@ -75,6 +75,9 @@ export const metadata: Metadata = {
       "max-video-preview": -1,
     },
   },
+  verification: {
+    google: "QKkCJY69pVEZLS4ovmjxYchakWUzBFntGJ-nh_6ygCs",
+  },
 };
 
 const localeBootstrap = `(function(){try{var l=localStorage.getItem("maqsed-locale");if(l==="en"){var d=document.documentElement;d.lang="en";d.dir="ltr";d.classList.add("locale-en");d.classList.remove("locale-ar");}}catch(e){}})();`;
