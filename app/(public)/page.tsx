@@ -3,6 +3,7 @@ import { SearchSection } from "@/features/home/components/SearchSection";
 import { PropertiesSection } from "@/features/home/components/PropertiesSection";
 import { AgentsSection } from "@/features/home/components/AgentsSection";
 import { pageMetadata, SITE_NAME } from "@/lib/seo/site";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 export const metadata = pageMetadata({
   title: SITE_NAME,
@@ -15,7 +16,7 @@ export const metadata = pageMetadata({
 export default function Home() {
   return (
     <div className="flex min-h-screen w-full flex-col bg-white">
-      <link rel="preload" as="image" href="/9.avif" fetchPriority="high" />
+      <link rel="preload" as="image" href={BRAND_ASSETS.defaultHero} fetchPriority="high" />
       <HeroSection />
       <SearchSection />
       {/* <AboutSection /> */}

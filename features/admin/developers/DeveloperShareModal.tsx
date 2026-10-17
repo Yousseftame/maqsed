@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import { CheckCircle2, Copy, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 export type DeveloperShareAccount = {
   firstName: string;
@@ -249,7 +250,7 @@ export function DeveloperAccountSharePanel({
             {isSendingEmail ? (
               <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <img src="/google_mail_gmail_logo_icon_159346.webp" alt="Email" className="h-5 w-5 object-contain" />
+              <img src={BRAND_ASSETS.gmail} alt="Email" className="h-5 w-5 object-contain" />
             )}
             {isSendingEmail
               ? isRtl

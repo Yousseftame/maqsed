@@ -3,6 +3,7 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "@/lib/firebase/firebase";
 import type { Locale } from "@/lib/i18n/types";
 import { COMPANY_DEFAULTS, DEFAULT_COMPANY_LOGO } from "@/features/admin/company/data";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 const COLLECTION = "company";
 const DOC_ID = "main";
@@ -90,7 +91,7 @@ export function resolveCompanyContent(
 ): ResolvedCompanyContent {
   const isAr = locale === "ar";
   return {
-    logo: pick(data?.logo, DEFAULT_COMPANY_LOGO),
+    logo: pick(data?.logo, BRAND_ASSETS.logoSvg || DEFAULT_COMPANY_LOGO),
     phone: pick(data?.phone, COMPANY_DEFAULTS.phone),
     email: pick(data?.email, COMPANY_DEFAULTS.email),
     location: pick(

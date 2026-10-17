@@ -3,10 +3,11 @@ import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { db, storage } from "@/lib/firebase/firebase";
 import type { Locale } from "@/lib/i18n/types";
 import { ar } from "@/lib/i18n/dictionaries/ar";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 const COLLECTION = "herosection";
 const DOC_ID = "main";
-export const DEFAULT_HERO_IMAGE = "/9.avif";
+export const DEFAULT_HERO_IMAGE = BRAND_ASSETS.defaultHero;
 
 function collapseText(value: string): string {
   return value.replace(/\n/g, " ").replace(/\s+/g, " ").trim();

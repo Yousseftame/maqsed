@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 export function AuthShell({ children }: { children: React.ReactNode }) {
   const { locale, t } = useLocale();
@@ -16,7 +17,7 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
         <div className="flex-shrink-0 flex items-center justify-between px-8 pt-8 pb-0">
           <Link href="/" className="inline-flex items-center">
             <Image
-              src="/svglogo.svg"
+              src={BRAND_ASSETS.logoSvg}
               alt="Maqsed"
               width={110}
               height={28}
@@ -24,8 +25,8 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
               priority
             />
           </Link>
-          <Link 
-            href="/" 
+          <Link
+            href="/"
             className="group flex items-center gap-2 text-sm font-medium tracking-wide text-[#8c8c8c] transition-colors duration-200 hover:text-[#3E1854]"
           >
             <ArrowLeft className="h-4 w-4 transition-transform duration-200 group-hover:-translate-x-1 rtl:rotate-180 rtl:group-hover:translate-x-1" />
@@ -48,22 +49,19 @@ export function AuthShell({ children }: { children: React.ReactNode }) {
       </div>
 
       <div className="relative hidden w-[52%] flex-shrink-0 items-center justify-center overflow-hidden bg-[#3E1854] lg:flex">
-        
-        {/* Background Pattern */}
-        <div 
+        <div
           className="absolute inset-0 w-full h-full opacity-15 mix-blend-overlay"
           style={{
-            backgroundImage: "url('/Gemini_Generated_Image_kax3jnkax3jnkax3.jpg')",
+            backgroundImage: `url('${BRAND_ASSETS.authPattern}')`,
             backgroundSize: "70%",
             backgroundRepeat: "repeat",
-            backgroundPosition: "left top"
+            backgroundPosition: "left top",
           }}
         />
 
-        {/* Centered Icon */}
         <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
           <img
-            src="/iconheroimg.png"
+            src={BRAND_ASSETS.iconHero}
             alt="Maqsed Icons"
             className="h-[350px] w-auto object-contain brightness-[3] contrast-200 grayscale lg:h-[550px] -translate-y-12 lg:-translate-y-24"
           />

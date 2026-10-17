@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LOCALE_STORAGE_KEY } from "@/lib/i18n/types";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 function getSplashBrand() {
   try {
@@ -59,8 +60,11 @@ export function SplashScreen({ onComplete }: { onComplete: () => void }) {
         }`}
       >
         <img
-          src="/splashscreen.png"
+          src={BRAND_ASSETS.splash}
           alt={displayBrand}
+          width={260}
+          height={88}
+          decoding="async"
           className="h-auto w-[220px] object-contain select-none sm:w-[260px]"
           draggable={false}
         />

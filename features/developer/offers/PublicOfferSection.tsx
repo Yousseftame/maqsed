@@ -10,6 +10,7 @@ import type { OfferData } from "@/features/admin/offers/offers.service";
 import { downloadOfferPDF } from "@/features/admin/offers/offer-pdf";
 import { formatServiceValue } from "@/features/admin/offers/offer-services";
 import toast from "react-hot-toast";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 interface PublicOfferSectionProps {
   offerId: string;
@@ -286,7 +287,7 @@ export function PublicOfferSection({ offerId }: PublicOfferSectionProps) {
 
                 {/* Company Header */}
                 <div className="flex items-center justify-between px-8 py-6 border-b border-gray-100">
-                  <img src="/logoadminpanel.png" alt="مقصد" className="h-9 object-contain" />
+                  <img src={BRAND_ASSETS.logoAdmin} alt="مقصد" className="h-9 object-contain" />
                   <div className="text-right">
                     <p className="text-xs text-gray-400 font-medium">
                       {isRtl ? "رقم العرض" : "Offer No."}

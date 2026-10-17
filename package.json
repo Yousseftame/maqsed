@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@base-ui/react": "^1.7.0",
+    "@emnapi/core": "^1.11.3",
+    "@emnapi/runtime": "^1.11.3",
     "@hookform/resolvers": "^5.7.1",
     "@tanstack/react-query": "^5.101.4",
     "@types/aos": "^3.0.8",

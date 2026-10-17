@@ -1,0 +1,63 @@
+# Settings for Backend (on Cloud Run).
+# See https://firebase.google.com/docs/app-hosting/configure#cloud-run
+runConfig:
+  minInstances: 0
+  memoryMiB: 1024
+
+# Public Firebase web config (same as NEXT_PUBLIC_* in .env.local).
+# Required at BUILD time so Next.js can prerender pages like /sitemap.xml.
+env:
+  - variable: NEXT_PUBLIC_SITE_URL
+    value: https://maqsad.sa
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_API_KEY
+    value: AIzaSyDd2aWUhXaJY3S4Y8k75jognbUmwkzYLcQ
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN
+    value: activelink2026.firebaseapp.com
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_PROJECT_ID
+    value: activelink2026
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET
+    value: activelink2026.firebasestorage.app
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID
+    value: "1067597927443"
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_APP_ID
+    value: 1:1067597927443:web:3839daee5004a36e085be6
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
+    value: G-JSXG9B2MDV
+    availability:
+      - BUILD
+      - RUNTIME
+  - variable: SMTP_HOST
+    value: smtp.gmail.com
+    availability:
+      - RUNTIME
+  - variable: SMTP_PORT
+    value: "465"
+    availability:
+      - RUNTIME
+  - variable: SMTP_USER
+    value: des@cbrand.sa
+    availability:
+      - RUNTIME
+  # Add SMTP_PASS in Firebase Console → App Hosting → maqsed → Environment
+  # (or: firebase apphosting:secrets:set SMTP_PASS) after the first successful deploy.

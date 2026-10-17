@@ -6,6 +6,7 @@ import { CheckCircle2, Loader2 } from "lucide-react";
 import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { SalesRequest } from "./requests.service";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 const PAYMENT_LABELS: Record<string, string> = {
   cash: "كاش",
@@ -192,7 +193,7 @@ export function InterestShareModal({ request, onClose }: Props) {
               {isSendingEmail ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <img src="/google_mail_gmail_logo_icon_159346.webp" alt="Email" className="h-5 w-5 object-contain" />
+                <img src={BRAND_ASSETS.gmail} alt="Email" className="h-5 w-5 object-contain" />
               )}
               {isSendingEmail
                 ? isRtl

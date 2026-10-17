@@ -12,7 +12,9 @@ import { ar } from "@/lib/i18n/dictionaries/ar";
 import { en } from "@/lib/i18n/dictionaries/en";
 import toast from "react-hot-toast";
 
-const DEFAULT_HERO_IMAGE = "/9.avif";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
+
+const DEFAULT_HERO_IMAGE = BRAND_ASSETS.defaultHero;
 
 type HeroGalleryImage = {
   id: string;

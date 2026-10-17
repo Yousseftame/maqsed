@@ -7,6 +7,7 @@ import toast from "react-hot-toast";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import type { OfferData } from "./offers.service";
 import { downloadOfferPDF } from "./offer-pdf";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 type Props = {
   offer: OfferData | null;
@@ -241,7 +242,7 @@ export function OfferShareModal({ offer, created = false, onClose }: Props) {
               {isSendingEmail ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
               ) : (
-                <img src="/google_mail_gmail_logo_icon_159346.webp" alt="Email" className="h-5 w-5 object-contain" />
+                <img src={BRAND_ASSETS.gmail} alt="Email" className="h-5 w-5 object-contain" />
               )}
               {isSendingEmail
                 ? isRtl

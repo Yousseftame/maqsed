@@ -22,6 +22,7 @@ import {
   SITE_NAME_AR,
   getSiteUrl,
 } from "@/lib/seo/site";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -43,9 +44,9 @@ export const metadata: Metadata = {
   publisher: SITE_NAME,
   category: "real estate",
   icons: {
-    icon: [{ url: "/icon-removebg-preview.png", type: "image/png" }],
-    shortcut: "/icon-removebg-preview.png",
-    apple: "/icon-removebg-preview.png",
+    icon: [{ url: BRAND_ASSETS.icon, type: "image/png" }],
+    shortcut: BRAND_ASSETS.icon,
+    apple: BRAND_ASSETS.icon,
   },
   openGraph: {
     type: "website",
@@ -55,13 +56,13 @@ export const metadata: Metadata = {
     siteName: SITE_NAME,
     title: SITE_NAME,
     description: SITE_DESCRIPTION_AR,
-    images: [{ url: "/icon-removebg-preview.png", alt: SITE_NAME }],
+    images: [{ url: BRAND_ASSETS.icon, alt: SITE_NAME }],
   },
   twitter: {
     card: "summary_large_image",
     title: SITE_NAME,
     description: SITE_DESCRIPTION_EN,
-    images: ["/icon-removebg-preview.png"],
+    images: [BRAND_ASSETS.icon],
   },
   robots: {
     index: true,

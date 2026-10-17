@@ -10,6 +10,7 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
 import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { filterAdminNav } from "@/features/admin/permissions/utils";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 
 const SIDEBAR_EASE = "duration-[400ms] ease-[cubic-bezier(0.22,1,0.36,1)]";
 
@@ -69,7 +70,7 @@ export function AdminSidebar({
             aria-label={t("admin.nav.overview")}
           >
             <Image
-              src="/logoadminpanel.png"
+              src={BRAND_ASSETS.logoAdmin}
               alt="Maqsed"
               width={120}
               height={44}
@@ -81,7 +82,7 @@ export function AdminSidebar({
               )}
             />
             <Image
-              src="/icon-removebg-preview.png"
+              src={BRAND_ASSETS.icon}
               alt=""
               width={28}
               height={28}
