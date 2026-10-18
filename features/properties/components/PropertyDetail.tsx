@@ -496,10 +496,6 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                     </p>
                   </div>
                 ) : null}
-
-                {adInfo.length > 0 ? (
-                  <AdvertisementInfoCard items={adInfo} title={isRtl ? "معلومات الاعلان" : "Advertisement info"} />
-                ) : null}
               </div>
             ) : null}
 
@@ -739,6 +735,10 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 </table>
               </div>
             </div>
+
+            {adInfo.length > 0 ? (
+              <AdvertisementInfoCard items={adInfo} title={isRtl ? "معلومات الاعلان" : "Advertisement info"} />
+            ) : null}
           </div>
 
           {property.brochureLink ? (
