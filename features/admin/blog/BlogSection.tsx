@@ -12,6 +12,7 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { blogService, resolveBlogPost, type BlogPost } from "@/features/blog/blog.service";
 import { ViewBlogModal } from "@/features/admin/blog/ViewBlogModal";
 import { BlogFormModal } from "@/features/admin/blog/BlogFormModal";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 function formatDate(value: number, locale: string) {
   return new Intl.DateTimeFormat(locale === "ar" ? "ar-SA" : "en-GB", {
@@ -25,6 +26,11 @@ export function BlogSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canCreate = can("blog", "create");
+  const canEdit = can("blog", "edit");
+  const canDelete = can("blog", "delete");
+  const canSort = can("blog", "sort");
   const [query, setQuery] = useState("");
   const [viewPost, setViewPost] = useState<BlogPost | null>(null);
   const [editPost, setEditPost] = useState<BlogPost | null>(null);
@@ -110,24 +116,28 @@ export function BlogSection() {
             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-[#F4F4F4] text-xs font-bold text-[#0a0f1d]">
               {index + 1}
             </span>
-            <button
-              type="button"
-              disabled={isBusy || index <= 0}
-              onClick={() => void move(row, -1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4] disabled:cursor-not-allowed disabled:opacity-30"
-              aria-label={t("admin.blog.moveUp")}
-            >
-              <ChevronUp className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              disabled={isBusy || index < 0 || index >= posts.length - 1}
-              onClick={() => void move(row, 1)}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4] disabled:cursor-not-allowed disabled:opacity-30"
-              aria-label={t("admin.blog.moveDown")}
-            >
-              <ChevronDown className="h-4 w-4" />
-            </button>
+            {canSort ? (
+              <>
+                <button
+                  type="button"
+                  disabled={isBusy || index <= 0}
+                  onClick={() => void move(row, -1)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4] disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label={t("admin.blog.moveUp")}
+                >
+                  <ChevronUp className="h-4 w-4" />
+                </button>
+                <button
+                  type="button"
+                  disabled={isBusy || index < 0 || index >= posts.length - 1}
+                  onClick={() => void move(row, 1)}
+                  className="flex h-8 w-8 items-center justify-center rounded-full text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4] disabled:cursor-not-allowed disabled:opacity-30"
+                  aria-label={t("admin.blog.moveDown")}
+                >
+                  <ChevronDown className="h-4 w-4" />
+                </button>
+              </>
+            ) : null}
           </div>
         );
       },
@@ -191,30 +201,38 @@ export function BlogSection() {
                 className="h-12 w-full rounded-full bg-[#F4F4F4] pe-4 ps-11 text-sm font-medium text-[#0a0f1d] outline-none placeholder:text-[#8c8c8c]"
               />
             </label>
-            <AdminButton type="button" onClick={openCreate}>
-              <Plus className="h-4 w-4" strokeWidth={2.5} />
-              {t("admin.blog.add")}
-            </AdminButton>
+            {canCreate ? (
+              <AdminButton type="button" onClick={openCreate}>
+                <Plus className="h-4 w-4" strokeWidth={2.5} />
+                {t("admin.blog.add")}
+              </AdminButton>
+            ) : null}
           </div>
         }
         actions={(row) => (
           <div className="flex justify-end gap-1">
             <TableAction label={t("admin.ui.view")} onClick={() => setViewPost(row)} />
-            <TableAction label={t("admin.ui.edit")} onClick={() => openEdit(row)} />
-            <TableAction label={t("admin.ui.delete")} tone="danger" onClick={() => void handleDelete(row)} />
+            {canEdit ? (
+              <TableAction label={t("admin.ui.edit")} onClick={() => openEdit(row)} />
+            ) : null}
+            {canDelete ? (
+              <TableAction label={t("admin.ui.delete")} tone="danger" onClick={() => void handleDelete(row)} />
+            ) : null}
           </div>
         )}
       />
 
       <ViewBlogModal post={viewPost} onClose={() => setViewPost(null)} />
-      <BlogFormModal
-        isOpen={isFormOpen}
-        post={editPost}
-        onClose={() => {
-          setIsFormOpen(false);
-          setEditPost(null);
-        }}
-      />
+      {canCreate || canEdit ? (
+        <BlogFormModal
+          isOpen={isFormOpen}
+          post={editPost}
+          onClose={() => {
+            setIsFormOpen(false);
+            setEditPost(null);
+          }}
+        />
+      ) : null}
     </div>
   );
 }

@@ -76,7 +76,7 @@ function AdminPermissionsView({ value }: { value: AdminPermissions }) {
 
       <div className="overflow-hidden rounded-[24px] bg-[#F4F4F4]">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[480px] border-separate border-spacing-0">
+          <table className="w-full min-w-[600px] border-separate border-spacing-0">
             <thead>
               <tr>
                 <th

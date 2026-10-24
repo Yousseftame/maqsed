@@ -37,6 +37,20 @@ function developerLabel(user: UserData) {
   return name || user.email;
 }
 
+function userDataToShareAccount(user: UserData, fallbackPhone?: string): DeveloperShareAccount | null {
+  const email = (user.email || "").trim();
+  const password = (user.password || "").trim();
+  if (!email || !password || password.length < 6) return null;
+  return {
+    firstName: (user.displayName || "").trim() || email,
+    lastName: (user.lastName || "").trim() || undefined,
+    email,
+    password,
+    phone: (user.phoneNumber || fallbackPhone || "").trim() || undefined,
+    company: (user.companyName || "").trim() || undefined,
+  };
+}
+
 function assignErrorMessage(code: string, isRtl: boolean) {
   const map: Record<string, [string, string]> = {
     OFFER_NOT_ACCEPTED: ["يمكن إضافة العروض المقبولة فقط.", "Only accepted offers can be added."],
@@ -127,6 +141,14 @@ export function AssignOfferDashboardModal({
     enabled: Boolean(offer),
   });
 
+  const assignedDeveloperUid = offer?.assignedDeveloperUid || "";
+
+  const { data: assignedDeveloper } = useQuery({
+    queryKey: ["users", "profile", assignedDeveloperUid],
+    queryFn: () => usersService.getUserProfile(assignedDeveloperUid),
+    enabled: Boolean(offer && assignedDeveloperUid),
+  });
+
   const activeDevelopers = useMemo(
     () =>
       developers
@@ -134,6 +156,13 @@ export function AssignOfferDashboardModal({
         .sort((a, b) => developerLabel(a).localeCompare(developerLabel(b), "ar")),
     [developers]
   );
+
+  /** Prefer session storage; otherwise load from assigned developer profile (works for any admin). */
+  const shareAccount = useMemo(() => {
+    if (createdAccount) return createdAccount;
+    if (!assignedDeveloper) return null;
+    return userDataToShareAccount(assignedDeveloper, offer?.developerPhone);
+  }, [createdAccount, assignedDeveloper, offer?.developerPhone]);
 
   useEffect(() => {
     if (!offer) {
@@ -228,7 +257,7 @@ export function AssignOfferDashboardModal({
         lastName: data.lastName,
         email: data.email,
         password: data.password,
-        phone: data.phone,
+        phone: data.phone || offer.developerPhone,
         company: data.company,
       });
       onDeveloperCreated?.(offer.id, shareAccount);
@@ -262,7 +291,9 @@ export function AssignOfferDashboardModal({
     }
     setIsSubmitting(true);
     try {
-      await assignToDeveloper(selected.uid, developerLabel(selected));
+      const account = userDataToShareAccount(selected, offer.developerPhone);
+      if (account) onDeveloperCreated?.(offer.id, account);
+      await assignToDeveloper(selected.uid, developerLabel(selected), false);
     } catch (error: unknown) {
       toast.error(assignErrorMessage(extractAssignError(error), isRtl));
     } finally {
@@ -337,13 +368,13 @@ export function AssignOfferDashboardModal({
                 </div>
               </div>
 
-              {createdAccount ? (
+              {shareAccount ? (
                 <div className="space-y-4">
                   {alreadyAssigned ? (
                     <div className="rounded-[16px] bg-[#E8F8EF] px-5 py-4 text-sm font-bold text-[#2f9e44]">
                       {isRtl
-                        ? `تمت الإضافة مسبقاً إلى: ${offer.assignedDeveloperName || createdAccount.firstName || "—"}`
-                        : `Already added to: ${offer.assignedDeveloperName || createdAccount.firstName || "—"}`}
+                        ? `تمت الإضافة مسبقاً إلى: ${offer.assignedDeveloperName || shareAccount.firstName || "—"}`
+                        : `Already added to: ${offer.assignedDeveloperName || shareAccount.firstName || "—"}`}
                     </div>
                   ) : null}
                   <div className="rounded-[20px] border border-[#0a0f1d]/8 bg-white p-5">
@@ -356,14 +387,15 @@ export function AssignOfferDashboardModal({
                           {isRtl ? "بيانات دخول المطور الجديد" : "New developer login details"}
                         </p>
                         <p dir="ltr" className="text-xs font-medium text-[#8c8c8c]">
-                          {createdAccount.email}
+                          {shareAccount.email}
                         </p>
                       </div>
                     </div>
                     <DeveloperAccountSharePanel
-                      account={createdAccount}
+                      account={shareAccount}
                       showEmail
                       sendToEmail={offer.developerEmail}
+                      fallbackPhone={offer.developerPhone}
                     />
                   </div>
                 </div>
@@ -533,7 +565,7 @@ export function AssignOfferDashboardModal({
               >
                 {t("admin.cancel") || (isRtl ? "إلغاء" : "Cancel")}
               </button>
-              {!alreadyAssigned && !createdAccount ? (
+              {!alreadyAssigned && !shareAccount ? (
                 <button
                   type={mode === "create" ? "submit" : "button"}
                   form={mode === "create" ? "assign-offer-create-developer" : undefined}
@@ -544,7 +576,7 @@ export function AssignOfferDashboardModal({
                   {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
                   {isRtl ? "إضافة للوحة" : "Add to dashboard"}
                 </button>
-              ) : !alreadyAssigned && createdAccount ? (
+              ) : !alreadyAssigned && shareAccount ? (
                 <button
                   type="button"
                   onClick={onAssignExisting}

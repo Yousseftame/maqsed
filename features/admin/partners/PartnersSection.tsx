@@ -9,12 +9,18 @@ import { AdminButton, fieldClass } from "@/features/admin/ui/AdminButton";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { partnersService, type Partner } from "@/features/partners/partners.service";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { cn } from "@/lib/utils";
 
 export function PartnersSection() {
   const { t } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canCreate = can("partners", "create");
+  const canEdit = can("partners", "edit");
+  const canDelete = can("partners", "delete");
+  const canSort = can("partners", "sort");
   const fileRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -112,33 +118,43 @@ export function PartnersSection() {
       <Panel
         title={t("admin.interface.partners")}
         action={
-          <AdminButton type="button" disabled={isUploading} onClick={() => fileRef.current?.click()}>
-            {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" strokeWidth={2.5} />}
-            <span className="hidden sm:inline">
-              {isUploading ? t("admin.partners.uploading") : t("admin.interface.addPartner")}
-            </span>
-          </AdminButton>
+          canCreate ? (
+            <AdminButton type="button" disabled={isUploading} onClick={() => fileRef.current?.click()}>
+              {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" strokeWidth={2.5} />}
+              <span className="hidden sm:inline">
+                {isUploading ? t("admin.partners.uploading") : t("admin.interface.addPartner")}
+              </span>
+            </AdminButton>
+          ) : null
         }
       >
         <p className="mb-6 text-sm font-semibold text-[#8c8c8c]">{t("admin.interface.partnersHint")}</p>
-        <input
-          ref={fileRef}
-          type="file"
-          accept="image/png,image/jpeg,image/webp,image/svg+xml"
-          multiple
-          className="hidden"
-          onChange={(event) => void onFilesSelected(event.target.files)}
-        />
+        {canCreate ? (
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/png,image/jpeg,image/webp,image/svg+xml"
+            multiple
+            className="hidden"
+            onChange={(event) => void onFilesSelected(event.target.files)}
+          />
+        ) : null}
 
         {isFetched && partners.length === 0 ? (
-          <button
-            type="button"
-            onClick={() => fileRef.current?.click()}
-            className="flex min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-[24px] border border-dashed border-[#0a0f1d]/15 bg-[#F4F4F4] px-6 text-center"
-          >
-            <ImagePlus className="h-8 w-8 text-[#8c8c8c]" strokeWidth={1.5} />
-            <p className="max-w-md text-sm font-semibold text-[#8c8c8c]">{t("admin.partners.empty")}</p>
-          </button>
+          canCreate ? (
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="flex min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-[24px] border border-dashed border-[#0a0f1d]/15 bg-[#F4F4F4] px-6 text-center"
+            >
+              <ImagePlus className="h-8 w-8 text-[#8c8c8c]" strokeWidth={1.5} />
+              <p className="max-w-md text-sm font-semibold text-[#8c8c8c]">{t("admin.partners.empty")}</p>
+            </button>
+          ) : (
+            <div className="flex min-h-[220px] w-full flex-col items-center justify-center gap-3 rounded-[24px] border border-dashed border-[#0a0f1d]/15 bg-[#F4F4F4] px-6 text-center">
+              <p className="max-w-md text-sm font-semibold text-[#8c8c8c]">{t("admin.partners.empty")}</p>
+            </div>
+          )
         ) : (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
             {partners.map((partner, index) => {
@@ -149,33 +165,39 @@ export function PartnersSection() {
                   className="group relative flex flex-col overflow-hidden rounded-[24px] bg-[#F4F4F4] p-4"
                 >
                   <div className="absolute end-3 top-3 z-10 flex items-center gap-1">
-                    <button
-                      type="button"
-                      disabled={isBusy || index === 0}
-                      onClick={() => void move(partner, -1)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#0a0f1d] shadow-sm transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-30"
-                      aria-label={t("admin.partners.moveUp")}
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={isBusy || index === partners.length - 1}
-                      onClick={() => void move(partner, 1)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#0a0f1d] shadow-sm transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-30"
-                      aria-label={t("admin.partners.moveDown")}
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={isBusy}
-                      onClick={() => void remove(partner)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-red-500 shadow-sm transition-colors hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
-                      aria-label={t("admin.ui.delete")}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    {canSort ? (
+                      <>
+                        <button
+                          type="button"
+                          disabled={isBusy || index === 0}
+                          onClick={() => void move(partner, -1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#0a0f1d] shadow-sm transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-30"
+                          aria-label={t("admin.partners.moveUp")}
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isBusy || index === partners.length - 1}
+                          onClick={() => void move(partner, 1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-[#0a0f1d] shadow-sm transition-colors hover:bg-white disabled:cursor-not-allowed disabled:opacity-30"
+                          aria-label={t("admin.partners.moveDown")}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </button>
+                      </>
+                    ) : null}
+                    {canDelete ? (
+                      <button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => void remove(partner)}
+                        className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-red-500 shadow-sm transition-colors hover:text-red-600 disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label={t("admin.ui.delete")}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    ) : null}
                   </div>
 
                   <div className="flex aspect-square items-center justify-center rounded-[18px] bg-white p-5">
@@ -194,23 +216,26 @@ export function PartnersSection() {
                       defaultValue={partner.name}
                       key={`${partner.id}-${partner.name}`}
                       placeholder={t("admin.partners.namePlaceholder")}
-                      onBlur={(event) => void saveName(partner, event.target.value)}
-                      className={cn(fieldClass, "h-10 px-4")}
+                      disabled={!canEdit}
+                      onBlur={(event) => canEdit && void saveName(partner, event.target.value)}
+                      className={cn(fieldClass, "h-10 px-4", !canEdit && "opacity-70")}
                     />
                   </div>
                 </div>
               );
             })}
 
-            <button
-              type="button"
-              disabled={isUploading}
-              onClick={() => fileRef.current?.click()}
-              className="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[24px] border border-dashed border-[#0a0f1d]/20 bg-[#F4F4F4] text-[#8c8c8c] transition-colors hover:border-[#0a0f1d]/40 hover:bg-[#EAEAEA] hover:text-[#0a0f1d] disabled:opacity-50"
-            >
-              {isUploading ? <Loader2 className="h-6 w-6 animate-spin" /> : <Plus className="h-6 w-6" />}
-              <span className="text-xs font-bold">{t("admin.interface.addPartner")}</span>
-            </button>
+            {canCreate ? (
+              <button
+                type="button"
+                disabled={isUploading}
+                onClick={() => fileRef.current?.click()}
+                className="flex min-h-[220px] flex-col items-center justify-center gap-2 rounded-[24px] border border-dashed border-[#0a0f1d]/20 bg-[#F4F4F4] text-[#8c8c8c] transition-colors hover:border-[#0a0f1d]/40 hover:bg-[#EAEAEA] hover:text-[#0a0f1d] disabled:opacity-50"
+              >
+                {isUploading ? <Loader2 className="h-6 w-6 animate-spin" /> : <Plus className="h-6 w-6" />}
+                <span className="text-xs font-bold">{t("admin.interface.addPartner")}</span>
+              </button>
+            ) : null}
           </div>
         )}
       </Panel>

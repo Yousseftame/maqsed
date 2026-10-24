@@ -667,6 +667,7 @@ export interface Dictionary {
       read: string;
       edit: string;
       delete: string;
+      sort: string;
       all: string;
       grantAll: string;
       revokeAll: string;
@@ -1732,12 +1733,13 @@ export const en: Dictionary = {
     },
     permissions: {
       title: "Module Permissions",
-      description: "Choose what this admin can see and do on each page: create, view, edit, and delete.",
+      description: "Choose what this admin can see and do on each page: create, view, edit, delete, and sort.",
       module: "Module",
       create: "Create",
       read: "Read",
       edit: "Edit",
       delete: "Delete",
+      sort: "Sort",
       all: "All",
       grantAll: "Grant All",
       revokeAll: "Revoke All",

@@ -68,7 +68,7 @@ function buildDeveloperMessage(account: DeveloperShareAccount, url: string) {
     "",
     "بعد تسجيل الدخول ستنتقل مباشرة إلى لوحة المطور.",
     "",
-    "يُرجى الاحتفاظ بهذه البيانات وعدم مشاركتها. ننصح بتغيير كلمة المرور بعد أول دخول.",
+    "يُرجى الاحتفاظ بهذه البيانات وعدم مشاركتها.",
     "",
     "نسعد بخدمتكم.",
     "مقصد — ننمو معاً"
@@ -85,20 +85,82 @@ function WhatsAppIcon() {
   );
 }
 
+/**
+ * Digits only for WhatsApp. Country code is required.
+ * Local numbers like 01201411024 (Egypt) or 05xxxxxxxx (Saudi) are normalized.
+ */
+function toWhatsAppPhone(phone: string) {
+  let digits = String(phone || "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+
+  // Already international Egypt (+20 1X…) or Saudi (+966 5…)
+  if (digits.startsWith("20") && /^201[0125]\d{8}/.test(digits)) {
+    return digits.slice(0, 12);
+  }
+  if (digits.startsWith("966") && /^9665\d{8}/.test(digits)) {
+    return digits.slice(0, 12);
+  }
+
+  if (!digits.startsWith("0")) return digits;
+
+  // Egypt local 01X… (11 digits) — trim extras if typed too long
+  if (/^01[0125]/.test(digits)) {
+    const eleven = digits.slice(0, 11);
+    if (/^01[0125]\d{8}$/.test(eleven)) {
+      return `20${eleven.slice(1)}`;
+    }
+  }
+
+  // Saudi local 05… (10 digits) — trim extras if typed too long
+  if (/^05/.test(digits)) {
+    const ten = digits.slice(0, 10);
+    if (/^05\d{8}$/.test(ten)) {
+      return `966${ten.slice(1)}`;
+    }
+  }
+
+  const local = digits.slice(1);
+
+  // Egypt mobiles: 010 / 011 / 012 / 015… → +20
+  if (/^1[0125]\d{8}$/.test(local)) {
+    return `20${local}`;
+  }
+
+  // Saudi mobiles: 05xxxxxxxx → +966
+  if (/^5\d{8}$/.test(local)) {
+    return `966${local}`;
+  }
+
+  if (local.length === 10 && local.startsWith("1")) return `20${local}`;
+  if (local.length === 9 && local.startsWith("5")) return `966${local}`;
+
+  return digits;
+}
+
+function openWhatsAppAppChat(phone: string, message: string) {
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 export function DeveloperAccountSharePanel({
   account,
   showEmail = false,
   sendToEmail,
+  fallbackPhone,
 }: {
   account: DeveloperShareAccount;
   showEmail?: boolean;
   sendToEmail?: string;
+  /** Offer phone when account.phone is empty */
+  fallbackPhone?: string;
 }) {
   const { isRtl } = useLocale();
   const [isSendingEmail, setIsSendingEmail] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const loginEmail = createdDeveloperEmail(account);
   const recipientEmail = (sendToEmail || "").trim();
+  const destinationPhone = (account.phone || fallbackPhone || "").trim();
+  const whatsappPhone = toWhatsAppPhone(destinationPhone);
 
   useEffect(() => {
     setEmailSent(false);
@@ -120,10 +182,26 @@ export function DeveloperAccountSharePanel({
       toast.error(isRtl ? "بيانات الدخول غير مكتملة." : "Login details are incomplete.");
       return;
     }
-    window.open(
-      `https://wa.me/?text=${encodeURIComponent(buildDeveloperMessage(account, loginUrl()))}`,
-      "_blank",
-      "noopener,noreferrer"
+
+    const phone = toWhatsAppPhone(destinationPhone);
+    if (!phone) {
+      toast.error(isRtl ? "لا يوجد رقم جوال للمطور." : "Developer phone number is missing.");
+      return;
+    }
+    if (phone.length < 10 || phone.length > 15) {
+      toast.error(
+        isRtl
+          ? "رقم الجوال غير صالح. استخدم رمز الدولة (مثال: 9665… أو 2010…)."
+          : "Invalid phone number. Include country code (e.g. 9665… or 2010…)."
+      );
+      return;
+    }
+
+    const message = buildDeveloperMessage(account, loginUrl());
+    void navigator.clipboard.writeText(message).catch(() => undefined);
+    openWhatsAppAppChat(phone, message);
+    toast.success(
+      isRtl ? `فتح واتساب على +${phone}` : `Opening WhatsApp for +${phone}`
     );
   };
 
@@ -230,6 +308,16 @@ export function DeveloperAccountSharePanel({
           </button>
         </div>
       </div>
+
+      {whatsappPhone ? (
+        <p className="mb-2 text-center text-xs font-semibold text-[#65676B]" dir="ltr">
+          {isRtl ? "سيتم الفتح على:" : "Will open chat with:"}{" "}
+          <span className="font-bold text-[#1c1e21]">+{whatsappPhone}</span>
+          {destinationPhone && toWhatsAppPhone(destinationPhone) !== destinationPhone.replace(/\D/g, "") ? (
+            <span className="font-medium text-[#8c8c8c]"> ({destinationPhone})</span>
+          ) : null}
+        </p>
+      ) : null}
 
       <div className="flex gap-3">
         <button

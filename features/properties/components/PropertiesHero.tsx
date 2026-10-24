@@ -11,7 +11,7 @@ export function PropertiesHero() {
     <section className="relative z-30 w-full overflow-hidden">
       <div className="absolute inset-0" aria-hidden>
         <div className="absolute inset-x-0 top-0 h-[55%] bg-white" />
-        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-[#0a0f1d]" />
+        <div className="absolute inset-x-0 bottom-0 h-[45%] bg-white" />
       </div>
 
       <div className="relative mx-auto max-w-[1400px] px-6 py-16 md:px-12 md:py-20 lg:px-20">

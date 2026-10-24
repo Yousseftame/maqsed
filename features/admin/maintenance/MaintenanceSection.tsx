@@ -9,12 +9,15 @@ import { Field, textareaClass } from "@/features/admin/ui/Field";
 import { AdminButton, fieldClass } from "@/features/admin/ui/AdminButton";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { maintenanceService } from "@/features/maintenance/maintenance.service";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { writeMaintenanceCookie } from "@/lib/auth/constants";
 import { cn } from "@/lib/utils";
 
 export function MaintenanceSection() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canEdit = can("maintenance", "edit");
   const [isEnabled, setIsEnabled] = useState(false);
   const [messageTitleAr, setMessageTitleAr] = useState("");
   const [messageTitleEn, setMessageTitleEn] = useState("");
@@ -38,6 +41,7 @@ export function MaintenanceSection() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (!canEdit) return;
     setIsSaving(true);
     try {
       await maintenanceService.saveSettings({
@@ -60,6 +64,7 @@ export function MaintenanceSection() {
 
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-6 pt-4 sm:pt-6 pb-20">
+      <fieldset disabled={!canEdit} className="m-0 flex min-w-0 flex-col gap-6 border-0 p-0 disabled:opacity-90">
       <Panel>
         <div className="flex flex-col gap-8">
           
@@ -84,7 +89,7 @@ export function MaintenanceSection() {
               type="button"
               role="switch"
               aria-checked={isEnabled}
-              disabled={!isFetched || isSaving}
+              disabled={!canEdit || !isFetched || isSaving}
               onClick={() => setIsEnabled(!isEnabled)}
               className={cn(
                 "relative inline-flex h-8 w-14 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus-visible:ring-2 focus-visible:ring-[#0a0f1d] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
@@ -150,12 +155,15 @@ export function MaintenanceSection() {
         </div>
       </Panel>
 
-      <div className="flex justify-end">
-        <AdminButton type="submit" disabled={isSaving || !isFetched} className="w-full sm:w-auto px-10">
-          {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {t("admin.ui.save")}
-        </AdminButton>
-      </div>
+      {canEdit ? (
+        <div className="flex justify-end">
+          <AdminButton type="submit" disabled={isSaving || !isFetched} className="w-full sm:w-auto px-10">
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {t("admin.ui.save")}
+          </AdminButton>
+        </div>
+      ) : null}
+      </fieldset>
     </form>
   );
 }

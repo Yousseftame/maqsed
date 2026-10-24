@@ -3,7 +3,7 @@ import iconHero from "@/assets/brand/iconheroimg.png";
 import authPattern from "@/assets/brand/Gemini_Generated_Image_kax3jnkax3jnkax3.jpg";
 import iconPng from "@/assets/brand/icon-removebg-preview.png";
 import logoAdmin from "@/assets/brand/logoadminpanel.png";
-import defaultHero from "@/assets/brand/9.avif";
+import defaultHero from "@/assets/brand/9.jpg";
 import gmailIcon from "@/assets/brand/google_mail_gmail_logo_icon_159346.webp";
 
 function assetSrc(asset: string | { src: string }) {

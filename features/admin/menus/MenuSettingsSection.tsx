@@ -10,6 +10,7 @@ import { AdminButton } from "@/features/admin/ui/AdminButton";
 import { Panel } from "@/features/admin/ui/Panel";
 import { cn } from "@/lib/utils";
 import { AddMenuItemModal } from "./AddMenuItemModal";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { categoriesForScope, type MenuCategoryKey, type MenuScope } from "./data";
 import { menuOptionsService } from "./menu-options.service";
 import { useMenuOptions } from "./useMenuOptions";
@@ -18,7 +19,10 @@ export function MenuSettingsSection() {
   const { locale, t } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
-    const { of, isPending } = useMenuOptions();
+  const { can } = usePermissions();
+  const canCreate = can("menus", "create");
+  const canDelete = can("menus", "delete");
+  const { of, isPending } = useMenuOptions();
 
   const [scope, setScope] = useState<MenuScope>("project");
   const [addingCategory, setAddingCategory] = useState<MenuCategoryKey | null>(null);
@@ -89,10 +93,12 @@ export function MenuSettingsSection() {
                   key={category}
                   title={t(`admin.menus.${category}`)}
                   action={
-                    <AdminButton type="button" onClick={() => setAddingCategory(category)} className="h-10 px-4">
-                      <Plus className="h-4 w-4" strokeWidth={2.5} />
-                      {t("admin.menus.addButton")}
-                    </AdminButton>
+                    canCreate ? (
+                      <AdminButton type="button" onClick={() => setAddingCategory(category)} className="h-10 px-4">
+                        <Plus className="h-4 w-4" strokeWidth={2.5} />
+                        {t("admin.menus.addButton")}
+                      </AdminButton>
+                    ) : null
                   }
                 >
                   {categoryItems.length > 0 ? (
@@ -110,15 +116,17 @@ export function MenuSettingsSection() {
                             className="group flex items-center gap-3 rounded-2xl border border-gray-100 bg-[#F9F9F9] px-4 py-3"
                           >
                             <span className="text-sm font-semibold text-[#0a0f1d]">{label}</span>
-                            <button
-                              type="button"
-                              onClick={() => handleDelete(item.id)}
-                              disabled={isBusy}
-                              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-50"
-                              aria-label={t("admin.ui.delete")}
-                            >
-                              {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
-                            </button>
+                            {canDelete ? (
+                              <button
+                                type="button"
+                                onClick={() => handleDelete(item.id)}
+                                disabled={isBusy}
+                                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-gray-400 transition-colors hover:bg-red-50 hover:text-red-500 disabled:opacity-50"
+                                aria-label={t("admin.ui.delete")}
+                              >
+                                {isBusy ? <Loader2 className="h-4 w-4 animate-spin" /> : <Trash2 className="h-4 w-4" />}
+                              </button>
+                            ) : null}
                           </div>
                         );
                       })}
@@ -135,15 +143,17 @@ export function MenuSettingsSection() {
         )}
       </div>
 
-      <AddMenuItemModal
-        isOpen={Boolean(addingCategory)}
-        scope={scope}
-        category={addingCategory}
-        categoryLabel={addingCategory ? t(`admin.menus.${addingCategory}`) : ""}
-        order={addingCategory ? of(scope, addingCategory).length : 0}
-        onClose={() => setAddingCategory(null)}
-        onSaved={refresh}
-      />
+      {canCreate ? (
+        <AddMenuItemModal
+          isOpen={Boolean(addingCategory)}
+          scope={scope}
+          category={addingCategory}
+          categoryLabel={addingCategory ? t(`admin.menus.${addingCategory}`) : ""}
+          order={addingCategory ? of(scope, addingCategory).length : 0}
+          onClose={() => setAddingCategory(null)}
+          onSaved={refresh}
+        />
+      ) : null}
     </>
   );
 }

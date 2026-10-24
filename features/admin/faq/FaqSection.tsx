@@ -11,6 +11,7 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { faqService, FAQ_FEATURED_LIMIT, type FaqItem } from "@/features/faq/faq.service";
 import { AddFaqModal } from "@/features/admin/faq/AddFaqModal";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { cn } from "@/lib/utils";
 
 const inputClass = cn(
@@ -31,9 +32,11 @@ function itemTitle(item: FaqItem, locale: string) {
 function FaqEditor({
   item,
   onSaved,
+  canEdit,
 }: {
   item: FaqItem;
   onSaved: () => Promise<void>;
+  canEdit: boolean;
 }) {
   const { t, locale } = useLocale();
   const [lang, setLang] = useState<"ar" | "en">(locale === "en" ? "en" : "ar");
@@ -117,6 +120,7 @@ function FaqEditor({
           <input
             dir={lang === "ar" ? "rtl" : "ltr"}
             value={question}
+            disabled={!canEdit}
             onChange={(event) =>
               setDraft((current) =>
                 lang === "ar"
@@ -125,7 +129,7 @@ function FaqEditor({
               )
             }
             placeholder={t("admin.faq.question")}
-            className={cn(inputClass, lang === "en" && "text-start")}
+            className={cn(inputClass, lang === "en" && "text-start", !canEdit && "opacity-70")}
           />
         </Field>
         <Field label={t("admin.faq.answer")}>
@@ -133,6 +137,7 @@ function FaqEditor({
             dir={lang === "ar" ? "rtl" : "ltr"}
             value={answer}
             rows={5}
+            disabled={!canEdit}
             onChange={(event) =>
               setDraft((current) =>
                 lang === "ar"
@@ -141,12 +146,12 @@ function FaqEditor({
               )
             }
             placeholder={t("admin.faq.answer")}
-            className={cn(areaClass, "min-h-[140px]", lang === "en" && "text-start")}
+            className={cn(areaClass, "min-h-[140px]", lang === "en" && "text-start", !canEdit && "opacity-70")}
           />
         </Field>
       </div>
 
-      {isDirty ? (
+      {canEdit && isDirty ? (
         <div className="mt-5 flex justify-end">
           <AdminButton type="button" disabled={isSaving} onClick={() => void handleSave()}>
             {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
@@ -162,6 +167,10 @@ export function FaqSection() {
   const { t, locale } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canCreate = can("faq", "create");
+  const canEdit = can("faq", "edit");
+  const canDelete = can("faq", "delete");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -233,10 +242,12 @@ export function FaqSection() {
         <Panel
           title={t("admin.nav.faq")}
           action={
-            <AdminButton type="button" onClick={() => setIsAddOpen(true)}>
-              <Plus className="h-4 w-4" strokeWidth={2.5} />
-              {t("admin.faq.addItem")}
-            </AdminButton>
+            canCreate ? (
+              <AdminButton type="button" onClick={() => setIsAddOpen(true)}>
+                <Plus className="h-4 w-4" strokeWidth={2.5} />
+                {t("admin.faq.addItem")}
+              </AdminButton>
+            ) : null
           }
         >
           <p className="mb-5 text-sm font-semibold text-[#8c8c8c]">{t("admin.faq.itemsHint")}</p>
@@ -293,30 +304,34 @@ export function FaqSection() {
                         </span>
                       </button>
                       <div className="flex shrink-0 items-center gap-1">
-                        <button
-                          type="button"
-                          disabled={isBusy}
-                          onClick={() => void toggleFeatured(item)}
-                          className={cn(
-                            "flex h-8 w-8 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40",
-                            item.featured
-                              ? "bg-[#17C3B3]/10 text-[#17C3B3]"
-                              : "text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d]"
-                          )}
-                          aria-pressed={item.featured}
-                          aria-label={t("admin.faq.featured")}
-                        >
-                          <Star className="h-4 w-4" fill={item.featured ? "currentColor" : "none"} />
-                        </button>
-                        <button
-                          type="button"
-                          disabled={isBusy}
-                          onClick={() => void remove(item)}
-                          className="flex h-8 w-8 items-center justify-center rounded-full text-red-500 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
-                          aria-label={t("admin.ui.delete")}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </button>
+                        {canEdit ? (
+                          <button
+                            type="button"
+                            disabled={isBusy}
+                            onClick={() => void toggleFeatured(item)}
+                            className={cn(
+                              "flex h-8 w-8 items-center justify-center rounded-full transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                              item.featured
+                                ? "bg-[#17C3B3]/10 text-[#17C3B3]"
+                                : "text-[#8c8c8c] hover:bg-[#F4F4F4] hover:text-[#0a0f1d]"
+                            )}
+                            aria-pressed={item.featured}
+                            aria-label={t("admin.faq.featured")}
+                          >
+                            <Star className="h-4 w-4" fill={item.featured ? "currentColor" : "none"} />
+                          </button>
+                        ) : null}
+                        {canDelete ? (
+                          <button
+                            type="button"
+                            disabled={isBusy}
+                            onClick={() => void remove(item)}
+                            className="flex h-8 w-8 items-center justify-center rounded-full text-red-500 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
+                            aria-label={t("admin.ui.delete")}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        ) : null}
                         <button
                           type="button"
                           onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -328,7 +343,7 @@ export function FaqSection() {
                       </div>
                     </div>
 
-                    {isExpanded ? <FaqEditor item={item} onSaved={refresh} /> : null}
+                    {isExpanded ? <FaqEditor item={item} onSaved={refresh} canEdit={canEdit} /> : null}
                   </div>
                 );
               })}
@@ -337,16 +352,18 @@ export function FaqSection() {
         </Panel>
       </div>
 
-      <AddFaqModal
-        isOpen={isAddOpen}
-        order={items.length}
-        onClose={() => setIsAddOpen(false)}
-        onSaved={(id) => {
-          setQuery("");
-          setExpandedId(id);
-          void refresh();
-        }}
-      />
+      {canCreate ? (
+        <AddFaqModal
+          isOpen={isAddOpen}
+          order={items.length}
+          onClose={() => setIsAddOpen(false)}
+          onSaved={(id) => {
+            setQuery("");
+            setExpandedId(id);
+            void refresh();
+          }}
+        />
+      ) : null}
     </>
   );
 }

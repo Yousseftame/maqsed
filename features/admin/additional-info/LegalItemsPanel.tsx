@@ -11,6 +11,7 @@ import { useLocale } from "@/components/providers/LocaleProvider";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { legalService, type LegalItem, type LegalPageId } from "@/features/legal/legal.service";
 import { AddLegalItemModal } from "@/features/admin/additional-info/AddLegalItemModal";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { cn } from "@/lib/utils";
 
 const inputClass = cn(
@@ -38,6 +39,11 @@ export function LegalItemsPanel({
   const { t, locale } = useLocale();
   const confirm = useConfirm();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canCreate = can("additionalInfo", "create");
+  const canEdit = can("additionalInfo", "edit");
+  const canDelete = can("additionalInfo", "delete");
+  const canSort = can("additionalInfo", "sort");
   const [busyId, setBusyId] = useState<string | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -129,10 +135,12 @@ export function LegalItemsPanel({
     <Panel
       title={title}
       action={
-        <AdminButton type="button" onClick={() => setIsAddOpen(true)}>
-          <Plus className="h-4 w-4" strokeWidth={2.5} />
-          {t("admin.additionalInfo.addItem")}
-        </AdminButton>
+        canCreate ? (
+          <AdminButton type="button" onClick={() => setIsAddOpen(true)}>
+            <Plus className="h-4 w-4" strokeWidth={2.5} />
+            {t("admin.additionalInfo.addItem")}
+          </AdminButton>
+        ) : null
       }
     >
       <p className="mb-5 text-sm font-semibold text-[#8c8c8c]">{t("admin.additionalInfo.itemsHint")}</p>
@@ -179,33 +187,39 @@ export function LegalItemsPanel({
                     <p className="truncate text-sm font-bold text-[#0a0f1d]">{preview}</p>
                   </button>
                   <div className="flex shrink-0 items-center gap-1">
-                    <button
-                      type="button"
-                      disabled={isBusy || Boolean(query.trim()) || index <= 0}
-                      onClick={() => void move(item, -1)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4] disabled:cursor-not-allowed disabled:opacity-30"
-                      aria-label={t("admin.blog.moveUp")}
-                    >
-                      <ChevronUp className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={isBusy || Boolean(query.trim()) || index < 0 || index >= items.length - 1}
-                      onClick={() => void move(item, 1)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4] disabled:cursor-not-allowed disabled:opacity-30"
-                      aria-label={t("admin.blog.moveDown")}
-                    >
-                      <ChevronDown className="h-4 w-4" />
-                    </button>
-                    <button
-                      type="button"
-                      disabled={isBusy}
-                      onClick={() => void remove(item)}
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-red-500 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
-                      aria-label={t("admin.ui.delete")}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </button>
+                    {canSort ? (
+                      <>
+                        <button
+                          type="button"
+                          disabled={isBusy || Boolean(query.trim()) || index <= 0}
+                          onClick={() => void move(item, -1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4] disabled:cursor-not-allowed disabled:opacity-30"
+                          aria-label={t("admin.blog.moveUp")}
+                        >
+                          <ChevronUp className="h-4 w-4" />
+                        </button>
+                        <button
+                          type="button"
+                          disabled={isBusy || Boolean(query.trim()) || index < 0 || index >= items.length - 1}
+                          onClick={() => void move(item, 1)}
+                          className="flex h-8 w-8 items-center justify-center rounded-full text-[#0a0f1d] transition-colors hover:bg-[#F4F4F4] disabled:cursor-not-allowed disabled:opacity-30"
+                          aria-label={t("admin.blog.moveDown")}
+                        >
+                          <ChevronDown className="h-4 w-4" />
+                        </button>
+                      </>
+                    ) : null}
+                    {canDelete ? (
+                      <button
+                        type="button"
+                        disabled={isBusy}
+                        onClick={() => void remove(item)}
+                        className="flex h-8 w-8 items-center justify-center rounded-full text-red-500 transition-colors hover:bg-red-50 disabled:cursor-not-allowed disabled:opacity-40"
+                        aria-label={t("admin.ui.delete")}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => setExpandedId(isExpanded ? null : item.id)}
@@ -224,9 +238,10 @@ export function LegalItemsPanel({
                         dir="rtl"
                         defaultValue={item.questionAr}
                         key={`${item.id}-questionAr-${item.questionAr}`}
-                        onBlur={(event) => void saveField(item, "questionAr", event.target.value)}
+                        disabled={!canEdit}
+                        onBlur={(event) => canEdit && void saveField(item, "questionAr", event.target.value)}
                         placeholder={t("admin.additionalInfo.questionAr")}
-                        className={inputClass}
+                        className={cn(inputClass, !canEdit && "opacity-70")}
                       />
                     </Field>
                     <Field label={t("admin.additionalInfo.questionEn")}>
@@ -234,9 +249,10 @@ export function LegalItemsPanel({
                         dir="ltr"
                         defaultValue={item.questionEn}
                         key={`${item.id}-questionEn-${item.questionEn}`}
-                        onBlur={(event) => void saveField(item, "questionEn", event.target.value)}
+                        disabled={!canEdit}
+                        onBlur={(event) => canEdit && void saveField(item, "questionEn", event.target.value)}
                         placeholder={t("admin.additionalInfo.questionEn")}
-                        className={`${inputClass} text-start`}
+                        className={cn(inputClass, "text-start", !canEdit && "opacity-70")}
                       />
                     </Field>
                     <Field label={t("admin.additionalInfo.answerAr")}>
@@ -245,9 +261,10 @@ export function LegalItemsPanel({
                         defaultValue={item.answerAr}
                         key={`${item.id}-answerAr-${item.answerAr}`}
                         rows={4}
-                        onBlur={(event) => void saveField(item, "answerAr", event.target.value)}
+                        disabled={!canEdit}
+                        onBlur={(event) => canEdit && void saveField(item, "answerAr", event.target.value)}
                         placeholder={t("admin.additionalInfo.answerAr")}
-                        className={areaClass}
+                        className={cn(areaClass, !canEdit && "opacity-70")}
                       />
                     </Field>
                     <Field label={t("admin.additionalInfo.answerEn")}>
@@ -256,9 +273,10 @@ export function LegalItemsPanel({
                         defaultValue={item.answerEn}
                         key={`${item.id}-answerEn-${item.answerEn}`}
                         rows={4}
-                        onBlur={(event) => void saveField(item, "answerEn", event.target.value)}
+                        disabled={!canEdit}
+                        onBlur={(event) => canEdit && void saveField(item, "answerEn", event.target.value)}
                         placeholder={t("admin.additionalInfo.answerEn")}
-                        className={`${areaClass} text-start`}
+                        className={cn(areaClass, "text-start", !canEdit && "opacity-70")}
                       />
                     </Field>
                   </div>
@@ -270,17 +288,19 @@ export function LegalItemsPanel({
       )}
     </Panel>
 
-    <AddLegalItemModal
-      isOpen={isAddOpen}
-      page={page}
-      order={items.length}
-      onClose={() => setIsAddOpen(false)}
-      onSaved={(id) => {
-        setQuery("");
-        setExpandedId(id);
-        void refresh();
-      }}
-    />
+    {canCreate ? (
+      <AddLegalItemModal
+        isOpen={isAddOpen}
+        page={page}
+        order={items.length}
+        onClose={() => setIsAddOpen(false)}
+        onSaved={(id) => {
+          setQuery("");
+          setExpandedId(id);
+          void refresh();
+        }}
+      />
+    ) : null}
     </>
   );
 }

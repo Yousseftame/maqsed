@@ -62,6 +62,43 @@ function buildOfferMessage(offer: OfferData, offerUrl: string) {
   return lines.join("\n");
 }
 
+/**
+ * Digits only for WhatsApp. Country code is required.
+ * Local numbers like 01201411024 (Egypt) or 05xxxxxxxx (Saudi) are normalized.
+ */
+function toWhatsAppPhone(phone: string) {
+  let digits = String(phone || "").replace(/\D/g, "");
+  if (digits.startsWith("00")) digits = digits.slice(2);
+
+  // Already international (no leading 0)
+  if (!digits.startsWith("0")) return digits;
+
+  const local = digits.slice(1); // drop trunk 0
+
+  // Egypt mobiles: 010 / 011 / 012 / 015… → +20
+  if (/^1[0125]\d{8}$/.test(local)) {
+    return `20${local}`;
+  }
+
+  // Saudi mobiles: 05xxxxxxxx → +966
+  if (/^5\d{8}$/.test(local)) {
+    return `966${local}`;
+  }
+
+  // Fallback: 10-digit local starting with 1 → Egypt; 9-digit starting with 5 → Saudi
+  if (local.length === 10 && local.startsWith("1")) return `20${local}`;
+  if (local.length === 9 && local.startsWith("5")) return `966${local}`;
+
+  return digits;
+}
+
+function openWhatsAppAppChat(phone: string, message: string) {
+  // HTTPS click-to-chat only — avoids the browser "Open WhatsApp?" protocol popup
+  // that whatsapp:// iframes leave hanging when you return to the site.
+  const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
+
 export function OfferShareModal({ offer, created = false, onClose }: Props) {
   const { t, isRtl } = useLocale();
   const [isSendingEmail, setIsSendingEmail] = useState(false);
@@ -77,9 +114,35 @@ export function OfferShareModal({ offer, created = false, onClose }: Props) {
   const offerUrl = typeof window !== "undefined" ? `${window.location.origin}/offer/${offer.id}` : "";
   const offerMessage = buildOfferMessage(offer, offerUrl);
   const otp = offer.secretCode || "";
+  const destinationPhone = String(offer.developerPhone || "").trim();
+  const whatsappPhone = toWhatsAppPhone(destinationPhone);
 
   const handleWhatsApp = () => {
-    window.open(`https://wa.me/?text=${encodeURIComponent(offerMessage)}`, "_blank", "noopener,noreferrer");
+    const phone = toWhatsAppPhone(offer.developerPhone || "");
+    if (!phone) {
+      toast.error(isRtl ? "لا يوجد رقم جوال للمطور." : "Developer phone number is missing.");
+      return;
+    }
+    if (phone.length < 10 || phone.length > 15) {
+      toast.error(
+        isRtl
+          ? "رقم الجوال غير صالح. استخدم رمز الدولة (مثال: 9665…)."
+          : "Invalid phone number. Include country code (e.g. 9665…)."
+      );
+      return;
+    }
+
+    const pageUrl =
+      typeof window !== "undefined" ? `${window.location.origin}/offer/${offer.id}` : "";
+    const message = buildOfferMessage(offer, pageUrl);
+
+    void navigator.clipboard.writeText(message).catch(() => undefined);
+    openWhatsAppAppChat(phone, message);
+    toast.success(
+      isRtl
+        ? `فتح واتساب على +${phone}`
+        : `Opening WhatsApp for +${phone}`
+    );
   };
 
   const handleCopyCode = () => {
@@ -221,6 +284,16 @@ export function OfferShareModal({ offer, created = false, onClose }: Props) {
               <Copy className="h-4 w-4" />
             </button>
           </div>
+
+          {whatsappPhone ? (
+            <p className="mb-2 text-center text-xs font-semibold text-[#65676B]" dir="ltr">
+              {isRtl ? "سيتم الفتح على:" : "Will open chat with:"}{" "}
+              <span className="font-bold text-[#1c1e21]">+{whatsappPhone}</span>
+              {destinationPhone && toWhatsAppPhone(destinationPhone) !== destinationPhone.replace(/\D/g, "") ? (
+                <span className="font-medium text-[#8c8c8c]"> ({destinationPhone})</span>
+              ) : null}
+            </p>
+          ) : null}
 
           <div className="mb-6 flex gap-3">
             <button

@@ -1,7 +1,24 @@
 export type UserRole = "superAdmin" | "admin" | "developer" | "employee" | "user";
 
-export type PermissionModule = "cities" | "projects" | "units" | "offers" | "customers";
-export type PermissionAction = "create" | "read" | "edit" | "delete";
+export type PermissionModule =
+  | "users"
+  | "cities"
+  | "projects"
+  | "units"
+  | "offers"
+  | "customers"
+  | "blog"
+  | "faq"
+  | "additionalInfo"
+  | "menus"
+  | "partners"
+  | "interface"
+  | "about"
+  | "company"
+  | "maintenance"
+  | "payments";
+
+export type PermissionAction = "create" | "read" | "edit" | "delete" | "sort";
 
 export type ModulePermission = Record<PermissionAction, boolean>;
 export type AdminPermissions = Record<PermissionModule, ModulePermission>;

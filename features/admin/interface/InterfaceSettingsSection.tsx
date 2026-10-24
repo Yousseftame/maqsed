@@ -8,6 +8,7 @@ import { Field, textareaClass } from "@/features/admin/ui/Field";
 import { AdminButton, fieldClass } from "@/features/admin/ui/AdminButton";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { heroService, withArabicHeroTitleBreak } from "@/features/home/hero.service";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { ar } from "@/lib/i18n/dictionaries/ar";
 import { en } from "@/lib/i18n/dictionaries/en";
 import toast from "react-hot-toast";
@@ -35,6 +36,8 @@ function galleryFromHero(hero: { backgroundImages?: string[]; backgroundImage?: 
 export function InterfaceSettingsSection() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canEdit = can("interface", "edit");
   const fileRef = useRef<HTMLInputElement>(null);
   const [titleAr, setTitleAr] = useState("");
   const [titleEn, setTitleEn] = useState("");
@@ -93,6 +96,7 @@ export function InterfaceSettingsSection() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (!canEdit) return;
     setIsSaving(true);
     try {
       const backgroundImages: string[] = [];
@@ -130,7 +134,7 @@ export function InterfaceSettingsSection() {
 
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-6 pt-4 sm:pt-6 pb-20">
-      
+      <fieldset disabled={!canEdit} className="m-0 flex min-w-0 flex-col gap-6 border-0 p-0 disabled:opacity-90">
       {/* Hero Settings Panel */}
       <Panel>
         <div className="flex flex-col gap-6">
@@ -254,13 +258,15 @@ export function InterfaceSettingsSection() {
         </div>
       </Panel>
 
-      <div className="flex justify-end">
-        <AdminButton type="submit" disabled={isSaving} className="w-full sm:w-auto px-10">
-          {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {t("admin.ui.save")}
-        </AdminButton>
-      </div>
-
+      {canEdit ? (
+        <div className="flex justify-end">
+          <AdminButton type="submit" disabled={isSaving} className="w-full sm:w-auto px-10">
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {t("admin.ui.save")}
+          </AdminButton>
+        </div>
+      ) : null}
+      </fieldset>
     </form>
   );
 }

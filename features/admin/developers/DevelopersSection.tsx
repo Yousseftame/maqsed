@@ -100,11 +100,14 @@ function DeveloperAuditLogs({ uid }: { uid: string }) {
 }
 
 export function DevelopersSection() {
-  const { locale, t } = useLocale();
+  const { locale, t, isRtl } = useLocale();
   const queryClient = useQueryClient();
   const confirm = useConfirm();
   const { userData } = useAuth();
-  const { canManageAccount } = usePermissions();
+  const { can, canManageAccount } = usePermissions();
+  const canCreateUser = can("users", "create");
+  const canEditUser = can("users", "edit");
+  const canDeleteUser = can("users", "delete");
 
   const [queryStr, setQueryStr] = useState("");
   const [activeTab, setActiveTab] = useState<"developer" | "admin">("developer");
@@ -116,7 +119,7 @@ export function DevelopersSection() {
   const [selectedDeveloper, setSelectedDeveloper] = useState<UserData | null>(null);
 
   const handleDelete = async (developer: UserData) => {
-    if (!canManageAccount(developer)) return;
+    if (!canManageAccount(developer) || !canDeleteUser) return;
     const ok = await confirm({
       title: t("admin.developers.deleteTitle") || "Delete Account",
       description: t("admin.developers.deleteDesc") || `Are you sure you want to delete ${developer.displayName || developer.email}? This will permanently remove them from the system and Authentication.`,
@@ -147,7 +150,7 @@ export function DevelopersSection() {
   };
 
   const handleToggleStatus = async (developer: UserData) => {
-    if (!canManageAccount(developer)) return;
+    if (!canManageAccount(developer) || !canEditUser) return;
     const isCurrentlyDisabled = developer.status === "disabled";
     const newStatus = isCurrentlyDisabled ? "active" : "disabled";
 
@@ -365,7 +368,7 @@ export function DevelopersSection() {
                 <RefreshCw className={`h-5 w-5 ${isRefetching ? "animate-spin" : ""}`} />
               </button>
               
-              {activeTab === "developer" && (
+              {activeTab === "developer" && canCreateUser ? (
                 <button
                   onClick={() => setIsAddModalOpen(true)}
                   className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
@@ -373,8 +376,8 @@ export function DevelopersSection() {
                   <Plus className="h-4 w-4" />
                   {t("admin.developers.create") || "Create Account"}
                 </button>
-              )}
-              {activeTab === "admin" && userData?.role === "superAdmin" && (
+              ) : null}
+              {activeTab === "admin" && userData?.role === "superAdmin" ? (
                 <button
                   onClick={() => setIsAddAdminModalOpen(true)}
                   className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-full bg-[#0a0f1d] px-6 text-sm font-semibold text-white shadow-sm transition-transform hover:scale-105 active:scale-95"
@@ -382,13 +385,16 @@ export function DevelopersSection() {
                   <Plus className="h-4 w-4" />
                   {t("admin.developers.createAdmin") || "Create Admin"}
                 </button>
-              )}
+              ) : null}
             </div>
           </div>
         }
         actions={(row) => {
           const isCurrentlyDisabled = row.status === "disabled";
           const canManage = canManageAccount(row);
+          const isDeveloperRow = row.role === "developer";
+          const showEdit = canManage && (!isDeveloperRow || canEditUser);
+          const showDelete = canManage && (!isDeveloperRow || canDeleteUser);
           
           return (
             <>
@@ -399,7 +405,32 @@ export function DevelopersSection() {
                   setIsViewModalOpen(true);
                 }}
               />
-              {canManage ? (
+              {activeTab === "developer" && isDeveloperRow && showEdit ? (
+                <TableAction
+                  label={isRtl ? "مشاركة" : "Share"}
+                  onClick={() => {
+                    const password = (row.password || "").trim();
+                    const email = (row.email || "").trim();
+                    if (!email || !password || password.length < 6) {
+                      toast.error(
+                        isRtl
+                          ? "بيانات الدخول غير متوفرة لهذا المطور."
+                          : "Login details are not available for this developer."
+                      );
+                      return;
+                    }
+                    setCreatedDeveloper({
+                      firstName: (row.displayName || "").trim() || email,
+                      lastName: (row.lastName || "").trim() || undefined,
+                      email,
+                      password,
+                      phone: (row.phoneNumber || "").trim() || undefined,
+                      company: (row.companyName || "").trim() || undefined,
+                    });
+                  }}
+                />
+              ) : null}
+              {showEdit ? (
                 <>
                   <TableAction
                     label={t("admin.ui.edit") || "Edit"}
@@ -413,12 +444,14 @@ export function DevelopersSection() {
                     onClick={() => handleToggleStatus(row)}
                     tone={isCurrentlyDisabled ? "default" : "danger"}
                   />
-                  <TableAction
-                    label={t("admin.ui.delete") || "Delete"}
-                    onClick={() => handleDelete(row)}
-                    tone="danger"
-                  />
                 </>
+              ) : null}
+              {showDelete ? (
+                <TableAction
+                  label={t("admin.ui.delete") || "Delete"}
+                  onClick={() => handleDelete(row)}
+                  tone="danger"
+                />
               ) : null}
             </>
           );
@@ -427,11 +460,13 @@ export function DevelopersSection() {
       />
     </div>
 
-    <AddDeveloperModal 
-      isOpen={isAddModalOpen} 
-      onClose={() => setIsAddModalOpen(false)}
-      onCreated={setCreatedDeveloper}
-    />
+    {canCreateUser ? (
+      <AddDeveloperModal 
+        isOpen={isAddModalOpen} 
+        onClose={() => setIsAddModalOpen(false)}
+        onCreated={setCreatedDeveloper}
+      />
+    ) : null}
     <DeveloperShareModal account={createdDeveloper} onClose={() => setCreatedDeveloper(null)} />
 
     <AddAdminModal 
@@ -448,14 +483,16 @@ export function DevelopersSection() {
       developer={selectedDeveloper}
     />
 
-    <EditDeveloperModal
-      isOpen={isEditModalOpen}
-      onClose={() => {
-        setIsEditModalOpen(false);
-        setTimeout(() => setSelectedDeveloper(null), 200);
-      }}
-      developer={selectedDeveloper}
-    />
+    {canEditUser ? (
+      <EditDeveloperModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false);
+          setTimeout(() => setSelectedDeveloper(null), 200);
+        }}
+        developer={selectedDeveloper}
+      />
+    ) : null}
   </>
   );
 }

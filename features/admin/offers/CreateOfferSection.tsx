@@ -30,7 +30,16 @@ export function CreateOfferSection() {
   const { t, isRtl } = useLocale();
   const queryClient = useQueryClient();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [successData, setSuccessData] = useState<{ otp: string; offerNumber: string; offerId: string } | null>(null);
+  const [successData, setSuccessData] = useState<{
+    otp: string;
+    offerNumber: string;
+    offerId: string;
+    developerPhone: string;
+    developerName: string;
+    developerEmail: string;
+    title: string;
+    description: string;
+  } | null>(null);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -99,7 +108,17 @@ export function CreateOfferSection() {
         secretCode: otp,
       });
 
-      setSuccessData({ otp, offerNumber: nextNumber, offerId: docRef.id });
+      // Freeze recipient details at submit time so WhatsApp always uses this offer's phone.
+      setSuccessData({
+        otp,
+        offerNumber: nextNumber,
+        offerId: docRef.id,
+        developerPhone: formData.developerPhone.trim(),
+        developerName: formData.developerName.trim(),
+        developerEmail: formData.developerEmail.trim(),
+        title: formData.title.trim(),
+        description: formData.description.trim(),
+      });
       queryClient.invalidateQueries({ queryKey: ["offers"] });
     } catch (error) {
       console.error("Error creating offer:", error);
@@ -319,17 +338,18 @@ export function CreateOfferSection() {
       </form>
 
       <OfferShareModal
+        key={successData?.offerId || "offer-share"}
         created
         offer={
           successData
             ? {
                 id: successData.offerId,
                 offerNumber: successData.offerNumber,
-                title: formData.title,
-                description: formData.description.trim(),
-                developerName: formData.developerName,
-                developerEmail: formData.developerEmail,
-                developerPhone: formData.developerPhone,
+                title: successData.title,
+                description: successData.description,
+                developerName: successData.developerName,
+                developerEmail: successData.developerEmail,
+                developerPhone: successData.developerPhone,
                 agreementTypes,
                 services: services.map(normalizeOfferService),
                 subtotal,

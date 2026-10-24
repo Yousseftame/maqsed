@@ -9,12 +9,15 @@ import { AdminButton, fieldClass } from "@/features/admin/ui/AdminButton";
 import { Field } from "@/features/admin/ui/Field";
 import { COMPANY_DEFAULTS, DEFAULT_COMPANY_LOGO } from "@/features/admin/company/data";
 import { companyService, normalizeLicenses, type CompanyLicense } from "@/features/company/company.service";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
 
 export function CompanySection() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canEdit = can("company", "edit");
   const fileRef = useRef<HTMLInputElement>(null);
   const [logo, setLogo] = useState(DEFAULT_COMPANY_LOGO);
   const [logoFile, setLogoFile] = useState<File | null>(null);
@@ -71,6 +74,7 @@ export function CompanySection() {
 
   async function handleSave(event: React.FormEvent) {
     event.preventDefault();
+    if (!canEdit) return;
     setIsSaving(true);
     try {
       const nextLogo = logoFile ? await companyService.uploadLogo(logoFile) : logo;
@@ -113,6 +117,7 @@ export function CompanySection() {
 
   return (
     <form className="flex min-w-0 flex-col gap-6 pt-4 sm:pt-6 pb-20" onSubmit={handleSave}>
+      <fieldset disabled={!canEdit} className="m-0 flex min-w-0 flex-col gap-6 border-0 p-0 disabled:opacity-90">
       <Panel title={t("admin.company.logo")}>
         <div className="flex flex-col gap-2">
           <button
@@ -300,12 +305,15 @@ export function CompanySection() {
         </button>
       </Panel>
 
-      <div className="flex justify-end">
-        <AdminButton type="submit" disabled={isSaving} className="w-full sm:w-auto px-10">
-          {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {t("admin.ui.save")}
-        </AdminButton>
-      </div>
+      {canEdit ? (
+        <div className="flex justify-end">
+          <AdminButton type="submit" disabled={isSaving} className="w-full sm:w-auto px-10">
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {t("admin.ui.save")}
+          </AdminButton>
+        </div>
+      ) : null}
+      </fieldset>
     </form>
   );
 }

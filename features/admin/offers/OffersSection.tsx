@@ -406,7 +406,11 @@ export function OffersSection() {
         }
       />
       <EditOfferModal offer={editingOffer} onClose={() => setEditingOffer(null)} />
-      <OfferShareModal offer={sharingOffer} onClose={() => setSharingOffer(null)} />
+      <OfferShareModal
+        key={sharingOffer?.id || "offer-share"}
+        offer={sharingOffer}
+        onClose={() => setSharingOffer(null)}
+      />
       <AssignOfferDashboardModal
         offer={assigningOffer}
         createdAccount={assigningOffer ? createdDeveloperByOfferId[assigningOffer.id] || null : null}

@@ -16,16 +16,27 @@ import { doc, updateDoc } from "firebase/firestore";
 import { db } from "@/lib/firebase/firebase";
 
 export function emptyModulePermission(): ModulePermission {
-  return { create: false, read: false, edit: false, delete: false };
+  return { create: false, read: false, edit: false, delete: false, sort: false };
 }
 
 export function emptyPermissions(): AdminPermissions {
   return {
+    users: emptyModulePermission(),
     cities: emptyModulePermission(),
     projects: emptyModulePermission(),
     units: emptyModulePermission(),
     offers: emptyModulePermission(),
     customers: emptyModulePermission(),
+    blog: emptyModulePermission(),
+    faq: emptyModulePermission(),
+    additionalInfo: emptyModulePermission(),
+    menus: emptyModulePermission(),
+    partners: emptyModulePermission(),
+    interface: emptyModulePermission(),
+    about: emptyModulePermission(),
+    company: emptyModulePermission(),
+    maintenance: emptyModulePermission(),
+    payments: emptyModulePermission(),
   };
 }
 
@@ -45,7 +56,7 @@ export function applyReadConsistency(permissions: AdminPermissions): AdminPermis
       granted[action] = Boolean(current[action]);
     }
 
-    const hasWrite = granted.create || granted.edit || granted.delete;
+    const hasWrite = granted.create || granted.edit || granted.delete || granted.sort;
     if (hasWrite && available.includes("read")) {
       granted.read = true;
     }
@@ -185,6 +196,11 @@ export function getModuleFromHref(href: string): PermissionModule | null {
 }
 
 export function getRequiredPathPermission(pathname: string) {
+  // /admin/blog/:id (edit existing post) — not /admin/blog or /admin/blog/new
+  if (/^\/admin\/blog\/(?!new\/?$)[^/]+\/?$/.test(pathname)) {
+    return { prefix: pathname, module: "blog" as const, action: "edit" as const };
+  }
+
   return (
     ADMIN_PATH_PERMISSIONS.find(
       (entry) => pathname === entry.prefix || pathname.startsWith(`${entry.prefix}/`)

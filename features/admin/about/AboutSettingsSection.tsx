@@ -16,6 +16,7 @@ import {
   aboutService,
   type AboutFeature,
 } from "@/features/about/about.service";
+import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import toast from "react-hot-toast";
 
 type FeatureDraft = AboutFeature & { id: string };
@@ -84,6 +85,8 @@ function ImagePicker({
 export function AboutSettingsSection() {
   const { t } = useLocale();
   const queryClient = useQueryClient();
+  const { can } = usePermissions();
+  const canEdit = can("about", "edit");
   const aboutImageRef = useRef<HTMLInputElement>(null);
   const visionImageRef = useRef<HTMLInputElement>(null);
   const pdfRef = useRef<HTMLInputElement>(null);
@@ -194,6 +197,7 @@ export function AboutSettingsSection() {
 
   async function handleSave(e: React.FormEvent) {
     e.preventDefault();
+    if (!canEdit) return;
     setIsSaving(true);
     try {
       const nextAboutImage = aboutImageFile ? await aboutService.uploadImage(aboutImageFile) : aboutImage;
@@ -253,6 +257,7 @@ export function AboutSettingsSection() {
 
   return (
     <form onSubmit={handleSave} className="flex flex-col gap-6 pt-4 sm:pt-6 pb-20">
+      <fieldset disabled={!canEdit} className="m-0 flex min-w-0 flex-col gap-6 border-0 p-0 disabled:opacity-90">
       <Panel title={t("admin.about.headerSection")}>
         <div className="grid gap-6 sm:grid-cols-2">
           <Field label={t("admin.about.headerTitleAr")}>
@@ -583,12 +588,15 @@ export function AboutSettingsSection() {
         </div>
       </Panel>
 
-      <div className="flex justify-end">
-        <AdminButton type="submit" disabled={isSaving} className="w-full px-10 sm:w-auto">
-          {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-          {t("admin.ui.save")}
-        </AdminButton>
-      </div>
+      {canEdit ? (
+        <div className="flex justify-end">
+          <AdminButton type="submit" disabled={isSaving} className="w-full px-10 sm:w-auto">
+            {isSaving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            {t("admin.ui.save")}
+          </AdminButton>
+        </div>
+      ) : null}
+      </fieldset>
     </form>
   );
 }
