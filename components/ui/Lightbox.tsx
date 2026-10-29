@@ -53,16 +53,18 @@ export function Lightbox({ images, initialIndex, onClose }: LightboxProps) {
         <>
           <button 
             onClick={isRtl ? handleNext : handlePrevious}
-            className="absolute left-2 sm:left-8 z-50 flex p-4 text-gray-400 transition-colors hover:text-white"
+            className="absolute left-3 sm:left-8 z-50 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/90 text-[#2e2e2e] shadow-md backdrop-blur-sm transition-colors hover:bg-white"
+            aria-label={isRtl ? "التالي" : "Previous"}
           >
-            <ChevronLeft className="h-10 w-10 sm:h-14 sm:w-14 stroke-[1]" />
+            <ChevronLeft className="h-6 w-6" />
           </button>
           
           <button 
             onClick={isRtl ? handlePrevious : handleNext}
-            className="absolute right-2 sm:right-8 z-50 flex p-4 text-gray-400 transition-colors hover:text-white"
+            className="absolute right-3 sm:right-8 z-50 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full bg-white/90 text-[#2e2e2e] shadow-md backdrop-blur-sm transition-colors hover:bg-white"
+            aria-label={isRtl ? "السابق" : "Next"}
           >
-            <ChevronRight className="h-10 w-10 sm:h-14 sm:w-14 stroke-[1]" />
+            <ChevronRight className="h-6 w-6" />
           </button>
         </>
       )}
