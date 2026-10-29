@@ -141,7 +141,7 @@ export function resolveBlogPost(post: BlogPost, locale: Locale): ResolvedBlogPos
     published: post.published,
     publishedAt: post.publishedAt,
     createdAt: post.createdAt,
-    author: pick(isAr ? post.authorAr : post.authorEn, isAr ? post.authorEn : post.authorAr),
+    author: pick(isAr ? post.authorAr || "" : post.authorEn || "", isAr ? post.authorEn || "" : post.authorAr || ""),
     category: pick(isAr ? post.categoryAr : post.categoryEn, isAr ? post.categoryEn : post.categoryAr),
   };
 }
