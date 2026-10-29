@@ -113,6 +113,7 @@ export interface Dictionary {
     forSale: string;
     forRent: string;
     mostViewed: string;
+    featuredUnit: string;
     page: {
       pill: string;
       titleLine1: string;
@@ -171,7 +172,6 @@ export interface Dictionary {
     title: string;
     empty: string;
     readMore: string;
-    authorFallback: string;
     featured: string;
     contentTitle: string;
     minutes: string;
@@ -431,6 +431,9 @@ export interface Dictionary {
       viewsCol: string;
       deleteTitle: string;
       deleteDescription: string;
+      featured: string;
+      featuredEnable: string;
+      featuredHint: string;
       statuses: {
         active: string;
         soldOut: string;
@@ -775,6 +778,8 @@ export interface Dictionary {
       instagram: string;
       twitter: string;
       linkedin: string;
+      snapchat: string;
+      tiktok: string;
       legal: string;
       owner: string;
       ownerAr: string;
@@ -828,10 +833,18 @@ export interface Dictionary {
       date: string;
       details: string;
       order: string;
-      authorAr: string;
-      authorEn: string;
+      category: string;
       categoryAr: string;
       categoryEn: string;
+      categoryPlaceholder: string;
+      tabArticles: string;
+      tabCategories: string;
+      addCategory: string;
+      editCategory: string;
+      emptyCategories: string;
+      categoryRequired: string;
+      deleteCategoryTitle: string;
+      deleteCategoryDescription: string;
       moveUp: string;
       moveDown: string;
       deleteTitle: string;
@@ -928,6 +941,8 @@ export interface Dictionary {
       linkedin: string;
       twitter: string;
       instagram: string;
+      snapchat: string;
+      tiktok: string;
     };
   };
   whatsappBubble: {
@@ -1156,6 +1171,7 @@ export const en: Dictionary = {
     forSale: "FOR SALE",
     forRent: "FOR RENT",
     mostViewed: "Most viewed",
+    featuredUnit: "Featured unit",
     page: {
       pill: "Explore Properties",
       titleLine1: "Perfect Family Homes for",
@@ -1235,7 +1251,6 @@ export const en: Dictionary = {
     title: "Our Articles",
     empty: "No articles have been published yet",
     readMore: "Read post",
-    authorFallback: "MAQSED",
     featured: "Featured",
     contentTitle: "Article content",
     minutes: "min read",
@@ -1502,6 +1517,9 @@ export const en: Dictionary = {
       viewsCol: "Views",
       deleteTitle: "Delete unit?",
       deleteDescription: "This will remove the unit from the list",
+      featured: "Featured unit",
+      featuredEnable: "Mark as featured",
+      featuredHint: "Shows a featured badge on this unit across the website",
       statuses: {
         active: "Active",
         soldOut: "Sold out",
@@ -1847,6 +1865,8 @@ export const en: Dictionary = {
       instagram: "Instagram link",
       twitter: "X (Twitter) link",
       linkedin: "LinkedIn link",
+      snapchat: "Snapchat link",
+      tiktok: "TikTok link",
       legal: "Official and legal details",
       owner: "Owner name",
       ownerAr: "Owner name (Arabic)",
@@ -1900,10 +1920,18 @@ export const en: Dictionary = {
       date: "Date",
       details: "Article details",
       order: "Display order",
-      authorAr: "Author (Arabic)",
-      authorEn: "Author (English)",
+      category: "Category",
       categoryAr: "Category (Arabic)",
       categoryEn: "Category (English)",
+      categoryPlaceholder: "Select a category",
+      tabArticles: "Articles",
+      tabCategories: "Categories",
+      addCategory: "Add category",
+      editCategory: "Edit category",
+      emptyCategories: "No categories yet",
+      categoryRequired: "Please add the category in Arabic or English",
+      deleteCategoryTitle: "Delete category?",
+      deleteCategoryDescription: "This removes the category from the list. Existing articles keep their saved labels.",
       moveUp: "Move up",
       moveDown: "Move down",
       deleteTitle: "Delete article?",
@@ -1952,8 +1980,8 @@ export const en: Dictionary = {
         title: "Real Estate Inventory",
         marketValue: "Market value of available (approx.)",
         marketValueHint: "SAR",
-        available: "Available for sale/rent",
-        soldOrRented: "Sold / Rented",
+        available: "Available",
+        soldOrRented: "Sold",
         distribution: "Inventory Distribution",
         apartments: "Apartments & Penthouses",
         villas: "Residential Villas",
@@ -2000,6 +2028,8 @@ export const en: Dictionary = {
       linkedin: "LinkedIn",
       twitter: "Twitter",
       instagram: "Instagram",
+      snapchat: "Snapchat",
+      tiktok: "TikTok",
     },
   },
   whatsappBubble: {

@@ -253,7 +253,7 @@ export function SalesContactModal({ isOpen, onClose, unitId, projectName }: Sale
                         {...register("paymentCash")}
                         className="h-4 w-4 shrink-0 accent-[#6A2B92]"
                       />
-                      {isRtl ? "نقدي" : "Cash"}
+                      {isRtl ? "كاش" : "Cash"}
                     </label>
                     <label
                       className={cn(

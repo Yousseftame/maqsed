@@ -8,6 +8,7 @@ import { ShareButton } from "@/components/shared/ShareButton";
 import { type ResolvedBlogPost } from "@/features/blog/blog.service";
 import { usePublishedPosts } from "@/features/blog/useBlog";
 import { BlogListSkeleton } from "@/features/blog/components/BlogSkeletons";
+import { ContainedCover } from "@/components/ui/ContainedCover";
 import { cn } from "@/lib/utils";
 
 function formatDate(value: number, locale: string) {
@@ -24,7 +25,6 @@ function ArticleCard({
   isRtl,
   featured,
   featuredLabel,
-  authorFallback,
   ctaLabel,
 }: {
   post: ResolvedBlogPost;
@@ -32,44 +32,42 @@ function ArticleCard({
   isRtl: boolean;
   featured?: boolean;
   featuredLabel: string;
-  authorFallback: string;
   ctaLabel: string;
 }) {
   const date = formatDate(post.publishedAt || post.createdAt, locale);
-  const author = post.author || authorFallback;
 
   return (
-    <div className="group flex h-full flex-col overflow-visible rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+    <div className="group flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
       <Link href={`/blog/${post.slug}`} className="flex flex-1 cursor-pointer flex-col">
-        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-2xl bg-[#3E1854]">
-        {post.coverImage ? (
-          <img
-            src={post.coverImage}
-            alt={post.title}
-            className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-        ) : (
-          <div className="absolute inset-0 bg-gradient-to-br from-[#6A2B92] to-[#3E1854]" />
-        )}
-        <div className="pointer-events-none absolute inset-0 bg-black/10 transition-opacity duration-300 group-hover:opacity-0" />
+        <div className="relative aspect-[16/9] w-full overflow-hidden bg-white">
+          {post.coverImage ? (
+            <ContainedCover
+              src={post.coverImage}
+              alt={post.title}
+              loading="lazy"
+              imageClassName="transition-transform duration-700 group-hover:scale-105"
+            />
+          ) : (
+            <div className="h-full w-full bg-gradient-to-br from-[#6A2B92] to-[#3E1854]" />
+          )}
 
-        {featured ? (
-          <div className="absolute top-3 start-3 z-10 rounded-full bg-[#17C3B3] px-3 py-1 text-[11px] font-bold text-white shadow-sm">
-            {featuredLabel}
-          </div>
-        ) : null}
+          {featured ? (
+            <div className="absolute top-3 start-3 z-10 rounded-full bg-[#17C3B3] px-3 py-1 text-[11px] font-bold text-white shadow-sm">
+              {featuredLabel}
+            </div>
+          ) : null}
 
-        {post.category ? (
-          <div
-            className={cn(
-              "absolute top-3 z-10 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-[11px] font-medium text-white shadow-sm backdrop-blur-md",
-              featured ? "end-3" : "start-3"
-            )}
-          >
-            {post.category}
-          </div>
-        ) : null}
-      </div>
+          {post.category ? (
+            <div
+              className={cn(
+                "absolute top-3 z-10 rounded-full border border-white/20 bg-black/40 px-3 py-1 text-[11px] font-medium text-white shadow-sm backdrop-blur-md",
+                featured ? "end-3" : "start-3"
+              )}
+            >
+              {post.category}
+            </div>
+          ) : null}
+        </div>
 
       <div className="flex flex-1 flex-col p-4 text-start">
         <div className="mb-2 flex items-center gap-1.5 text-xs font-medium text-[#8c8c8c]">
@@ -79,10 +77,9 @@ function ArticleCard({
           </span>
         </div>
 
-        <h3 className="mb-1 text-lg font-bold leading-snug text-[#0a0f1d] transition-colors group-hover:text-[#6A2B92]">
+        <h3 className="mb-3 text-lg font-bold leading-snug text-[#0a0f1d] transition-colors group-hover:text-[#6A2B92]">
           {post.title}
         </h3>
-        <p className="mb-3 text-xs font-medium text-[#8c8c8c]">{author}</p>
 
         {post.excerpt ? (
           <p className="line-clamp-2 text-sm leading-relaxed text-[#8c8c8c]">{post.excerpt}</p>
@@ -112,7 +109,6 @@ function ArticleCard({
 export function BlogListPage() {
   const { t, locale, isRtl } = useLocale();
   const { posts, isPending, isFetched } = usePublishedPosts();
-  const authorFallback = t("blogPage.authorFallback");
   const ctaLabel = t("blogPage.readMore");
   const featuredLabel = t("blogPage.featured");
 
@@ -155,7 +151,6 @@ export function BlogListPage() {
                   isRtl={isRtl}
                   featured={index === 0}
                   featuredLabel={featuredLabel}
-                  authorFallback={authorFallback}
                   ctaLabel={ctaLabel}
                 />
               ))}

@@ -5,7 +5,7 @@ function Pulse({ className }: { className: string }) {
 export function BlogCardSkeleton() {
   return (
     <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white">
-      <Pulse className="aspect-[4/3] w-full" />
+      <Pulse className="aspect-[16/9] w-full" />
       <div className="flex flex-1 flex-col p-4">
         <Pulse className="mb-3 h-3 w-24 rounded-full" />
         <Pulse className="mb-2 h-5 w-4/5 rounded-full" />
@@ -42,17 +42,15 @@ export function BlogArticleSkeleton() {
           </div>
 
           <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white">
-            <div className="grid lg:grid-cols-2">
-              <Pulse className="min-h-[280px] w-full lg:min-h-[520px]" />
-              <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-14">
-                <Pulse className="mb-5 h-8 w-24 rounded-full" />
-                <Pulse className="mb-3 h-10 w-full rounded-full" />
-                <Pulse className="mb-6 h-10 w-3/4 rounded-full" />
-                <Pulse className="mb-6 h-4 w-48 rounded-full" />
-                <Pulse className="mb-2 h-4 w-full rounded-full" />
-                <Pulse className="mb-2 h-4 w-full rounded-full" />
-                <Pulse className="h-4 w-2/3 rounded-full" />
-              </div>
+            <Pulse className="aspect-[16/9] w-full" />
+            <div className="flex flex-col p-8 sm:p-10 lg:p-14">
+              <Pulse className="mb-5 h-8 w-24 rounded-full" />
+              <Pulse className="mb-3 h-10 w-full rounded-full" />
+              <Pulse className="mb-6 h-10 w-3/4 rounded-full" />
+              <Pulse className="mb-6 h-4 w-48 rounded-full" />
+              <Pulse className="mb-2 h-4 w-full rounded-full" />
+              <Pulse className="mb-2 h-4 w-full rounded-full" />
+              <Pulse className="h-4 w-2/3 rounded-full" />
             </div>
           </div>
 

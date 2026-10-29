@@ -102,8 +102,6 @@ export function ViewBlogModal({
                   label={t("admin.blog.date")}
                   value={formatDate(post.publishedAt || post.createdAt, locale)}
                 />
-                <DetailBlock label={t("admin.blog.authorAr")} value={post.authorAr} dir="rtl" />
-                <DetailBlock label={t("admin.blog.authorEn")} value={post.authorEn} dir="ltr" />
                 <DetailBlock label={t("admin.blog.categoryAr")} value={post.categoryAr} dir="rtl" />
                 <DetailBlock label={t("admin.blog.categoryEn")} value={post.categoryEn} dir="ltr" />
                 <DetailBlock label={t("admin.blog.excerptAr")} value={post.excerptAr} dir="rtl" />

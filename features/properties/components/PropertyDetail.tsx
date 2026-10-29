@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { Lightbox } from "@/components/ui/Lightbox";
+import { ContainedCover } from "@/components/ui/ContainedCover";
 import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { ShareButton } from "@/components/shared/ShareButton";
@@ -32,6 +33,7 @@ import { AdvertisementInfoCard } from "@/features/admin/shared/AdvertisementInfo
 import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
 import { getActiveUnitDiscount } from "@/features/units/unit-discount";
 import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
+import { FeaturedUnitBadge } from "@/features/units/FeaturedUnitBadge";
 import { useNow } from "@/features/units/useNow";
 
 type PropertyDetailProps = {
@@ -115,26 +117,6 @@ function unitAreas(unit: Unit, property: Property | null) {
   const external = Number(unit.externalArea ?? model?.externalArea) || 0;
   const total = Number(unit.totalArea) || Number(model?.totalArea) || (internal + external) || 0;
   return { total, internal, external };
-}
-
-function CoverImage({ src, alt, onClick }: { src: string; alt: string; onClick?: () => void }) {
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
-
-  if (!src || failed) return <div className="h-full w-full bg-gray-200" />;
-  return (
-    <img
-      src={src}
-      alt={alt}
-      draggable={false}
-      onClick={onClick}
-      onError={() => setFailed(true)}
-      className={cn("h-full w-full object-cover", onClick ? "cursor-pointer" : "")}
-    />
-  );
 }
 
 function FeatureGrid({ items }: { items: string[] }) {
@@ -273,6 +255,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
           status,
           statusLabel: status === "Available" ? (isRtl ? "متاحة" : "Available") : isRtl ? "مباعة" : "Sold",
           views: Number(unit.views) || 0,
+          featured: Boolean(unit.featured),
         };
       }),
     [projectUnits, property, isRtl, now]
@@ -394,7 +377,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
 
       <section className="w-full px-6 pb-12 md:px-12 lg:px-20">
         <div className="mx-auto max-w-[1400px]">
-          <div className="relative aspect-[16/7] w-full overflow-hidden rounded-3xl bg-gray-200 group select-none">
+          <div className="relative aspect-[16/7] w-full overflow-hidden rounded-3xl bg-white group select-none">
             <AnimatePresence initial={false} custom={galleryDirection}>
               <motion.div
                 key={`${propertyId}-${currentImageIdx}`}
@@ -425,9 +408,10 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                 }}
                 className="absolute inset-0"
               >
-                <CoverImage
+                <ContainedCover
                   src={currentImage}
                   alt={title}
+                  draggable={false}
                   onClick={gallery.length ? () => setLightboxIndex(currentImageIdx) : undefined}
                 />
               </motion.div>
@@ -658,6 +642,7 @@ export function PropertyDetail({ propertyId }: PropertyDetailProps) {
                               {unit.number}
                             </span>
                             <MostViewedBadge views={unit.views} size="sm" />
+                            <FeaturedUnitBadge featured={unit.featured} size="sm" />
                           </div>
                         </td>
                         <td className="py-4 px-4 text-start">

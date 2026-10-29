@@ -219,7 +219,7 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
 
                   <div className="sm:col-span-1">
                     <label className={labelClass}>المساحة الداخلية (م²)</label>
-                    <input type="number" min="0" {...register("internalArea")} className={inputClass} disabled={isMaxReached} />
+                    <input type="number" min="0" step="any" {...register("internalArea")} className={inputClass} disabled={isMaxReached} />
                   </div>
                   <div className="sm:col-span-1">
                     <label className={labelClass}>المساحة الخارجية (م²)</label>
@@ -232,7 +232,7 @@ export function ManageModelsModal({ isOpen, onClose, property }: ManageModelsMod
 
                   <div className="sm:col-span-2">
                     <label className={labelClass}>السعر الافتراضي</label>
-                    <input type="number" min="0" {...register("defaultPrice")} placeholder="السعر بالريال" className={inputClass} disabled={isMaxReached} />
+                    <input type="number" min="0" step="any" {...register("defaultPrice")} placeholder="السعر بالريال" className={inputClass} disabled={isMaxReached} />
                   </div>
 
                   <div className="sm:col-span-2 mt-2">

@@ -53,6 +53,7 @@ export type Unit = {
   discountPercentage?: number;
   discountDays?: number;
   discountStartedAt?: Timestamp | any;
+  featured?: boolean;
 
   // Section 4: Technical Details (التفاصيل الفنية)
   additionalComponents: string[]; // e.g., ['kitchen', 'maid_room']
@@ -81,6 +82,7 @@ function normalizeUnit(raw: Record<string, unknown> & { id?: string }): Unit {
   return {
     ...(raw as Unit),
     slug: String(raw.slug || "").trim(),
+    featured: Boolean(raw.featured),
     additionalComponents: asStringArray(raw.additionalComponents),
     features: asStringArray(raw.features),
     facade: asStringArray(raw.facade),

@@ -18,7 +18,7 @@ import { developerOwnerUid } from "@/features/developer/dashboard-owner";
 
 const UNIT_STATUS_LABELS: Record<string, string> = {
   available: "متاحة",
-  unavailable: "مباعة/مؤجرة",
+  unavailable: "مباعة",
 };
 
 export function DeveloperUnitsSection() {

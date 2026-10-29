@@ -115,6 +115,7 @@ export function mapPublicUnits(
       discountPercentage: Number(unit.discountPercentage) || 0,
       discountDays: Number(unit.discountDays) || 0,
       discountStartedAt: unit.discountStartedAt,
+      featured: Boolean(unit.featured),
     };
 
     return [{ listing, projectName, cityId, neighborhoodId, unitType: unit.unitType?.trim() || typeLabel }];

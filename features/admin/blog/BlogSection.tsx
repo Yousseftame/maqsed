@@ -10,8 +10,13 @@ import { AdminButton } from "@/features/admin/ui/AdminButton";
 import { useConfirm } from "@/features/admin/components/ConfirmModal";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { blogService, resolveBlogPost, type BlogPost } from "@/features/blog/blog.service";
+import {
+  blogCategoriesService,
+  type BlogCategory,
+} from "@/features/blog/blog-categories.service";
 import { ViewBlogModal } from "@/features/admin/blog/ViewBlogModal";
 import { BlogFormModal } from "@/features/admin/blog/BlogFormModal";
+import { BlogCategoryModal } from "@/features/admin/blog/BlogCategoryModal";
 import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 function formatDate(value: number, locale: string) {
@@ -36,10 +41,19 @@ export function BlogSection() {
   const [editPost, setEditPost] = useState<BlogPost | null>(null);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"posts" | "categories">("posts");
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [editCategory, setEditCategory] = useState<BlogCategory | null>(null);
+  const [busyCategoryId, setBusyCategoryId] = useState<string | null>(null);
 
   const { data: posts = [] } = useQuery({
     queryKey: ["blog", "admin"],
     queryFn: () => blogService.getPosts(),
+  });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["blogCategories"],
+    queryFn: () => blogCategoriesService.getItems(),
   });
 
   const filtered = useMemo(() => {
@@ -103,6 +117,48 @@ export function BlogSection() {
     setEditPost(post);
     setIsFormOpen(true);
   }
+
+  async function handleDeleteCategory(category: BlogCategory) {
+    const ok = await confirm({
+      title: t("admin.blog.deleteCategoryTitle"),
+      description: t("admin.blog.deleteCategoryDescription"),
+      confirmLabel: t("admin.ui.delete"),
+      cancelLabel: t("admin.cancel"),
+      tone: "danger",
+    });
+    if (!ok) return;
+    setBusyCategoryId(category.id);
+    try {
+      await blogCategoriesService.deleteItem(category.id);
+      await queryClient.invalidateQueries({ queryKey: ["blogCategories"] });
+      toast.success(t("admin.ui.saved"));
+    } catch {
+      toast.error(t("admin.ui.error") || "Failed to save.");
+    } finally {
+      setBusyCategoryId(null);
+    }
+  }
+
+  const categoryColumns: Column<BlogCategory>[] = [
+    {
+      id: "labelAr",
+      header: t("admin.blog.categoryAr"),
+      cell: (row) => (
+        <span className="font-bold text-[#0a0f1d]" dir="rtl">
+          {row.labelAr || "—"}
+        </span>
+      ),
+    },
+    {
+      id: "labelEn",
+      header: t("admin.blog.categoryEn"),
+      cell: (row) => (
+        <span className="font-medium text-[#0a0f1d]" dir="ltr">
+          {row.labelEn || "—"}
+        </span>
+      ),
+    },
+  ];
 
   const columns: Column<BlogPost>[] = [
     {
@@ -184,6 +240,28 @@ export function BlogSection() {
 
   return (
     <div className="flex flex-col gap-6 pt-4 sm:pt-6 pb-20">
+      <div className="flex w-fit rounded-2xl bg-[#F4F4F4] p-1.5">
+        <button
+          type="button"
+          onClick={() => setActiveTab("posts")}
+          className={`flex items-center gap-3 rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 sm:text-base ${
+            activeTab === "posts" ? "bg-white text-[#0a0f1d] shadow-sm" : "text-[#8c8c8c] hover:bg-black/5 hover:text-[#0a0f1d]"
+          }`}
+        >
+          {t("admin.blog.tabArticles")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("categories")}
+          className={`flex items-center gap-3 rounded-xl px-6 py-3 text-sm font-bold transition-all duration-300 sm:text-base ${
+            activeTab === "categories" ? "bg-white text-[#0a0f1d] shadow-sm" : "text-[#8c8c8c] hover:bg-black/5 hover:text-[#0a0f1d]"
+          }`}
+        >
+          {t("admin.blog.tabCategories")}
+        </button>
+      </div>
+
+      {activeTab === "posts" ? (
       <DataTable
         columns={columns}
         rows={filtered}
@@ -221,6 +299,54 @@ export function BlogSection() {
           </div>
         )}
       />
+      ) : (
+      <DataTable
+        columns={categoryColumns}
+        rows={categories}
+        rowKey={(row) => row.id}
+        empty={t("admin.blog.emptyCategories")}
+        actionsHeader={t("admin.ui.actions")}
+        toolbar={
+          <div className="flex justify-end">
+            {canCreate ? (
+              <AdminButton
+                type="button"
+                onClick={() => {
+                  setEditCategory(null);
+                  setIsCategoryModalOpen(true);
+                }}
+              >
+                <Plus className="h-4 w-4" strokeWidth={2.5} />
+                {t("admin.blog.addCategory")}
+              </AdminButton>
+            ) : null}
+          </div>
+        }
+        actions={(row) => (
+          <div className="flex justify-end gap-1">
+            {canEdit ? (
+              <TableAction
+                label={t("admin.ui.edit")}
+                onClick={() => {
+                  setEditCategory(row);
+                  setIsCategoryModalOpen(true);
+                }}
+              />
+            ) : null}
+            {canDelete ? (
+              <TableAction
+                label={t("admin.ui.delete")}
+                tone="danger"
+                onClick={() => {
+                  if (busyCategoryId === row.id) return;
+                  void handleDeleteCategory(row);
+                }}
+              />
+            ) : null}
+          </div>
+        )}
+      />
+      )}
 
       <ViewBlogModal post={viewPost} onClose={() => setViewPost(null)} />
       {canCreate || canEdit ? (
@@ -230,6 +356,21 @@ export function BlogSection() {
           onClose={() => {
             setIsFormOpen(false);
             setEditPost(null);
+          }}
+        />
+      ) : null}
+      {canCreate || canEdit ? (
+        <BlogCategoryModal
+          isOpen={isCategoryModalOpen}
+          category={editCategory}
+          order={categories.length}
+          onClose={() => {
+            setIsCategoryModalOpen(false);
+            setEditCategory(null);
+          }}
+          onSaved={async () => {
+            await queryClient.invalidateQueries({ queryKey: ["blogCategories"] });
+            await queryClient.invalidateQueries({ queryKey: ["blog"] });
           }}
         />
       ) : null}

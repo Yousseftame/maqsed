@@ -29,6 +29,7 @@ export type UnitListing = {
   discountDays?: number;
   discountStartedAt?: unknown;
   priceValue?: number;
+  featured?: boolean;
 };
 
 export const allUnits: UnitListing[] = [

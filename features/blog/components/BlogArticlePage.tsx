@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowRight, Calendar, User } from "lucide-react";
+import { ArrowRight, Calendar } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { usePublishedPost } from "@/features/blog/useBlog";
 import { ShareButton } from "@/components/shared/ShareButton";
 import { BlogArticleSkeleton } from "@/features/blog/components/BlogSkeletons";
+import { ContainedCover } from "@/components/ui/ContainedCover";
 import { cn } from "@/lib/utils";
 
 function formatDate(value: number, locale: string) {
@@ -80,7 +81,6 @@ export function BlogArticlePage() {
   }
 
   const date = formatDate(post.publishedAt || post.createdAt, locale);
-  const author = post.author || t("blogPage.authorFallback");
 
   return (
     <div className="flex w-full flex-col bg-[#fcfcfc]">
@@ -92,20 +92,15 @@ export function BlogArticlePage() {
           </div>
 
           <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm">
-            <div className="grid lg:grid-cols-2">
-              <div className="relative aspect-[4/3] min-h-[280px] bg-[#3E1854] lg:aspect-auto lg:min-h-[520px]">
-                {post.coverImage ? (
-                  <img
-                    src={post.coverImage}
-                    alt={post.title}
-                    className="absolute inset-0 h-full w-full object-cover"
-                  />
-                ) : (
-                  <div className="absolute inset-0 bg-gradient-to-br from-[#6A2B92] to-[#3E1854]" />
-                )}
-              </div>
+            <div className="relative aspect-[16/9] w-full overflow-hidden bg-white">
+              {post.coverImage ? (
+                <ContainedCover src={post.coverImage} alt={post.title} />
+              ) : (
+                <div className="h-full w-full bg-gradient-to-br from-[#6A2B92] to-[#3E1854]" />
+              )}
+            </div>
 
-              <div className="flex flex-col justify-center p-8 sm:p-10 lg:p-14">
+              <div className="flex flex-col p-8 sm:p-10 lg:p-14">
                 {post.category ? (
                   <div className="mb-5 w-fit rounded-full border border-[#17C3B3]/20 bg-[#17C3B3]/10 px-4 py-1.5 text-sm font-bold text-[#17C3B3]">
                     {post.category}
@@ -118,10 +113,6 @@ export function BlogArticlePage() {
 
                 <div className="mb-6 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-medium text-[#8c8c8c]">
                   <span className="inline-flex items-center gap-2">
-                    <User className="h-4 w-4 text-[#17C3B3]" />
-                    {author}
-                  </span>
-                  <span className="inline-flex items-center gap-2">
                     <Calendar className="h-4 w-4 text-[#17C3B3]" />
                     {date}
                   </span>
@@ -131,7 +122,6 @@ export function BlogArticlePage() {
                   <p className="text-base leading-relaxed text-gray-500 sm:text-lg">{post.excerpt}</p>
                 ) : null}
               </div>
-            </div>
           </div>
 
           <div className="mx-auto mt-8 max-w-4xl rounded-3xl border border-gray-100 bg-white px-6 py-10 shadow-sm sm:px-10 sm:py-12 lg:px-16 lg:py-14">

@@ -15,6 +15,10 @@ export type CompanyLicense = {
   value?: string;
 };
 
+export type SocialNetwork = "facebook" | "instagram" | "twitter" | "linkedin" | "snapchat" | "tiktok";
+
+export type SocialEnabledMap = Partial<Record<SocialNetwork, boolean>>;
+
 export type CompanyPageData = {
   logo?: string;
   phone?: string;
@@ -25,6 +29,9 @@ export type CompanyPageData = {
   instagram?: string;
   twitter?: string;
   linkedin?: string;
+  snapchat?: string;
+  tiktok?: string;
+  socialEnabled?: SocialEnabledMap;
   ownerAr?: string;
   ownerEn?: string;
   commercial?: string;
@@ -48,6 +55,8 @@ export type ResolvedCompanyContent = {
   instagram: string;
   twitter: string;
   linkedin: string;
+  snapchat: string;
+  tiktok: string;
   owner: string;
   commercial: string;
   fal: string;
@@ -57,6 +66,16 @@ export type ResolvedCompanyContent = {
 
 function pick(value: string | undefined, fallback: string): string {
   return (value || "").trim() || fallback;
+}
+
+export function isSocialEnabled(flags: SocialEnabledMap | undefined, network: SocialNetwork): boolean {
+  if (!flags || typeof flags[network] !== "boolean") return true;
+  return flags[network] === true;
+}
+
+function visibleSocialUrl(data: CompanyPageData | null | undefined, network: SocialNetwork): string {
+  if (!isSocialEnabled(data?.socialEnabled, network)) return "";
+  return String(data?.[network] || "").trim();
 }
 
 function sanitizeFileName(name: string): string {
@@ -98,10 +117,12 @@ export function resolveCompanyContent(
       isAr ? data?.locationAr : data?.locationEn,
       isAr ? COMPANY_DEFAULTS.locationAr : COMPANY_DEFAULTS.locationEn
     ),
-    facebook: (data?.facebook || "").trim(),
-    instagram: (data?.instagram || "").trim(),
-    twitter: (data?.twitter || "").trim(),
-    linkedin: (data?.linkedin || "").trim(),
+    facebook: visibleSocialUrl(data, "facebook"),
+    instagram: visibleSocialUrl(data, "instagram"),
+    twitter: visibleSocialUrl(data, "twitter"),
+    linkedin: visibleSocialUrl(data, "linkedin"),
+    snapchat: visibleSocialUrl(data, "snapchat"),
+    tiktok: visibleSocialUrl(data, "tiktok"),
     owner: pick(
       isAr ? data?.ownerAr : data?.ownerEn,
       isAr ? COMPANY_DEFAULTS.ownerAr : COMPANY_DEFAULTS.ownerEn

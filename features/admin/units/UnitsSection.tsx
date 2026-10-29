@@ -21,7 +21,7 @@ import { usePermissions } from "@/features/admin/permissions/usePermissions";
 
 const UNIT_STATUS_LABELS: Record<string, string> = {
   available: "متاحة",
-  unavailable: "مباعة/مؤجرة",
+  unavailable: "مباعة",
 };
 
 const UNIT_STATUS_TONE: Record<string, "success" | "neutral" | "warning" | "danger" | "primary"> = {

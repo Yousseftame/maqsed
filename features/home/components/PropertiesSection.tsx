@@ -15,6 +15,7 @@ import { useMenuOptions } from "@/features/admin/menus/useMenuOptions";
 import { formatProjectPriceRange, projectPriceRangeFromUnits } from "@/features/properties/project-price";
 import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
 import { ProjectDeveloperOverlay } from "@/features/properties/components/ProjectDeveloperOverlay";
+import { ContainedCover } from "@/components/ui/ContainedCover";
 import type { City } from "@/features/admin/cities/data";
 import type { Locale } from "@/lib/i18n/types";
 
@@ -93,29 +94,6 @@ function unitsCountForProject(property: Property, units: Unit[]) {
     0
   );
   return fromBuildings;
-}
-
-function ProjectCover({ src, alt }: { src: string; alt: string }) {
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
-
-  if (!src || failed) {
-    return <div className="h-full w-full bg-gray-200" />;
-  }
-
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-      loading="lazy"
-      decoding="async"
-      onError={() => setFailed(true)}
-    />
-  );
 }
 
 function CardSkeleton() {
@@ -330,8 +308,13 @@ export function PropertiesSection() {
                 onMouseEnter={() => setIsHoveringCard(true)}
                 onMouseLeave={() => setIsHoveringCard(false)}
               >
-                <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200">
-                  <ProjectCover src={prop.image} alt={prop.name} />
+                <div className="relative aspect-[4/3] w-full overflow-hidden bg-white">
+                  <ContainedCover
+                    src={prop.image}
+                    alt={prop.name}
+                    loading="lazy"
+                    imageClassName="transition-transform duration-700 group-hover:scale-105"
+                  />
 
                   <div className="absolute top-4 start-4 z-10 flex flex-col items-start gap-2">
                     {prop.category ? (

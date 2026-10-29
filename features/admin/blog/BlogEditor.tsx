@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowRight, CloudUpload, Loader2 } from "lucide-react";
+import { ArrowRight, ChevronDown, CloudUpload, Loader2 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import toast from "react-hot-toast";
 import { Panel } from "@/features/admin/ui/Panel";
@@ -11,6 +11,10 @@ import { Field, textareaClass } from "@/features/admin/ui/Field";
 import { AdminButton, fieldClass } from "@/features/admin/ui/AdminButton";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { blogService, slugify, type BlogPost } from "@/features/blog/blog.service";
+import {
+  blogCategoriesService,
+  resolveBlogCategoryLabel,
+} from "@/features/blog/blog-categories.service";
 import { cn } from "@/lib/utils";
 
 export function BlogEditor({
@@ -24,7 +28,7 @@ export function BlogEditor({
   showBack?: boolean;
   onSaved?: () => void;
 }) {
-  const { t, isRtl } = useLocale();
+  const { t, isRtl, locale } = useLocale();
   const router = useRouter();
   const queryClient = useQueryClient();
   const fileRef = useRef<HTMLInputElement>(null);
@@ -40,16 +44,21 @@ export function BlogEditor({
   const [coverFile, setCoverFile] = useState<File | null>(null);
   const [storagePath, setStoragePath] = useState(post?.storagePath || "");
   const [published, setPublished] = useState(post?.published ?? true);
-  const [authorAr, setAuthorAr] = useState(post?.authorAr || "");
-  const [authorEn, setAuthorEn] = useState(post?.authorEn || "");
   const [categoryAr, setCategoryAr] = useState(post?.categoryAr || "");
   const [categoryEn, setCategoryEn] = useState(post?.categoryEn || "");
+  const [categoryId, setCategoryId] = useState(post?.categoryId || "");
   const [isSaving, setIsSaving] = useState(false);
+  const hydratedCategory = useRef(false);
 
   const { data: existing, isFetched } = useQuery({
     queryKey: ["blog", "post", postId],
     queryFn: () => blogService.getPost(postId!),
     enabled: Boolean(postId) && !post,
+  });
+
+  const { data: categories = [] } = useQuery({
+    queryKey: ["blogCategories"],
+    queryFn: () => blogCategoriesService.getItems(),
   });
 
   const currentPost = post || existing || null;
@@ -68,12 +77,34 @@ export function BlogEditor({
     setCoverImage(existing.coverImage);
     setStoragePath(existing.storagePath || "");
     setPublished(existing.published);
-    setAuthorAr(existing.authorAr);
-    setAuthorEn(existing.authorEn);
     setCategoryAr(existing.categoryAr);
     setCategoryEn(existing.categoryEn);
+    setCategoryId(existing.categoryId || "");
     setCoverFile(null);
+    hydratedCategory.current = false;
   }, [existing, isFetched, post, postId]);
+
+  useEffect(() => {
+    if (hydratedCategory.current) return;
+    const source = currentPost;
+    if (!source) {
+      if (!postId) hydratedCategory.current = true;
+      return;
+    }
+    if (source.categoryId) {
+      setCategoryId(source.categoryId);
+      hydratedCategory.current = true;
+      return;
+    }
+    if (categories.length === 0) return;
+    const match = categories.find(
+      (item) =>
+        (source.categoryAr && (item.labelAr === source.categoryAr || item.labelEn === source.categoryAr)) ||
+        (source.categoryEn && (item.labelEn === source.categoryEn || item.labelAr === source.categoryEn))
+    );
+    if (match) setCategoryId(match.id);
+    hydratedCategory.current = true;
+  }, [categories, currentPost, postId]);
 
   function onCoverPick(file: File) {
     if (coverImage.startsWith("blob:")) URL.revokeObjectURL(coverImage);
@@ -108,6 +139,7 @@ export function BlogEditor({
         nextStoragePath = uploaded.storagePath;
       }
 
+      const selectedCategory = categories.find((item) => item.id === categoryId);
       const payload = {
         titleAr: titleAr.trim(),
         titleEn: titleEn.trim(),
@@ -119,10 +151,9 @@ export function BlogEditor({
         coverImage: nextCover,
         storagePath: nextStoragePath,
         published,
-        authorAr: authorAr.trim(),
-        authorEn: authorEn.trim(),
-        categoryAr: categoryAr.trim(),
-        categoryEn: categoryEn.trim(),
+        categoryId: selectedCategory?.id || "",
+        categoryAr: selectedCategory?.labelAr || categoryAr.trim(),
+        categoryEn: selectedCategory?.labelEn || categoryEn.trim(),
       };
 
       if (currentId && currentPost) {
@@ -181,44 +212,23 @@ export function BlogEditor({
         <span className="text-xs font-semibold text-[#8c8c8c]">{t("admin.blog.slugHint")}</span>
       </Field>
 
-      <div className="grid gap-6 sm:grid-cols-2">
-        <Field label={t("admin.blog.authorAr")}>
-          <input
-            dir="rtl"
-            value={authorAr}
-            onChange={(e) => setAuthorAr(e.target.value)}
-            placeholder={t("admin.blog.authorAr")}
-            className={fieldClass}
-          />
-        </Field>
-        <Field label={t("admin.blog.authorEn")}>
-          <input
-            dir="ltr"
-            value={authorEn}
-            onChange={(e) => setAuthorEn(e.target.value)}
-            placeholder={t("admin.blog.authorEn")}
-            className={`${fieldClass} text-start`}
-          />
-        </Field>
-        <Field label={t("admin.blog.categoryAr")}>
-          <input
-            dir="rtl"
-            value={categoryAr}
-            onChange={(e) => setCategoryAr(e.target.value)}
-            placeholder={t("admin.blog.categoryAr")}
-            className={fieldClass}
-          />
-        </Field>
-        <Field label={t("admin.blog.categoryEn")}>
-          <input
-            dir="ltr"
-            value={categoryEn}
-            onChange={(e) => setCategoryEn(e.target.value)}
-            placeholder={t("admin.blog.categoryEn")}
-            className={`${fieldClass} text-start`}
-          />
-        </Field>
-      </div>
+      <Field label={t("admin.blog.category")}>
+        <div className="relative">
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className={`${fieldClass} appearance-none pe-10`}
+          >
+            <option value="">{t("admin.blog.categoryPlaceholder")}</option>
+            {categories.map((item) => (
+              <option key={item.id} value={item.id}>
+                {resolveBlogCategoryLabel(item, locale) || item.labelAr || item.labelEn}
+              </option>
+            ))}
+          </select>
+          <ChevronDown className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-[#8c8c8c]" />
+        </div>
+      </Field>
 
       <div className="grid gap-6 sm:grid-cols-2">
         <Field label={t("admin.blog.excerptAr")}>

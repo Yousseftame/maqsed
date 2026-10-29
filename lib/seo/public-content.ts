@@ -253,8 +253,8 @@ export function blogPostingJsonLd(post: BlogPost, slug: string) {
     dateModified: modified?.toISOString(),
     inLanguage: "ar",
     author: {
-      "@type": "Person",
-      name: post.authorAr || post.authorEn || SITE_NAME_AR,
+      "@type": "Organization",
+      name: SITE_NAME_AR,
     },
     publisher: {
       "@type": "Organization",

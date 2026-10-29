@@ -76,12 +76,6 @@ function KindSelect({
   );
 }
 
-function parseAmount(raw: string) {
-  if (raw.trim() === "") return 0;
-  if (!/^\d*\.?\d*$/.test(raw)) return null;
-  return Number(raw) || 0;
-}
-
 export function OfferServicesFields({ services, isRtl, onUpdate, onRemove, onAdd }: Props) {
   return (
     <div className="space-y-2">
@@ -127,12 +121,15 @@ export function OfferServicesFields({ services, isRtl, onUpdate, onRemove, onAdd
             ) : (
               <div className={`${fieldClass} flex items-center gap-2 px-3`} dir="ltr">
                 <input
-                  type="text"
+                  type="number"
+                  min="0"
+                  step="any"
                   inputMode="decimal"
                   value={amountValue}
                   onChange={(e) => {
-                    const parsed = parseAmount(e.target.value);
-                    if (parsed === null) return;
+                    const raw = e.target.value;
+                    const parsed = raw === "" ? 0 : Number(raw);
+                    if (Number.isNaN(parsed)) return;
                     onUpdate(idx, kind === "percent" ? { percent: parsed } : { price: parsed });
                   }}
                   onKeyDown={(e) => {

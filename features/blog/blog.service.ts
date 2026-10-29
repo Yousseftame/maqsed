@@ -34,10 +34,11 @@ export type BlogPost = {
   createdAt: number;
   updatedAt: number;
   order: number;
-  authorAr: string;
-  authorEn: string;
+  categoryId?: string;
   categoryAr: string;
   categoryEn: string;
+  authorAr?: string;
+  authorEn?: string;
 };
 
 export type BlogPostInput = {
@@ -51,8 +52,7 @@ export type BlogPostInput = {
   coverImage: string;
   storagePath?: string;
   published: boolean;
-  authorAr: string;
-  authorEn: string;
+  categoryId?: string;
   categoryAr: string;
   categoryEn: string;
 };
@@ -113,10 +113,11 @@ function mapPost(id: string, data: Record<string, unknown>): BlogPost {
     createdAt,
     updatedAt: toMillis(data.updatedAt) || createdAt,
     order: typeof data.order === "number" ? data.order : -createdAt,
-    authorAr: String(data.authorAr || "").trim(),
-    authorEn: String(data.authorEn || "").trim(),
+    categoryId: String(data.categoryId || "").trim() || undefined,
     categoryAr: String(data.categoryAr || "").trim(),
     categoryEn: String(data.categoryEn || "").trim(),
+    authorAr: String(data.authorAr || "").trim(),
+    authorEn: String(data.authorEn || "").trim(),
   };
 }
 

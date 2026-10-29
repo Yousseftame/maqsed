@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Building2, ArrowUpRight } from "lucide-react";
+import { ContainedCover } from "@/components/ui/ContainedCover";
 import type { UnitListing } from "@/features/units/data/units";
 import { MostViewedBadge } from "@/features/analytics/MostViewedBadge";
 import { isMostViewed } from "@/features/analytics/most-viewed";
 import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
+import { FeaturedUnitBadge } from "@/features/units/FeaturedUnitBadge";
 import { getActiveUnitDiscount } from "@/features/units/unit-discount";
 import { useNow } from "@/features/units/useNow";
 
@@ -23,27 +24,6 @@ function affiliationText(unit: UnitListing, isRtl: boolean) {
 function unitHref(unit: UnitListing) {
   if (unit.slug) return `/units/${encodeURIComponent(unit.slug)}`;
   return `/units/${unit.pathId || unit.id}`;
-}
-
-function UnitCover({ src, alt }: { src: string; alt: string }) {
-  const [failed, setFailed] = useState(false);
-
-  useEffect(() => {
-    setFailed(false);
-  }, [src]);
-
-  if (!src || failed) return <div className="h-full w-full bg-gray-200" />;
-
-  return (
-    <img
-      src={src}
-      alt={alt}
-      className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
-      loading="lazy"
-      decoding="async"
-      onError={() => setFailed(true)}
-    />
-  );
 }
 
 interface UnitCardProps {
@@ -80,9 +60,19 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
         href={unitHref(unit)}
         className="group flex flex-col justify-between rounded-2xl border border-gray-200 bg-white transition-all duration-300 hover:border-[#17C3B3] hover:shadow-[0_10px_40px_-10px_rgba(0,0,0,0.08)] hover:-translate-y-1 block h-full overflow-hidden"
       >
-        <div className="relative h-32 w-full sm:h-40">
-          <UnitCover src={unit.gallery[0] || ""} alt={`Unit ${unit.id}`} />
+        <div className="relative h-32 w-full overflow-hidden bg-white sm:h-40">
+          <ContainedCover
+            src={unit.gallery[0] || ""}
+            alt={`Unit ${unit.id}`}
+            loading="lazy"
+            imageClassName="transition-transform duration-700 group-hover:scale-105"
+          />
           <div className="absolute inset-0 bg-black/5 transition-colors duration-300 group-hover:bg-black/0" />
+          <FeaturedUnitBadge
+            featured={unit.featured}
+            size="sm"
+            className="absolute bottom-3 start-3 z-10"
+          />
           {(discount || showMostViewed) ? (
             <div className="absolute top-3 end-3 z-10 flex flex-col items-end gap-1.5">
               {discount ? (
@@ -201,8 +191,13 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
       className="group flex h-full cursor-pointer flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md"
     >
       {/* Image Section */}
-      <div className="relative aspect-[4/3] w-full overflow-hidden bg-gray-200">
-        <UnitCover src={unit.gallery[0] || ""} alt={`Unit ${unit.id}`} />
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-white">
+        <ContainedCover
+          src={unit.gallery[0] || ""}
+          alt={`Unit ${unit.id}`}
+          loading="lazy"
+          imageClassName="transition-transform duration-700 group-hover:scale-105"
+        />
         
         {/* Top Badges */}
         <div className="absolute top-4 start-4 z-10">
@@ -223,6 +218,10 @@ export function UnitCard({ unit, isRtl, projectName, variant = "default" }: Unit
             {showMostViewed ? <MostViewedBadge views={unit.views} /> : null}
           </div>
         ) : null}
+        <FeaturedUnitBadge
+          featured={unit.featured}
+          className="absolute bottom-4 start-4 z-10"
+        />
       </div>
 
       <div className="flex flex-1 flex-col p-5 text-start">

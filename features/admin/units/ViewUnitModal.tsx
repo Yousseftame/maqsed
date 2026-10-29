@@ -8,6 +8,7 @@ import { StatusBadge } from "@/features/admin/ui/StatusBadge";
 import { MenuValuePills } from "@/features/admin/menus/MenuValuePills";
 import { getActiveUnitDiscount } from "@/features/units/unit-discount";
 import { UnitDiscountBadge } from "@/features/units/UnitDiscountBadge";
+import { FeaturedUnitBadge } from "@/features/units/FeaturedUnitBadge";
 import { useNow } from "@/features/units/useNow";
 import { AdvertisementInfoAdminBlock } from "@/features/admin/shared/AdvertisementInfoView";
 
@@ -52,8 +53,9 @@ export function ViewUnitModal({ isOpen, onClose, unit }: ViewUnitModalProps) {
                   تفاصيل الوحدة: {unit.displayUnitNumber || unit.unitNumber}
                 </h2>
                 <StatusBadge tone={unit.status === "available" ? "success" : "default"}>
-                  {unit.status === "available" ? "متاحة" : "مباعة/مؤجرة"}
+                  {unit.status === "available" ? "متاحة" : "مباعة"}
                 </StatusBadge>
+                <FeaturedUnitBadge featured={unit.featured} />
               </div>
               <button
                 onClick={onClose}

@@ -8,10 +8,41 @@ import { Panel } from "@/features/admin/ui/Panel";
 import { AdminButton, fieldClass } from "@/features/admin/ui/AdminButton";
 import { Field } from "@/features/admin/ui/Field";
 import { COMPANY_DEFAULTS, DEFAULT_COMPANY_LOGO } from "@/features/admin/company/data";
-import { companyService, normalizeLicenses, type CompanyLicense } from "@/features/company/company.service";
+import {
+  companyService,
+  isSocialEnabled,
+  normalizeLicenses,
+  type CompanyLicense,
+  type SocialEnabledMap,
+  type SocialNetwork,
+} from "@/features/company/company.service";
 import { usePermissions } from "@/features/admin/permissions/usePermissions";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { cn } from "@/lib/utils";
+
+const SOCIAL_NETWORKS: SocialNetwork[] = ["linkedin", "facebook", "instagram", "twitter", "snapchat", "tiktok"];
+
+function SocialToggle({ enabled, onChange }: { enabled: boolean; onChange: (next: boolean) => void }) {
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={enabled}
+      onClick={() => onChange(!enabled)}
+      className={cn(
+        "relative h-7 w-12 shrink-0 rounded-full transition-colors",
+        enabled ? "bg-[#17C3B3]" : "bg-[#D1D5DB]"
+      )}
+    >
+      <span
+        className={cn(
+          "absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all",
+          enabled ? "start-[1.35rem]" : "start-0.5"
+        )}
+      />
+    </button>
+  );
+}
 
 export function CompanySection() {
   const { t } = useLocale();
@@ -29,6 +60,9 @@ export function CompanySection() {
   const [instagram, setInstagram] = useState("");
   const [twitter, setTwitter] = useState("");
   const [linkedin, setLinkedin] = useState("");
+  const [snapchat, setSnapchat] = useState("");
+  const [tiktok, setTiktok] = useState("");
+  const [socialEnabled, setSocialEnabled] = useState<SocialEnabledMap>({});
   const [ownerAr, setOwnerAr] = useState("");
   const [ownerEn, setOwnerEn] = useState("");
   const [commercial, setCommercial] = useState("");
@@ -57,6 +91,11 @@ export function CompanySection() {
     setInstagram(data?.instagram?.trim() || "");
     setTwitter(data?.twitter?.trim() || "");
     setLinkedin(data?.linkedin?.trim() || "");
+    setSnapchat(data?.snapchat?.trim() || "");
+    setTiktok(data?.tiktok?.trim() || "");
+    setSocialEnabled(
+      Object.fromEntries(SOCIAL_NETWORKS.map((network) => [network, isSocialEnabled(data?.socialEnabled, network)]))
+    );
     setOwnerAr(data?.ownerAr?.trim() || COMPANY_DEFAULTS.ownerAr);
     setOwnerEn(data?.ownerEn?.trim() || COMPANY_DEFAULTS.ownerEn);
     setCommercial(data?.commercial?.trim() || COMPANY_DEFAULTS.commercial);
@@ -88,6 +127,16 @@ export function CompanySection() {
         instagram: instagram.trim(),
         twitter: twitter.trim(),
         linkedin: linkedin.trim(),
+        snapchat: snapchat.trim(),
+        tiktok: tiktok.trim(),
+        socialEnabled: {
+          linkedin: socialEnabled.linkedin !== false,
+          facebook: socialEnabled.facebook !== false,
+          instagram: socialEnabled.instagram !== false,
+          twitter: socialEnabled.twitter !== false,
+          snapchat: socialEnabled.snapchat !== false,
+          tiktok: socialEnabled.tiktok !== false,
+        },
         ownerAr: ownerAr.trim(),
         ownerEn: ownerEn.trim(),
         commercial: commercial.trim(),
@@ -190,46 +239,37 @@ export function CompanySection() {
 
       <Panel title={t("admin.company.socials")}>
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <Field label={t("admin.company.linkedin")}>
-            <input
-              type="url"
-              dir="ltr"
-              value={linkedin}
-              onChange={(event) => setLinkedin(event.target.value)}
-              placeholder="https://"
-              className={cn(fieldClass, "text-start")}
-            />
-          </Field>
-          <Field label={t("admin.company.facebook")}>
-            <input
-              type="url"
-              dir="ltr"
-              value={facebook}
-              onChange={(event) => setFacebook(event.target.value)}
-              placeholder="https://"
-              className={cn(fieldClass, "text-start")}
-            />
-          </Field>
-          <Field label={t("admin.company.instagram")}>
-            <input
-              type="url"
-              dir="ltr"
-              value={instagram}
-              onChange={(event) => setInstagram(event.target.value)}
-              placeholder="https://"
-              className={cn(fieldClass, "text-start")}
-            />
-          </Field>
-          <Field label={t("admin.company.twitter")}>
-            <input
-              type="url"
-              dir="ltr"
-              value={twitter}
-              onChange={(event) => setTwitter(event.target.value)}
-              placeholder="https://"
-              className={cn(fieldClass, "text-start")}
-            />
-          </Field>
+          {(
+            [
+              ["linkedin", linkedin, setLinkedin],
+              ["facebook", facebook, setFacebook],
+              ["instagram", instagram, setInstagram],
+              ["twitter", twitter, setTwitter],
+              ["snapchat", snapchat, setSnapchat],
+              ["tiktok", tiktok, setTiktok],
+            ] as const
+          ).map(([network, value, setValue]) => {
+            const enabled = socialEnabled[network] !== false;
+            return (
+              <div key={network} className="flex min-w-0 flex-col gap-2">
+                <span className="text-sm font-semibold text-[#8c8c8c]">{t(`admin.company.${network}`)}</span>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="url"
+                    dir="ltr"
+                    value={value}
+                    onChange={(event) => setValue(event.target.value)}
+                    placeholder="https://"
+                    className={cn(fieldClass, "min-w-0 flex-1 text-start")}
+                  />
+                  <SocialToggle
+                    enabled={enabled}
+                    onChange={(next) => setSocialEnabled((current) => ({ ...current, [network]: next }))}
+                  />
+                </div>
+              </div>
+            );
+          })}
         </div>
       </Panel>
 

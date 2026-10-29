@@ -50,6 +50,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
       discountActive: false,
       discountPercentage: "",
       discountDays: "",
+      featured: false,
 
       additionalComponents: [] as string[],
       features: [] as string[],
@@ -66,6 +67,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
   const [images, setImages] = useState<ProjectGalleryImage[]>([]);
   const [adInfo, setAdInfo] = useState<string[]>([]);
   const lastFilledModelId = useRef<string | null>(null);
+  const lastFilledProjectId = useRef<string | null>(null);
 
   useEffect(() => {
     if (isOpen && unit) {
@@ -100,6 +102,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
         discountActive: unit.discountActive || false,
         discountPercentage: unit.discountPercentage?.toString() || "",
         discountDays: unit.discountDays?.toString() || "",
+        featured: Boolean(unit.featured),
 
         additionalComponents: normalizeMenuValues(unit.additionalComponents, items),
         features: normalizeMenuValues(unit.features, items),
@@ -166,7 +169,43 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
   const selectedModelId = watch("modelId");
   const isModelSelected = !isIndependent && !!selectedModelId;
   const selectedModel = isModelSelected ? selectedProject?.models.find((m: any) => m.id === selectedModelId) : null;
+  const buildingIdValue = watch("buildingId");
+  const selectedBuilding = projectBuildings.find((item) => item.id === buildingIdValue);
+  const buildingFloorsCount = Number(selectedBuilding?.floorsCount) || 0;
+  const currentFloorValue = String(watch("floor") || "");
+  const floorOptions =
+    buildingFloorsCount > 0
+      ? Array.from({ length: buildingFloorsCount }, (_, i) => i + 1)
+      : Array.from({ length: 51 }, (_, i) => i);
+  if (currentFloorValue && !floorOptions.includes(Number(currentFloorValue))) {
+    const extraFloor = Number(currentFloorValue);
+    if (Number.isFinite(extraFloor)) {
+      floorOptions.push(extraFloor);
+      floorOptions.sort((a, b) => a - b);
+    }
+  }
   
+  useEffect(() => {
+    if (!isOpen) {
+      lastFilledProjectId.current = null;
+      return;
+    }
+    if (isIndependent || !selectedProjectId || !selectedProject) {
+      if (isIndependent) lastFilledProjectId.current = "independent";
+      return;
+    }
+    if (lastFilledProjectId.current === selectedProjectId) return;
+
+    const skipPrefill = lastFilledProjectId.current === null && !!unit;
+    lastFilledProjectId.current = selectedProjectId;
+    if (skipPrefill) return;
+
+    const projectAdInfo = normalizeAdInfo(selectedProject.adInfo);
+    if (projectAdInfo.length > 0) {
+      setAdInfo(projectAdInfo);
+    }
+  }, [isOpen, isIndependent, selectedProjectId, selectedProject, unit]);
+
   useEffect(() => {
     if (!isOpen) {
       lastFilledModelId.current = null;
@@ -199,6 +238,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
   }, [isOpen, isModelSelected, selectedModelId, selectedProject, setValue, unit]);
 
   const discountActive = watch("discountActive");
+  const featured = watch("featured");
   const statusValue = watch("status");
 
   const updateMutation = useMutation({
@@ -239,6 +279,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
           ? (Number(data.internalArea) || 0) + (Number(data.externalArea) || 0)
           : model ? (Number(model.totalArea) || 0) : (Number(data.totalArea) || 0),
         discountActive: data.discountActive,
+        featured: Boolean(data.featured),
         additionalComponents: normalizeMenuValues(data.additionalComponents, items),
         features: normalizeMenuValues(data.features, items),
         facade: normalizeMenuValues(data.facade, items),
@@ -430,7 +471,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                         <div className="relative">
                           <select {...register("floor")} className={`${inputClass} appearance-none pr-4 pl-10`}>
                             <option value="">اختر الدور...</option>
-                            {Array.from({ length: 51 }, (_, i) => i).map((num) => (
+                            {floorOptions.map((num) => (
                               <option key={num} value={num.toString()}>
                                 {num}
                               </option>
@@ -459,7 +500,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                         }`}
                       >
                         <option value="available">متاحة</option>
-                        <option value="unavailable">غير متاحة (مباعة/مؤجرة)</option>
+                        <option value="unavailable">مباعة</option>
                       </select>
                       <ChevronDown className={`absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 pointer-events-none ${
                         statusValue === "available" ? "text-green-700" : "text-[#8c8c8c]"
@@ -501,7 +542,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                     </div>
                     <div>
                       <label className={labelClass}>السعر (ر.س)</label>
-                      <input type="number" {...register("price")} className={inputClass} />
+                      <input type="number" step="any" {...register("price")} className={inputClass} />
                     </div>
                   </div>
 
@@ -545,11 +586,11 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                     <div className="grid gap-5 sm:grid-cols-2 mt-5">
                       <div>
                         <label className={labelClass}>المساحة الداخلية (م²)</label>
-                        <input type="number" min="0" {...register("internalArea")} className={inputClass} />
+                        <input type="number" min="0" step="any" {...register("internalArea")} className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>المساحة الخارجية (م²)</label>
-                        <input type="number" min="0" {...register("externalArea")} className={inputClass} />
+                        <input type="number" min="0" step="any" {...register("externalArea")} className={inputClass} />
                       </div>
                       <div className="sm:col-span-2">
                         <label className={labelClass}>المساحة الكلية تلقائياً (م²)</label>
@@ -573,7 +614,7 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                     <div className="grid gap-5 sm:grid-cols-2 bg-white p-5 rounded-[16px]">
                       <div>
                         <label className={labelClass}>نسبة الخصم (%)</label>
-                        <input type="number" {...register("discountPercentage")} placeholder="مثال: 10" className={inputClass} />
+                        <input type="number" step="any" {...register("discountPercentage")} placeholder="مثال: 10" className={inputClass} />
                       </div>
                       <div>
                         <label className={labelClass}>عدد أيام العرض (إلغاء تلقائي)</label>
@@ -581,6 +622,31 @@ export function EditUnitModal({ isOpen, onClose, unit }: EditUnitModalProps) {
                       </div>
                     </div>
                   )}
+                </div>
+
+                <div className={`${formSectionClass} rounded-[16px] bg-[#F4F4F4] border border-[#0a0f1d]/5 p-6`}>
+                  <div className="flex items-center justify-between gap-4">
+                    <div>
+                      <h3 className="text-lg font-bold text-[#0a0f1d]">{t("admin.units.featured")}</h3>
+                      <p className="mt-1 text-sm font-medium text-[#8c8c8c]">{t("admin.units.featuredHint")}</p>
+                    </div>
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={Boolean(featured)}
+                      onClick={() => setValue("featured", !featured, { shouldDirty: true })}
+                      className="flex items-center gap-3 rounded-lg bg-white px-4 py-2 shadow-sm"
+                    >
+                      <span className="text-sm font-bold text-[#6A2B92]">{t("admin.units.featuredEnable")}</span>
+                      <span
+                        className={`relative h-7 w-12 shrink-0 rounded-full transition-colors ${featured ? "bg-[#6A2B92]" : "bg-[#D1D5DB]"}`}
+                      >
+                        <span
+                          className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition-all ${featured ? "start-[1.35rem]" : "start-0.5"}`}
+                        />
+                      </span>
+                    </button>
+                  </div>
                 </div>
 
                 {/* 4. التفاصيل الفنية */}
