@@ -1,7 +1,8 @@
 "use client";
 
 import { useLocale } from "@/components/providers/LocaleProvider";
-import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
+import { cn } from "@/lib/utils";
+import { ContainedCover } from "@/components/ui/ContainedCover";
 import { useAboutContent } from "@/features/about/useAboutContent";
 
 export function VisionMissionSection() {
@@ -9,53 +10,39 @@ export function VisionMissionSection() {
   const content = useAboutContent();
 
   return (
-    <section className="relative w-full bg-[#6A2B92] py-16 lg:py-20 overflow-hidden">
-      {/* Central Parallax Window */}
-      {/* Absolute positioned in the center, spans full height */}
-      <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none">
+    <section className="relative z-30 w-full overflow-hidden bg-[#F9FAFB] px-6 pb-24 pt-8 md:px-12 lg:px-20">
+      <div className="mx-auto max-w-[1400px]">
         <div
-          className="w-[80%] md:w-[50%] lg:w-[40%] h-[400px] md:h-[500px] lg:h-[550px]"
-          style={{
-            // Creates the sharp angled parallelogram mask matching the screenshot
-            clipPath: isRtl 
-              ? "polygon(0 0%, 100% 60%, 100% 100%, 0 40%)" // Mirrored for RTL
-              : "polygon(0 60%, 100% 0%, 100% 40%, 0 100%)", // Top-Left, Top-Right, Bottom-Right, Bottom-Left
-            // Fixed background for parallax effect
-            backgroundImage: `url("${content.visionMissionImage}")`,
-            backgroundAttachment: "fixed",
-            backgroundPosition: "center",
-            backgroundSize: "cover",
-            backgroundRepeat: "no-repeat",
-          }}
-        />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-[1600px] px-6 lg:px-12 min-h-[450px] md:min-h-[600px] grid grid-cols-1 lg:grid-cols-12 gap-8">
-        
-        {/* Mission Content (Top Left) */}
-        <div 
-          className="lg:col-span-4 lg:col-start-1 self-start pt-16"
+          className={cn(
+            "flex flex-col overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-sm",
+            isRtl ? "lg:flex-row-reverse" : "lg:flex-row"
+          )}
         >
-          <h2 className="mb-6 text-4xl sm:text-5xl font-medium tracking-tight text-white">
-            <DiaTextReveal text={content.missionTitle} textColor="white" colors={["white"]} />
-          </h2>
-          <p className="text-base sm:text-lg leading-relaxed text-gray-300">
-            {content.missionSubtitle}
-          </p>
-        </div>
+          <div className="flex flex-1 flex-col justify-center gap-10 p-8 text-start sm:p-10 lg:p-16">
+            <div>
+              <h2 className="mb-4 text-3xl font-extrabold text-[#6A2B92] sm:text-4xl">
+                {content.missionTitle}
+              </h2>
+              <p className="max-w-xl text-base font-medium leading-relaxed text-gray-500">
+                {content.missionSubtitle}
+              </p>
+            </div>
+            <div>
+              <h2 className="mb-4 text-3xl font-extrabold text-[#6A2B92] sm:text-4xl">
+                {content.visionTitle}
+              </h2>
+              <p className="max-w-xl text-base font-medium leading-relaxed text-gray-500">
+                {content.visionSubtitle}
+              </p>
+            </div>
+          </div>
 
-        {/* Vision Content (Bottom Right) */}
-        <div 
-          className="lg:col-span-4 lg:col-start-9 self-end mt-48 lg:mt-0" 
-        >
-          <h2 className="mb-6 text-4xl sm:text-5xl font-medium tracking-tight text-white">
-            <DiaTextReveal text={content.visionTitle} textColor="white" colors={["white"]} />
-          </h2>
-          <p className="text-base sm:text-lg leading-relaxed text-gray-300">
-            {content.visionSubtitle}
-          </p>
+          <div className="relative min-h-[280px] flex-1 p-4 sm:min-h-[360px] lg:min-h-[auto] lg:p-6">
+            <div className="relative h-full min-h-[280px] w-full overflow-hidden rounded-2xl bg-[#F4F4F4] sm:min-h-[360px] lg:min-h-[400px]">
+              <ContainedCover src={content.visionMissionImage} alt="" />
+            </div>
+          </div>
         </div>
-
       </div>
     </section>
   );

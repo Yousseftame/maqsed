@@ -7,6 +7,7 @@ import { DiaTextReveal } from "@/components/ui/dia-text-reveal";
 import { ArrowUpRight, Mail, Phone, MapPin, Loader2 } from "lucide-react";
 import { useLocale } from "@/components/providers/LocaleProvider";
 import { useCompanyContent } from "@/features/company/useCompanyContent";
+import { BRAND_ASSETS } from "@/lib/brand-assets";
 import { cn } from "@/lib/utils";
 import { requestsService } from "@/features/admin/customers/requests.service";
 import { SellForm } from "@/features/sell/components/SellForm";

@@ -71,7 +71,7 @@ exports.updateAdminAccount = (0, https_1.onCall)(async (request) => {
             lastName: lastName || "",
             phoneNumber: phone || "",
         };
-        if (targetRole === "admin") {
+        if (targetRole === "admin" && uid !== callerUid) {
             updates.permissions = (0, permissions_1.sanitizePermissions)(permissions);
         }
         await targetRef.update(updates);

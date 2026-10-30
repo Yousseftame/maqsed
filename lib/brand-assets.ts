@@ -5,6 +5,7 @@ import iconPng from "@/assets/brand/icon-removebg-preview.png";
 import logoAdmin from "@/assets/brand/logoadminpanel.png";
 import defaultHero from "@/assets/brand/9.jpg";
 import gmailIcon from "@/assets/brand/google_mail_gmail_logo_icon_159346.webp";
+import pagePattern from "@/assets/brand/patern-maqsed.jpg";
 
 function assetSrc(asset: string | { src: string }) {
   return typeof asset === "string" ? asset : asset.src;

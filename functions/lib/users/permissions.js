@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.MODULE_AVAILABLE_ACTIONS = exports.PERMISSION_ACTIONS = exports.PERMISSION_MODULES = void 0;
+exports.emptyPermissions = emptyPermissions;
 exports.sanitizePermissions = sanitizePermissions;
 exports.PERMISSION_MODULES = [
     "users",
@@ -70,8 +71,7 @@ function sanitizePermissions(input) {
         for (const action of exports.MODULE_AVAILABLE_ACTIONS[module]) {
             next[module][action] = Boolean(current?.[action]);
         }
-        const hasWrite =
-            next[module].create || next[module].edit || next[module].delete || next[module].sort;
+        const hasWrite = next[module].create || next[module].edit || next[module].delete || next[module].sort;
         if (hasWrite && exports.MODULE_AVAILABLE_ACTIONS[module].includes("read")) {
             next[module].read = true;
         }
