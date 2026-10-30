@@ -45,7 +45,7 @@ export const updateAdminAccount = onCall(async (request) => {
       phoneNumber: phone || "",
     };
 
-    if (targetRole === "admin") {
+    if (targetRole === "admin" && uid !== callerUid) {
       updates.permissions = sanitizePermissions(permissions);
     }
 

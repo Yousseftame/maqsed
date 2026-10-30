@@ -14,6 +14,10 @@ service cloud.firestore {
       return isAuthenticated() && (getUserData().role == 'admin' || getUserData().role == 'superAdmin');
     }
 
+    function isSuperAdmin() {
+      return isAuthenticated() && getUserData().role == 'superAdmin';
+    }
+
     function isDeveloper() {
       return isAuthenticated() && getUserData().role == 'developer';
     }
@@ -42,20 +46,65 @@ service cloud.firestore {
     }
 
     match /users/{userId} {
-      allow read: if isAdmin()
-        || (isAuthenticated() && request.auth.uid == userId)
-        || (isDeveloper() && resource.data.developerUid == request.auth.uid);
-      allow create: if isAdmin() || (isAuthenticated() && request.auth.uid == userId);
-      allow update: if isAdmin()
-        || (isAuthenticated() && request.auth.uid == userId)
-        || (isDeveloper()
+      function isSelf() {
+        return isAuthenticated() && request.auth.uid == userId;
+      }
+
+      function identityUnchanged() {
+        return request.resource.data.get('role', '') == resource.data.get('role', '')
+          && request.resource.data.get('uid', userId) == resource.data.get('uid', userId)
+          && request.resource.data.get('email', '') == resource.data.get('email', '')
+          && request.resource.data.get('developerUid', '') == resource.data.get('developerUid', '')
+          && request.resource.data.get('status', '') == resource.data.get('status', '');
+      }
+
+      function permissionsUnchanged() {
+        return !request.resource.data.diff(resource.data).affectedKeys().hasAny(['permissions']);
+      }
+
+      function isSafeSelfUpdate() {
+        return isSelf()
+          && identityUnchanged()
+          && permissionsUnchanged()
+          && request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['displayName', 'lastName', 'phoneNumber', 'companyName', 'photoURL', 'lastLoginAt', 'lastLoginIp']);
+      }
+
+      function isAdminUpdatingOtherUser() {
+        return isAdmin()
+          && !isSelf()
+          && identityUnchanged()
+          && (isSuperAdmin() || permissionsUnchanged());
+      }
+
+      function isDeveloperUpdatingEmployeeStatus() {
+        return isDeveloper()
           && resource.data.role == 'employee'
           && resource.data.developerUid == request.auth.uid
           && request.resource.data.role == 'employee'
           && request.resource.data.developerUid == request.auth.uid
-          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']));
-      allow delete: if isAdmin()
-        || (isAuthenticated() && request.auth.uid == userId)
+          && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']);
+      }
+
+      function isEmployeeSelfCreate() {
+        return isSelf()
+          && request.resource.data.get('uid', '') == request.auth.uid
+          && request.resource.data.role == 'employee'
+          && request.resource.data.developerUid is string
+          && request.resource.data.developerUid.size() > 0
+          && exists(/databases/$(database)/documents/users/$(request.resource.data.developerUid))
+          && get(/databases/$(database)/documents/users/$(request.resource.data.developerUid)).data.role == 'developer';
+      }
+
+      allow read: if isAdmin()
+        || isSelf()
+        || (isDeveloper() && resource.data.developerUid == request.auth.uid);
+      allow create: if isEmployeeSelfCreate();
+      allow update: if !(isSelf() && !permissionsUnchanged())
+        && (isSafeSelfUpdate()
+          || isAdminUpdatingOtherUser()
+          || isDeveloperUpdatingEmployeeStatus());
+      allow delete: if (isAdmin() && !isSelf())
         || (isDeveloper() && resource.data.role == 'employee' && resource.data.developerUid == request.auth.uid);
       
       match /auditLogs/{logId} {
@@ -108,6 +157,11 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
 
+    match /blogCategories/{id} {
+      allow read: if true;
+      allow write: if isAdmin();
+    }
+
     match /legal/{id} {
       allow read: if true;
       allow write: if isAdmin();
@@ -142,7 +196,12 @@ service cloud.firestore {
       allow create: if true;
       allow read, update, delete: if isAdmin();
     }
-    
+
+    match /interest_requests/{requestId} {
+      allow create: if true;
+      allow read, update, delete: if isAdmin();
+    }
+
     match /offers/{offerId} {
       allow create, delete: if isAdmin();
       allow list: if isAdmin()
