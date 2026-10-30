@@ -22,4 +22,5 @@ export const BRAND_ASSETS = {
   logoAdmin: assetSrc(logoAdmin),
   defaultHero: assetSrc(defaultHero),
   gmail: assetSrc(gmailIcon),
+  pagePattern: assetSrc(pagePattern),
 } as const;

@@ -103,7 +103,7 @@ export function ContactPage() {
         {/* Background Pattern */}
         <div
           className="absolute inset-0 z-0 h-full w-full bg-cover bg-center bg-no-repeat pointer-events-none"
-          style={{ backgroundImage: "url('/patern-maqsed.jpg')" }}
+          style={{ backgroundImage: `url('${BRAND_ASSETS.pagePattern}')` }}
         />
 
         <div className="relative mx-auto flex max-w-[1400px] flex-col gap-14 lg:flex-row lg:items-end lg:justify-between z-10">

@@ -12,7 +12,7 @@ export function AboutHeader() {
   return (
     <PageHeader
       title={headerTitle}
-      backgroundImage="/patern-maqsed.jpg"
+      backgroundImage={BRAND_ASSETS.pagePattern}
       isPattern={true}
       breadcrumbPaths={[
         { name: t("nav.home"), url: "/" },
